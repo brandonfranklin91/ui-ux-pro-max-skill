@@ -1293,6 +1293,66 @@
       ]
     },
     {
+      "entityKind": "dataset-contract",
+      "entityId": "core-motion-smooth-scroll-setup",
+      "sourceFile": "motion.csv",
+      "sourceKey": {
+        "Scope": "No 18-25; Lenis options/methods and GSAP setup API identifiers in GSAP Snippet/Framework Notes, reduced-motion handling in Framework Notes",
+        "Boundary": "Pinned to lenis 1.3.27, gsap 3.15 and @gsap/react 2.1.2; does not verify product-specific duration or performance recommendations"
+      },
+      "status": "active",
+      "verifiedAt": "2026-10-16",
+      "sla": "manual-verified",
+      "appliesTo": [
+        "search",
+        "design-guidance"
+      ],
+      "sources": [
+        {
+          "type": "official",
+          "ref": "https://github.com/darkroomengineering/lenis/blob/main/README.md"
+        },
+        {
+          "type": "official",
+          "ref": "https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md"
+        },
+        {
+          "type": "official",
+          "ref": "https://github.com/greensock/GSAP/blob/master/README.md"
+        }
+      ]
+    },
+    {
+      "entityKind": "dataset-contract",
+      "entityId": "react-bits-component-catalog",
+      "sourceFile": "react-bits.csv",
+      "sourceKey": {
+        "Scope": "No 1-217; Component, Category, Description, Docs URL and Dependencies from the upstream registry and component metadata; Rendering and reduced-motion Accessibility Notes detected from each TS-TW component source",
+        "Boundary": "Snapshot of DavidHDev/react-bits main on 2026-10-16; Performance Notes are generic per rendering tier, not per-component benchmarks. Upstream license is MIT + Commons Clause"
+      },
+      "status": "active",
+      "verifiedAt": "2026-10-16",
+      "sla": "needs-review",
+      "appliesTo": [
+        "search",
+        "design-guidance"
+      ],
+      "sources": [
+        {
+          "type": "official",
+          "ref": "https://github.com/DavidHDev/react-bits/blob/main/public/r/registry.json"
+        },
+        {
+          "type": "official",
+          "ref": "https://github.com/DavidHDev/react-bits/blob/main/src/constants/Information.js"
+        },
+        {
+          "type": "official",
+          "ref": "https://github.com/DavidHDev/react-bits/blob/main/README.md"
+        }
+      ]
+    },
+    {
       "entityKind": "catalog-snapshot",
       "entityId": "google-fonts-catalog-2026-08-13",
       "sourceFile": "google-fonts.csv",

@@ -62,6 +62,7 @@ def build(verified_at):
         "upstreamPhosphorIcons": icons.get("iconCount"),
         "uxGuidelines": len(rows("ux-guidelines.csv")),
         "motionPresets": len(rows("motion.csv")),
+        "reactBitsComponents": len(rows("react-bits.csv")),
         "chartTypes": len(rows("charts.csv")),
         "stacks": len(stack_paths),
         "stackGuidelines": sum(len(rows(f"stacks/{path.name}")) for path in stack_paths),

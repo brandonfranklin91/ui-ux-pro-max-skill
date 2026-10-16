@@ -20,7 +20,7 @@ README = ROOT / "README.md"
 README_ZH = ROOT / "README.zh.md"
 DOMAINS = {
     "product", "style", "typography", "color", "landing", "chart", "ux",
-    "gsap", "react", "web", "icons", "google-fonts",
+    "gsap", "react", "reactbits", "web", "icons", "google-fonts",
 }
 FLAGS = {
     "--domain", "-d", "--stack", "-s", "--max-results", "-n", "--json",

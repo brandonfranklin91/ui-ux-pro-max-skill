@@ -92,7 +92,7 @@ PROVENANCE_APPLIES_TO = {
 CORE_PROVENANCE_FILES = {
     "colors.csv", "charts.csv", "ux-guidelines.csv", "landing.csv",
     "typography.csv", "icons.csv", "motion.csv", "app-interface.csv",
-    "react-performance.csv", "stacks/html-tailwind.csv",
+    "react-performance.csv", "react-bits.csv", "stacks/html-tailwind.csv",
 }
 CATALOG_PROVENANCE_FILES = {"google-fonts.csv", "phosphor-icons-upstream.json"}
 CATALOG_PROVENANCE_IDS = {
@@ -654,6 +654,7 @@ def _check_catalog_summary(summary, licenses, phosphor, problems):
         "upstreamPhosphorIcons": phosphor.get("iconCount"),
         "uxGuidelines": len(_read_rows(DATA_DIR / "ux-guidelines.csv")[1]),
         "motionPresets": len(_read_rows(DATA_DIR / "motion.csv")[1]),
+        "reactBitsComponents": len(_read_rows(DATA_DIR / "react-bits.csv")[1]),
         "chartTypes": len(_read_rows(DATA_DIR / "charts.csv")[1]),
         "stacks": len(STACK_CONFIG),
         "stackGuidelines": sum(len(_read_rows(DATA_DIR / config["file"])[1]) for config in STACK_CONFIG.values()),

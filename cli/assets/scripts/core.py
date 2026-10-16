@@ -61,6 +61,11 @@ CSV_CONFIG = {
         "search_cols": ["Category", "Intensity Tier", "Keywords", "Trigger"],
         "output_cols": ["Category", "Intensity Tier", "Trigger", "Duration", "Easing", "GSAP Snippet", "Framework Notes", "Do", "Don't", "Performance Notes"]
     },
+    "reactbits": {
+        "file": "react-bits.csv",
+        "search_cols": ["Component", "Category", "Description", "Keywords", "Rendering"],
+        "output_cols": ["Component", "Category", "Description", "Dependencies", "Rendering", "Install (shadcn)", "Install (jsrepo)", "Docs URL", "Performance Notes", "Accessibility Notes"]
+    },
     "react": {
         "file": "react-performance.csv",
         "search_cols": ["Category", "Issue", "Keywords", "Description"],
@@ -83,7 +88,7 @@ CSV_CONFIG = {
 UNTRUNCATED_COLS = {
     "Code Example Good", "Code Example Bad", "Code Good", "Code Bad",
     "Implementation Checklist", "Design System Variables", "CSS Import",
-    "Tailwind Config", "GSAP Snippet",
+    "Tailwind Config", "GSAP Snippet", "Install (shadcn)", "Install (jsrepo)",
 }
 
 STACK_CONFIG = {
@@ -206,7 +211,8 @@ _DOMAIN_SCORE_FLOORS = {
 }
 _SEARCH_THRESHOLDS = {
     domain: {"min_score": _DOMAIN_SCORE_FLOORS.get(domain, 0.0),
-             "min_margin": 0.0, "min_coverage": 0.5 if domain == "landing" else 0.0}
+             "min_margin": 0.0,
+             "min_coverage": 0.5 if domain in ("landing", "reactbits") else 0.0}
     for domain in CSV_CONFIG
 }
 _STACK_THRESHOLD = {"min_score": 3.6, "min_margin": 0.0, "min_coverage": 1 / 3}
@@ -226,6 +232,7 @@ _DOMAIN_QUERY_REWRITES = {
     "icons": {"lucide": None, "symbol": None, "glyph": None, "pictogram": None},
     "gsap": {"gsap": "animation", "quickto": None, "scrolltrigger": "scroll",
              "flip plugin": None, "splittext": None},
+    "reactbits": {"reactbits": None, "react bits": None, "component": None},
     "react": {"nextjs": "react", "usecallback": "memoization",
               "useeffect": "effects"},
     "web": {"aria": "accessibility", "outline": "focus",
@@ -578,7 +585,8 @@ def _domain_keywords():
         "typography": ["font pairing", "typography pairing", "heading font", "body font"],
         "google-fonts": ["google font", "font family", "font weight", "font style", "variable font", "noto", "font for", "find font", "font subset", "font language", "monospace font", "serif font", "sans serif font", "display font", "handwriting font", "font", "typography", "serif", "sans"],
         "icons": ["icon", "icons", "lucide", "phosphor", "heroicons", "symbol", "glyph", "pictogram", "svg icon"],
-        "gsap": ["gsap", "quickto", "scrolltrigger", "stagger", "magnetic cursor", "parallax", "page transition", "scroll reveal", "scroll-triggered", "scrollytelling", "flip plugin", "splittext", "shimmer", "skeleton loader"],
+        "gsap": ["gsap", "quickto", "scrolltrigger", "stagger", "magnetic cursor", "parallax", "page transition", "scroll reveal", "scroll-triggered", "scrollytelling", "flip plugin", "splittext", "shimmer", "skeleton loader", "lenis", "smooth scroll", "usegsap", "matchmedia"],
+        "reactbits": ["react bits", "reactbits", "animated background", "webgl background", "shader background", "cursor effect", "text animation component", "animated component"],
         "react": ["react", "next.js", "nextjs", "suspense", "memo", "usecallback", "useeffect", "rerender", "bundle", "waterfall", "barrel", "dynamic import", "rsc", "server component"],
         "web": ["aria", "focus", "outline", "semantic", "virtualize", "autocomplete", "form", "input type", "preconnect", "drag reorder", "single pointer", "touch target", "native accessibility"]
     }
@@ -618,7 +626,7 @@ def _rewrite_query_for_domain(query, domain, index):
 # deterministic instead of depending on dict/hash ordering.
 _DOMAIN_TIEBREAK_ORDER = [
     "ux", "product", "style", "color", "typography", "google-fonts",
-    "chart", "landing", "icons", "gsap", "react", "web",
+    "chart", "landing", "icons", "gsap", "react", "reactbits", "web",
 ]
 _DOMAIN_TIEBREAK_RANK = {
     domain: rank for rank, domain in enumerate(_DOMAIN_TIEBREAK_ORDER)

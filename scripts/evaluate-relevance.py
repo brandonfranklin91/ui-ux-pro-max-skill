@@ -85,7 +85,7 @@ def validate_identities(fixture):
 def _result_identity(result):
     fields = ("Style Category", "Product Type", "Data Type", "Pattern Name",
               "Font Pairing Name", "Family", "Category", "Issue", "Icon Name",
-              "Intensity Tier", "Trigger", "Guideline")
+              "Intensity Tier", "Trigger", "Guideline", "Component")
     return {field: result[field] for field in fields if result.get(field)}
 
 

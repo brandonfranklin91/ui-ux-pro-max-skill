@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "status": "provisional-baseline-regression-gate",
   "baselineRevision": "97eb2a2",
-  "runtimeFingerprint": "48b4cb2aeafb795c76f34bf7faa65e07287811e229b86c152bac3d2cab751385",
-  "oracleFingerprint": "02e7226428c64a995ec24ae104ce4d186f5f91bf0f062556e90ef9b0fcb6d67a",
+  "runtimeFingerprint": "471fee73fd5dd4b1b48bf8ae5b4e85c8782c7034656f442fb470b61be9ad4450",
+  "oracleFingerprint": "9cdb48f112eda13c6dad0eb32a0d17cdfc1ed6ba149e94535a1644bb6edfe002",
   "approvingMaintainer": "repository maintainer approved Phase 1 testing checkpoint; second judgment review remains required before final-target promotion",
   "units": "All metrics are ratios in [0,1]. Precision treats missing ranks as non-relevant. Negative abstention is measured across the hard-negative by domain/stack cross-product.",
   "splitPolicy": {
@@ -40,7 +40,8 @@
     "domain:gsap": 2,
     "domain:react": 2,
     "domain:web": 2,
-    "domain:google-fonts": 2
+    "domain:google-fonts": 2,
+    "domain:reactbits": 2
   },
   "splits": {
     "calibration": {
@@ -83,6 +84,7 @@
     "domain-react-parallel-promises": {"withinTop": 1, "minimumGrade": 2},
     "domain-web-icon-label": {"withinTop": 1, "minimumGrade": 2},
     "domain-google-fonts-inter": {"withinTop": 1, "minimumGrade": 2},
+    "domain-reactbits-split-text": {"withinTop": 1, "minimumGrade": 2},
     "stack-swiftui-navigation": {"withinTop": 1, "minimumGrade": 2},
     "stack-threejs-orbitcontrols": {"withinTop": 1, "minimumGrade": 2},
     "stack-uwp-migration": {"withinTop": 1, "minimumGrade": 2},

@@ -1,11 +1,11 @@
 ---
 name: ui-ux-pro-max
-description: "UI/UX design intelligence for web, mobile, and desktop. This skill should be used when designing, building, reviewing, or fixing interfaces, including pages, components, design systems, accessibility, interaction, responsive layout, typography, color, charts, and stack-specific UI implementation. Searchable local data: 79 searchable styles (50 active), 192 product palettes and reasoning profiles, 74 font pairings, 119 UX guidelines, 105 icons, 17 GSAP presets, 25 chart types, and 22 stacks."
+description: "UI/UX design intelligence for web, mobile, and desktop. This skill should be used when designing, building, reviewing, or fixing interfaces, including pages, components, design systems, accessibility, interaction, responsive layout, typography, color, charts, and stack-specific UI implementation. Searchable local data: 79 searchable styles (50 active), 192 product palettes and reasoning profiles, 74 font pairings, 119 UX guidelines, 105 icons, 25 GSAP presets, 25 chart types, and 22 stacks."
 ---
 
 # UI/UX Pro Max - Design Intelligence
 
-Searchable local UI/UX guidance: 79 searchable styles (50 active), 192 product palettes and exact reasoning profiles, 74 font pairings, 119 UX guidelines, 105 curated icons, 17 GSAP presets, 25 chart types, and 22 technology stacks.
+Searchable local UI/UX guidance: 79 searchable styles (50 active), 192 product palettes and exact reasoning profiles, 74 font pairings, 119 UX guidelines, 105 curated icons, 25 GSAP presets, 25 chart types, and 22 technology stacks.
 
 ## When to Apply
 
@@ -149,6 +149,8 @@ python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<
 | Landing page structure | `landing` | `"hero social-proof" --domain landing` |
 | Icon recommendations | `icons` | `"decorative icon aria hidden" --domain icons` |
 | GSAP animation presets | `gsap` | `"scroll reveal stagger" --domain gsap` |
+| Lenis smooth scroll + GSAP setup | `gsap` | `"lenis smooth scroll scrolltrigger" --domain gsap` |
+| React Bits animated components | `reactbits` | `"split text headline reveal" --domain reactbits` |
 | React/Next.js performance | `react` | `"rerender memo list" --domain react` |
 | App/native interface guidelines | `web` | `"accessibilityLabel touch safe-areas" --domain web` |
 

@@ -51,8 +51,8 @@ export function Hero() {
         tl.to(
           q('[data-food]'),
           mobile
-            ? { xPercent: 0, yPercent: -16, scale: 0.9, duration: 0.35 }
-            : { xPercent: 16, scale: 1.0, duration: 0.35 },
+            ? { xPercent: 0, yPercent: -6, scale: 1.0, duration: 0.35 }
+            : { xPercent: 10, scale: 1.0, duration: 0.35 },
           0.25,
         )
           .to(q('[data-bg]'), { xPercent: mobile ? 0 : -3, duration: 0.35 }, 0.25)
@@ -73,7 +73,7 @@ export function Hero() {
 
         // Phase 4 (85-100%): fade hero text, scene settles, menu slides over.
         tl.to(q('[data-tagline], [data-label]'), { autoAlpha: 0, y: -16, duration: 0.12 }, 0.86)
-          .to(q('[data-food]'), { yPercent: mobile ? -28 : -8, scale: mobile ? 0.84 : 0.94, duration: 0.15 }, 0.85)
+          .to(q('[data-food]'), { yPercent: mobile ? -10 : -4, scale: mobile ? 0.96 : 0.97, duration: 0.15 }, 0.85)
           .to(q('[data-scene]'), { autoAlpha: 0.55, duration: 0.15 }, 0.85)
         return tl
       }
@@ -98,7 +98,7 @@ export function Hero() {
       ref={root}
       id="top"
       aria-labelledby="hero-title"
-      className="relative h-[160vh] bg-charcoal motion-reduce:h-auto md:h-[240vh]"
+      className="relative bg-charcoal motion-ok:h-[160vh] md:motion-ok:h-[240vh]"
     >
       <div
         data-scene
@@ -114,7 +114,7 @@ export function Hero() {
         {/* Food layer: oversized so it can shift right without exposing an edge */}
         <div
           data-food
-          className="absolute inset-y-0 left-[-14%] w-[128%] will-change-transform motion-reduce:left-0 motion-reduce:w-full md:left-[-16%] md:w-[132%]"
+          className="absolute -inset-y-[8%] left-[-14%] w-[128%] will-change-transform motion-reduce:inset-y-0 motion-reduce:left-0 motion-reduce:w-full md:left-[-20%] md:w-[140%]"
         >
           <Picture
             src="/food/gumbo-hero"
@@ -130,7 +130,7 @@ export function Hero() {
         {/* Readability gradients */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgb(18_19_17/0.72)_0%,rgb(18_19_17/0.25)_35%,rgb(18_19_17/0.2)_60%,rgb(18_19_17/0.9)_100%)] md:bg-[linear-gradient(to_right,rgb(18_19_17/0.88)_0%,rgb(18_19_17/0.55)_38%,rgb(18_19_17/0.1)_70%),linear-gradient(to_bottom,rgb(18_19_17/0.5),transparent_30%,transparent_70%,rgb(18_19_17/0.85))]"
+          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgb(18_19_17/0.7)_0%,rgb(18_19_17/0.2)_28%,rgb(18_19_17/0.62)_50%,rgb(18_19_17/0.94)_78%)] md:bg-[linear-gradient(to_right,rgb(18_19_17/0.88)_0%,rgb(18_19_17/0.55)_38%,rgb(18_19_17/0.1)_70%),linear-gradient(to_bottom,rgb(18_19_17/0.5),transparent_30%,transparent_70%,rgb(18_19_17/0.85))]"
         />
 
         {/* Primary copy */}
@@ -159,7 +159,7 @@ export function Hero() {
           </div>
 
           {/* Phase 2 + 3 content (hidden until scrolled; visible statically under reduced motion) */}
-          <div className="pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 sm:inset-x-8 md:left-8 md:right-auto md:max-w-xl lg:left-[max(2rem,calc((100vw-80rem)/2+2rem))]">
+          <div className="pointer-events-none absolute inset-x-5 top-1/2 -translate-y-1/2 motion-reduce:hidden sm:inset-x-8 md:left-8 md:right-auto md:max-w-xl lg:left-[max(2rem,calc((100vw-80rem)/2+2rem))]">
             <div data-tagline className="motion-ok:[&>*]:opacity-0">
               <p className="eyebrow text-gold">Made right, every time</p>
               <h2 className="font-display text-balance mt-4 text-5xl font-light leading-[0.95] text-cream sm:text-6xl md:text-7xl lg:text-8xl">

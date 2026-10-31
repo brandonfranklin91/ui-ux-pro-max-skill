@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: { gsap: ['gsap', 'gsap/ScrollTrigger', '@gsap/react'] },
+        manualChunks: (id: string) => (/node_modules\/(gsap|@gsap)\//.test(id) ? 'gsap' : undefined),
       },
     },
   },

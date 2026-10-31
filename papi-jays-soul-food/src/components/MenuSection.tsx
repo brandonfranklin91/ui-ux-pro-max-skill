@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { menu, wingFlavors, type MenuItem, type WingFlavor } from '../data/menu'
 import { Picture } from './Picture'
-import { Check } from './Icons'
+import { ArrowRight, Check } from './Icons'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -205,6 +205,14 @@ function MenuCard({
         )}
         {item.priceNote && !item.priceNote.startsWith('starting') && (
           <p className="mt-3 text-sm text-ink-600">{item.priceNote}</p>
+        )}
+        {item.id === 'jerk-burger' && (
+          <a
+            href="burger.html"
+            className="mt-4 inline-flex w-fit items-center gap-2 text-sm font-semibold text-forest underline decoration-forest/30 underline-offset-4 hover:decoration-forest"
+          >
+            See it built in 3D <ArrowRight width={16} height={16} />
+          </a>
         )}
         <dl className="mt-auto pt-5 text-sm">
           {item.proteins && (

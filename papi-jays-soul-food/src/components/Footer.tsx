@@ -2,7 +2,8 @@ import { activeLocation, directionsUrl, site } from '../data/site'
 
 const year = new Date().getFullYear()
 
-export function Footer() {
+/** `base` prefixes in-page links so the footer also works on other pages (e.g. `index.html`). */
+export function Footer({ base = '' }: { base?: string }) {
   const loc = activeLocation()
   return (
     <footer className="bg-charcoal pb-28 text-cream md:pb-0">
@@ -23,9 +24,9 @@ export function Footer() {
         <nav aria-label="Footer" className="md:col-span-3">
           <h2 className="eyebrow text-gold">Explore</h2>
           <ul className="mt-4 space-y-2 text-cream/80">
-            <li><a className="hover:text-cream" href="#menu">Menu</a></li>
-            <li><a className="hover:text-cream" href="#friday">Friday Special</a></li>
-            <li><a className="hover:text-cream" href="#visit">Visit Us</a></li>
+            <li><a className="hover:text-cream" href={`${base}#menu`}>Menu</a></li>
+            <li><a className="hover:text-cream" href={`${base}#friday`}>Friday Special</a></li>
+            <li><a className="hover:text-cream" href={`${base}#visit`}>Visit Us</a></li>
           </ul>
         </nav>
 

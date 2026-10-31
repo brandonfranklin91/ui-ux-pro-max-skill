@@ -21,6 +21,31 @@ npm run preview    # http://localhost:4173
 The `dist/` folder from `npm run build` is a static site. Any static host
 (Netlify, Vercel, Cloudflare Pages, GitHub Pages) can serve it as-is.
 
+## 3D burger landing page
+
+`burger.html` is a second page: an immersive, scroll-driven 3D landing page for
+the Beef Jerk Patty Burger, built with three.js. Open it at
+`http://localhost:5173/burger.html` (dev) or `/burger.html` on the built site.
+The burger card on the main menu links to it ("See it built in 3D").
+
+Scrolling plays five beats: the whole burger turning under a spotlight, the
+layers separating with labels, a close-up of the jerk patty, a second patty
+for the double, and an order card with a single/double toggle as fries land
+on the board.
+
+- The burger is modelled in code (`src/burger/BurgerScene.ts`), so there are
+  no 3D files to download. Textures are drawn at load time
+  (`src/burger/textures.ts`).
+- Prices and ingredients come from `src/data/menu.ts`, the same source as the
+  main menu.
+- With reduced motion turned on, the page shows a still 3D render and the full
+  story as plain text. Browsers without WebGL see the burger photo instead.
+- three.js loads only on this page, so the main site stays light.
+
+To make it the site's front page, set your host to serve `burger.html` at `/`
+(most static hosts call this a rewrite or redirect rule). Its links already
+point back to `index.html` for the full menu.
+
 ## Before you publish
 
 Everything below came from the printed flyers and has **not** been confirmed.
@@ -52,6 +77,7 @@ All of it lives in `src/data/site.ts` and `src/data/menu.ts`.
 | Friday gumbo feature | `src/components/FridayFeature.tsx` |
 | Logo and motto | `src/components/BrandMoment.tsx` |
 | Location, hours, map | `src/components/Visit.tsx` |
+| 3D burger landing page | `src/burger/` and `burger.html` |
 | Colors and fonts | `src/index.css` |
 
 ## Accessibility and motion

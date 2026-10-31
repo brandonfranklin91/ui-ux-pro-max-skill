@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@custom-variant motion-ok (@media (prefers-reduced-motion: no-preference));
+
+@theme {
+  --color-charcoal: #121311;
+  --color-charcoal-800: #1a1c19;
+  --color-charcoal-700: #24271f;
+  --color-forest: #0f3d22;
+  --color-forest-700: #164f2d;
+  --color-forest-900: #092916;
+  --color-cream: #f4ecdc;
+  --color-cream-200: #ebe1cc;
+  --color-cream-300: #ddd0b4;
+  --color-gold: #c9a24a;
+  --color-gold-300: #e2c57a;
+  --color-gold-600: #9c7a2e;
+  --color-ink: #1d1a14;
+  --color-ink-600: #514b3f;
+  --color-brand-red: #c4191c;
+  --color-brand-yellow: #f6d327;
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-card: 0 1px 2px rgb(29 26 20 / 0.06), 0 12px 32px -12px rgb(29 26 20 / 0.25);
+  --shadow-card-hover: 0 2px 4px rgb(29 26 20 / 0.08), 0 24px 48px -16px rgb(29 26 20 / 0.35);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+  body {
+    @apply bg-charcoal text-cream font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection { background: var(--color-gold); color: var(--color-charcoal); }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  img { font-style: italic; }
+}
+
+@layer components {
+  .font-display { font-family: var(--font-display); font-variation-settings: "opsz" 144; }
+  .eyebrow {
+    @apply font-sans text-[11px] font-semibold uppercase;
+    letter-spacing: 0.28em;
+  }
+  .btn {
+    @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold tracking-wide transition-[background-color,color,transform,box-shadow] duration-300 ease-out-expo;
+  }
+  .btn:active { transform: translateY(1px) scale(0.985); }
+  .btn-gold { @apply bg-gold text-charcoal hover:bg-gold-300; }
+  .btn-ghost { @apply border border-cream/40 text-cream hover:border-cream hover:bg-cream/10; }
+  .btn-cream { @apply bg-cream text-charcoal hover:bg-white; }
+  .btn-forest { @apply bg-forest text-cream hover:bg-forest-700; }
+  .btn-outline-ink { @apply border border-ink/25 text-ink hover:border-ink hover:bg-ink hover:text-cream; }
+
+  /* fine paper-like texture for cream sections */
+  .texture-cream {
+    background-color: var(--color-cream);
+    background-image:
+      radial-gradient(rgb(29 26 20 / 0.035) 0.6px, transparent 0.6px),
+      radial-gradient(rgb(29 26 20 / 0.025) 0.6px, transparent 0.6px);
+    background-size: 7px 7px, 11px 11px;
+    background-position: 0 0, 3px 5px;
+  }
+  .texture-dark {
+    background-image:
+      radial-gradient(rgb(244 236 220 / 0.04) 0.6px, transparent 0.6px),
+      radial-gradient(rgb(244 236 220 / 0.025) 0.6px, transparent 0.6px);
+    background-size: 7px 7px, 11px 11px;
+    background-position: 0 0, 3px 5px;
+  }
+  .texture-forest {
+    background-color: var(--color-forest);
+    background-image:
+      radial-gradient(ellipse at 30% 20%, rgb(201 162 74 / 0.14), transparent 55%),
+      radial-gradient(rgb(244 236 220 / 0.035) 0.6px, transparent 0.6px);
+    background-size: auto, 9px 9px;
+  }
+  .hairline { @apply h-px w-full bg-ink/15; }
+  .hairline-gold { @apply h-px bg-gold/60; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+
+/* Steam wisps rise through a mask so they fade near the top */
+@keyframes steam-rise {
+  0%   { transform: translate3d(0, 0, 0) scaleX(1); opacity: 0; }
+  15%  { opacity: 0.55; }
+  100% { transform: translate3d(var(--drift, 8px), -140px, 0) scaleX(1.6); opacity: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .steam-wisp { animation: steam-rise var(--dur, 4.5s) ease-out infinite; animation-delay: var(--delay, 0s); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .steam-wisp { display: none; }
+}

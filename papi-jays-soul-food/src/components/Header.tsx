@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { site } from '../data/site'
 import { useScrolled } from '../hooks/useScrolled'
 import { Close, Menu as MenuIcon, Phone } from './Icons'
@@ -19,6 +20,7 @@ export function Header() {
   // Lock scroll + manage focus while the mobile sheet is open.
   useEffect(() => {
     if (!open) return
+    const trigger = openBtn.current
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     closeBtn.current?.focus()
@@ -29,7 +31,7 @@ export function Header() {
     return () => {
       document.body.style.overflow = prev
       window.removeEventListener('keydown', onKey)
-      openBtn.current?.focus()
+      trigger?.focus()
     }
   }, [open])
 
@@ -114,7 +116,9 @@ export function Header() {
         </div>
       </nav>
 
-      {/* Mobile sheet */}
+      {/* Mobile sheet. Portaled to <body>: the header's backdrop-filter would
+          otherwise become the containing block and clip this fixed overlay. */}
+      {createPortal(
       <div
         id={panelId}
         role="dialog"
@@ -157,7 +161,9 @@ export function Header() {
           </a>
         </div>
         <p className="eyebrow mt-10 px-5 text-cream/50">{site.city}</p>
-      </div>
+      </div>,
+      document.body,
+      )}
     </header>
   )
 }

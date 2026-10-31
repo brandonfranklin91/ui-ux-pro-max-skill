@@ -52,6 +52,9 @@ export function MenuSection() {
           },
         )
       })
+      // Filtering changes the grid's height, which moves every section below.
+      // Re-measure so later scroll triggers (Friday, Visit) fire at the right spot.
+      ScrollTrigger.refresh()
       return () => mm.revert()
     },
     { scope: root, dependencies: [items.length] },

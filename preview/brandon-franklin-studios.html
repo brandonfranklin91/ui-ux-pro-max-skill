@@ -243,7 +243,7 @@ section{position:relative;padding-inline:var(--gutter)}
   display:flex;flex-direction:column;justify-content:center;
   padding-block:clamp(104px,15vh,170px) clamp(90px,14vh,140px);
 }
-/* type left, the studio figure right — the same staging as the brand film */
+/* type left, the emblem turning on the right */
 .hero-grid{
   position:relative;
   display:grid;
@@ -263,40 +263,61 @@ section{position:relative;padding-inline:var(--gutter)}
   pointer-events:none;
 }
 
-/* NB: these are #hero-scoped on purpose. .hero-figure also carries
-   .figure-stage, whose block is declared later for About — at equal
-   specificity that later block would win. */
-#hero .hero-figure{
+/* ---- the emblem, given real depth ------------------------------
+   The source is a flat render, so the dimensionality is built: a
+   stack of alpha copies pushed back in Z becomes the extruded side
+   wall, and that wall is what sells the turn. Rotation is capped
+   well short of edge-on, where a stack of planes would give itself
+   away.                                                            */
+.hero-emblem{
   position:relative;
-  display:flex;justify-content:center;align-items:flex-end;
-  min-height:clamp(340px,64vh,640px);
+  display:grid;place-items:center;
+  min-height:clamp(260px,46vh,440px);
+  perspective:1000px;
   isolation:isolate;
 }
-#hero .hero-figure .figure img{height:clamp(320px,62vh,620px)}
-
-@media(max-width:900px){
-  .hero-grid{grid-template-columns:1fr;gap:0}
-  .hero-copy{justify-items:center;text-align:center}
-  /* on a phone he stands at the foot of the type rather than taking a
-     second screenful, so the hero stays one viewport tall */
-  #hero{justify-content:flex-start;padding-block:clamp(104px,14vh,150px) 0}
-  /* the grid is the figure's containing block, so it has to span the
-     hero or `bottom:0` lands at the foot of the copy instead */
-  .hero-grid{min-height:calc(100svh - clamp(104px,14vh,150px));align-content:start}
-  #hero .hero-figure{
-    position:absolute;left:0;right:0;bottom:0;top:auto;
-    z-index:-2;min-height:0;
-    align-items:flex-end;justify-content:center;
-    pointer-events:none;
-  }
-  #hero .hero-figure{bottom:10px}
-  #hero .hero-figure .figure img{height:min(44svh,384px)}
-  #hero .hero-figure .pedestal{width:min(58%,220px)}
-  .hero-grid::before{
-    inset:-26% -6% auto;height:68%;
-    background:radial-gradient(78% 70% at 50% 42%,rgba(14,11,29,.9) 0%,rgba(14,11,29,.66) 50%,transparent 84%);
-  }
+/* one element per animation driver: scroll / idle / pointer. Two tweens
+   on one property is how the turn previously compounded past edge-on. */
+.emblem-scroll{
+  position:relative;
+  width:min(80%,390px);
+  transform-style:preserve-3d;
+  will-change:transform;
 }
+.emblem-3d{
+  position:relative;
+  width:100%;
+  aspect-ratio:256/259;
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.emblem-stack{position:absolute;inset:0;transform-style:preserve-3d}
+.emblem-stack img{
+  position:absolute;inset:0;
+  width:100%;height:auto;
+  backface-visibility:hidden;
+}
+.emblem-stack img.emblem-face{
+  filter:drop-shadow(0 18px 34px rgba(14,11,29,.8)) drop-shadow(0 0 44px rgba(139,124,199,.45));
+}
+.emblem-glow{
+  position:absolute;z-index:-1;
+  left:50%;top:48%;transform:translate(-50%,-50%);
+  width:min(120%,520px);aspect-ratio:1;
+  background:radial-gradient(circle at 50% 50%,rgba(139,124,199,.44) 0%,rgba(90,59,140,.24) 38%,transparent 70%);
+  filter:blur(8px);pointer-events:none;
+  will-change:transform,opacity;
+}
+.emblem-floor{
+  position:absolute;z-index:-1;
+  left:50%;bottom:6%;transform:translateX(-50%);
+  width:min(62%,250px);height:clamp(16px,3vh,34px);
+  border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(201,194,227,.34) 0%,rgba(139,124,199,.14) 44%,transparent 72%);
+  filter:blur(9px);pointer-events:none;
+  will-change:transform,opacity;
+}
+
 .hero-logotype{
   font-family:var(--font-logo);
   font-size:clamp(44px,7.4vw,124px);
@@ -308,7 +329,6 @@ section{position:relative;padding-inline:var(--gutter)}
 }
 .hero-logotype .word{display:inline-block;white-space:nowrap}
 .hero-logotype .ch{display:inline-block;will-change:transform,opacity}
-/* the swash flourish under the wordmark, as in the logotype reference */
 .flourish{width:min(44vw,440px);height:26px;overflow:visible;margin-top:-8px}
 .flourish path{
   fill:none;stroke:var(--mist);stroke-width:1.1;stroke-linecap:round;
@@ -326,7 +346,7 @@ section{position:relative;padding-inline:var(--gutter)}
   margin-top:clamp(4px,1.2vh,12px);
   font-size:clamp(15px,1.35vw,19px);
   color:rgba(201,194,227,.82);
-  margin:0;
+  margin-bottom:0;
 }
 .hero-meta{
   display:flex;flex-wrap:wrap;gap:clamp(14px,2.4vw,34px);justify-content:flex-start;
@@ -345,7 +365,23 @@ section{position:relative;padding-inline:var(--gutter)}
   animation:cue 2.4s var(--ease) infinite;
 }
 @keyframes cue{0%{top:-100%}60%,100%{top:100%}}
-/* on a phone the figure stands where the cue would be */
+
+@media(max-width:900px){
+  /* the emblem sits above the wordmark, the way the printed lockup does */
+  .hero-grid{grid-template-columns:1fr;gap:clamp(14px,3vh,30px)}
+  .hero-copy{justify-items:center;text-align:center}
+  .hero-emblem{order:-1;min-height:0}
+  .emblem-scroll{width:min(42%,170px)}
+  .hero-meta{justify-content:center}
+  .hero-grid::before{
+    inset:-22% -6%;
+    background:radial-gradient(76% 64% at 50% 50%,rgba(14,11,29,.8) 0%,rgba(14,11,29,.5) 52%,transparent 84%);
+  }
+}
+@media(max-width:560px){
+  .hero-lede{max-width:38ch}
+  .hero-logotype{font-size:clamp(40px,11.4vw,124px)}
+}
 @media(max-width:700px){ .scroll-cue{display:none} }
 
 /* ============================================================
@@ -930,17 +966,16 @@ section{position:relative;padding-inline:var(--gutter)}
         </div>
       </div>
 
-      <div class="hero-figure figure-stage" data-figure="hero">
-        <span class="halo" aria-hidden="true"></span>
-        <span class="pedestal" aria-hidden="true"></span>
-        <div class="figure-parallax">
-          <div class="figure-reveal">
-            <div class="figure">
-              <img src="assets/brandon-figure.webp" width="820" height="1813"
-                   alt="Brandon Franklin, founder of Brandon Franklin Studios, standing with a hand extended in greeting."
-                   decoding="async" fetchpriority="high">
-            </div>
+      <div class="hero-emblem">
+        <span class="emblem-glow" aria-hidden="true"></span>
+        <span class="emblem-floor" aria-hidden="true"></span>
+        <div class="emblem-scroll">
+         <div class="emblem-3d">
+          <div class="emblem-stack">
+            <img class="emblem-face" src="assets/bf-emblem.webp" width="256" height="259"
+                 alt="The Brandon Franklin Studios emblem." decoding="async" fetchpriority="high">
           </div>
+         </div>
         </div>
       </div>
     </div>
@@ -1433,7 +1468,7 @@ scene.add(floor);
       One scrubbed master timeline across the whole document —
       scrub:1 so the camera reads as continuous, never snapping.
    ============================================================ */
-const path = { camX:0.9, camY:0, camZ:7.2, lookY:0, ribX:0, ribY:0, ribScale:1, rotX:0, rotY:0, rotZ:0, fog:0.055, glow:0.5 };
+const path = { camX:3.4, camY:0, camZ:9.4, lookY:0, ribX:-2.6, ribY:0, ribScale:0.58, rotX:0, rotY:0, rotZ:0, fog:0.055, glow:0.22 };
 
 if (!REDUCED) {
   const master = gsap.timeline({
@@ -1442,7 +1477,7 @@ if (!REDUCED) {
   });
 
   // HERO -> MANIFESTO : dolly in, the mark flips over (the logo turn)
-  master.to(path, { camX: 0, camZ: 4.3, camY: 0.35, rotY: Math.PI, rotZ: 0.42, fog: 0.085, glow: 0.78, ribScale: 1.18 }, 0)
+  master.to(path, { camX: 0, camZ: 4.3, camY: 0.35, ribX: 0, rotY: Math.PI, rotZ: 0.42, fog: 0.085, glow: 0.78, ribScale: 1.18 }, 0)
   // MANIFESTO -> WORK : pull back and slide the mark off-centre
         .to(path, { camZ: 9.4, camX: 1.9, camY: -0.5, ribX: -2.5, ribY: 0.4, rotY: Math.PI*2.1, rotX: 0.5, ribScale: 0.78, fog: 0.05, glow: 0.4 }, 0.22)
   // ABOUT : the mark holds well to the left so the figure owns the right
@@ -1606,7 +1641,7 @@ function heroIn(){
     .from('#hero .r-fade', { y: 26, opacity: 0, duration: 0.9, stagger: 0.09 }, 0.55)
     .from('.site-nav > *', { y: -18, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.3)
     .from('.scroll-cue', { opacity: 0, duration: 0.8 }, 1.1);
-  if (window.__heroFigureIn) tl.add(window.__heroFigureIn.play(), 0.25);
+  if (window.__heroEmblemIn) tl.add(window.__heroEmblemIn.play(), 0.2);
   return tl;
 }
 
@@ -1688,7 +1723,7 @@ if (!REDUCED) {
      transform: parallax (scroll) / reveal (clip) / tilt + float (same
      element, different properties) / light (halo + pedestal).        */
   document.querySelectorAll('.figure-stage').forEach((stage) => {
-    const where    = stage.dataset.figure || 'about';
+    const where    = stage.dataset.figure || 'about';   // only About ships one now
     const figWrap  = stage.querySelector('.figure-parallax');
     const figReveal= stage.querySelector('.figure-reveal');
     const figure   = stage.querySelector('.figure');
@@ -1696,7 +1731,7 @@ if (!REDUCED) {
     const pedestal = stage.querySelector('.pedestal');
     if (!figure) return;
 
-    const entrance = gsap.timeline({ paused: where === 'hero' })
+    const entrance = gsap.timeline({ paused: true })
       .fromTo(figReveal, { clipPath:'inset(100% 0 0 0)' },
                          { clipPath:'inset(0% 0 0 0)', duration: 1.25, ease:'power3.inOut' }, 0)
       .fromTo(figure,    { y: 56, scale: 0.94 },
@@ -1705,12 +1740,7 @@ if (!REDUCED) {
                          { opacity: 1, scale: 1, duration: 1.4, ease:'power2.out', stagger: 0.12 }, 0.15)
       .eventCallback('onComplete', () => gsap.set(figReveal, { clipPath:'none' }));
 
-    if (where === 'hero') {
-      // the hero figure arrives with the rest of the hero, not on scroll
-      window.__heroFigureIn = entrance;
-    } else {
-      ScrollTrigger.create({ trigger: stage, start:'top 72%', once: true, onEnter: () => entrance.play() });
-    }
+    ScrollTrigger.create({ trigger: stage, start:'top 72%', once: true, onEnter: () => entrance.play() });
 
     // idle float — present in the room rather than pasted on
     gsap.to(figure, { y: -14, duration: 3.4, ease:'sine.inOut', repeat: -1, yoyo: true, delay: 1.4 });
@@ -1718,8 +1748,8 @@ if (!REDUCED) {
     gsap.to(halo, { scale: 1.07, opacity: 0.82, duration: 5.2, ease:'sine.inOut', repeat: -1, yoyo: true, delay: 1.4 });
 
     // scroll parallax — he drifts slower than the copy beside him
-    gsap.fromTo(figWrap, { yPercent: where === 'hero' ? 0 : 9 },
-      { yPercent: where === 'hero' ? -14 : -9, ease:'none',
+    gsap.fromTo(figWrap, { yPercent: 9 },
+      { yPercent: -9, ease:'none',
         scrollTrigger: { trigger: stage, start:'top bottom', end:'bottom top', scrub: true } });
 
     // pointer tilt — the same 3D language as the project cards
@@ -1914,6 +1944,98 @@ if (!REDUCED && matchMedia('(hover:hover)').matches) {
       gsap.fromTo(out, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
     });
   }
+})();
+
+/* ============================================================
+   HERO EMBLEM — a flat render given real depth and kept turning.
+
+   The extrusion is a stack of alpha copies pushed back in Z; the side
+   wall that stack forms is what reads as solid. Two rules keep it
+   honest:
+     1. One element per driver (scroll / idle / pointer). Two tweens on
+        one property compound, and this turn compounded past edge-on.
+     2. Absolute values, never '+=' — a relative value re-resolves on
+        every ScrollTrigger refresh and drifts.
+   Total turn tops out near 56deg, short of where a stack of planes
+   gives itself away.
+   ============================================================ */
+(() => {
+  const stage = document.querySelector('.hero-emblem');
+  if (!stage) return;
+
+  const scr   = stage.querySelector('.emblem-scroll');   // scroll
+  const obj   = stage.querySelector('.emblem-3d');       // intro, then idle
+  const stack = stage.querySelector('.emblem-stack');    // pointer
+  const face  = stack.querySelector('.emblem-face');
+  const glow  = stage.querySelector('.emblem-glow');
+  const floor = stage.querySelector('.emblem-floor');
+
+  const SMALL  = innerWidth < 900;
+  const LAYERS = REDUCED ? 0 : (SMALL ? 11 : 18);
+  const DEPTH  = SMALL ? 0.8 : 1.0;   // px between layers, at rendered size
+  const REST   = { ry: -14, rx: 7 };
+
+  // build the side wall behind the lit face
+  for (let i = 1; i <= LAYERS; i++) {
+    const l = face.cloneNode();
+    l.classList.remove('emblem-face');
+    l.removeAttribute('alt');
+    l.setAttribute('aria-hidden', 'true');
+    l.style.transform = `translateZ(${-i * DEPTH}px)`;
+    l.style.filter = `brightness(${(1 - i / LAYERS * 0.72).toFixed(3)}) saturate(${(1 - i / LAYERS * 0.35).toFixed(3)})`;
+    l.style.zIndex = String(-i);
+    stack.appendChild(l);
+  }
+
+  if (REDUCED) {
+    gsap.set(obj, { rotateY: REST.ry, rotateX: REST.rx });
+    return;
+  }
+
+  gsap.set(obj, { rotateY: REST.ry, rotateX: REST.rx });
+
+  // idle only ever starts once the intro has handed the mark over
+  let idle = null;
+  function startIdle() {
+    if (idle) return;
+    idle = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } })
+      .fromTo(obj, { rotationY: REST.ry }, { rotationY: REST.ry + 24, duration: 5.2 }, 0)
+      .fromTo(obj, { rotationX: REST.rx }, { rotationX: REST.rx - 12, duration: 3.6 }, 0)
+      .fromTo(obj, { y: 0 }, { y: -12, duration: 3.0 }, 0);
+    gsap.fromTo(glow,  { scale: 1, opacity: 1 }, { scale: 1.09, opacity: 0.82, duration: 4.8, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    gsap.fromTo(floor, { scaleX: 1, opacity: 1 }, { scaleX: 0.86, opacity: 0.7, duration: 3.0, ease: 'sine.inOut', repeat: -1, yoyo: true });
+  }
+
+  // entrance — turns in with the wordmark
+  const intro = gsap.timeline({ paused: true, onComplete: startIdle })
+    .fromTo(obj,
+      { rotationY: REST.ry - 170, scale: 0.78, opacity: 0 },
+      { rotationY: REST.ry, scale: 1, opacity: 1, duration: 1.5, ease: 'power3.out' }, 0)
+    .fromTo([glow, floor],
+      { opacity: 0, scale: 0.6 },
+      { opacity: 1, scale: 1, duration: 1.4, ease: 'power2.out', stagger: 0.1 }, 0.2);
+
+  window.__heroEmblemIn = intro;
+  // never let a stalled preloader leave the hero mark invisible
+  gsap.delayedCall(5, () => { if (intro.paused()) intro.play(); });
+
+  // pointer adds to the turn on its own element
+  if (matchMedia('(hover:hover)').matches) {
+    const px = gsap.quickTo(stack, 'rotationY', { duration: 1.0, ease: 'power3' });
+    const py = gsap.quickTo(stack, 'rotationX', { duration: 1.0, ease: 'power3' });
+    addEventListener('pointermove', (e) => {
+      const r = stage.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      px((e.clientX / innerWidth  - 0.5) * 2 * 12);
+      py((e.clientY / innerHeight - 0.5) * 2 * -9);
+    }, { passive: true });
+  }
+
+  // scrolling out of the hero carries it through a partial turn
+  gsap.fromTo(scr,
+    { rotationY: 0, rotationX: 0, y: 0 },
+    { rotationY: 34, rotationX: -12, y: 70, ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.6 } });
 })();
 
 /* ---- brand emblem: turns over on hover, like the brand film ---- */

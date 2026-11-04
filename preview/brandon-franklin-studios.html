@@ -307,6 +307,87 @@ section{position:relative;padding-inline:var(--gutter)}
 }
 
 /* ============================================================
+   ABOUT — the studio figure, lit and floating
+   ============================================================ */
+#about{padding-block:clamp(80px,14vh,170px)}
+.about-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  gap:clamp(24px,5vw,80px);
+  align-items:center;
+}
+@media(max-width:900px){
+  .about-grid{grid-template-columns:1fr;gap:clamp(20px,5vh,44px)}
+  .figure-stage{order:-1}
+}
+
+.figure-stage{
+  position:relative;
+  display:flex;justify-content:center;align-items:flex-end;
+  min-height:clamp(350px,60vh,620px);
+  isolation:isolate;
+}
+/* violet key light behind the figure */
+.figure-stage .halo{
+  position:absolute;z-index:0;
+  left:50%;top:46%;transform:translate(-50%,-50%);
+  width:min(96%,480px);aspect-ratio:1;
+  background:radial-gradient(circle at 50% 50%,rgba(139,124,199,.42) 0%,rgba(90,59,140,.26) 36%,transparent 68%);
+  filter:blur(6px);
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+/* the pool of light he stands in */
+.figure-stage .pedestal{
+  position:absolute;z-index:0;bottom:4%;left:50%;transform:translateX(-50%);
+  width:min(70%,330px);height:clamp(26px,4.4vh,50px);
+  border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(201,194,227,.4) 0%,rgba(139,124,199,.18) 42%,transparent 72%);
+  filter:blur(10px);
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.figure-parallax{
+  position:relative;z-index:1;
+  display:flex;justify-content:center;width:100%;
+  will-change:transform;
+}
+.figure-reveal{clip-path:inset(0 0 0 0);will-change:clip-path}
+.figure{will-change:transform;transform-origin:50% 94%}
+.figure img{
+  display:block;
+  height:clamp(330px,58vh,600px);
+  width:auto;max-width:100%;
+  filter:drop-shadow(0 26px 40px rgba(14,11,29,.75)) drop-shadow(0 0 48px rgba(139,124,199,.3));
+}
+
+.about-body .sec-title{margin-bottom:clamp(16px,2.6vh,26px)}
+.about-body p{
+  max-width:46ch;
+  font-size:clamp(14.5px,1.2vw,16.5px);
+  color:rgba(201,194,227,.84);
+  margin:0 0 18px;
+}
+.about-stats{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(12px,2.4vw,30px);
+  margin:clamp(24px,4vh,42px) 0 clamp(22px,3.6vh,36px);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding-block:clamp(16px,2.6vh,26px);
+}
+.about-stats b{
+  display:block;
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(24px,3vw,40px);line-height:1;color:var(--paper);
+  margin-bottom:8px;
+}
+.about-stats span{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.about-sign{
+  font-family:var(--font-display);font-style:italic;
+  font-size:clamp(16px,1.8vw,22px);color:var(--lilac);
+}
+
+/* ============================================================
    WORK
    ============================================================ */
 #work{padding-block:clamp(90px,16vh,190px)}
@@ -571,6 +652,7 @@ section{position:relative;padding-inline:var(--gutter)}
   </a>
   <nav class="nav-links" aria-label="Primary">
     <a href="#manifesto">Studio</a>
+    <a href="#about">About</a>
     <a href="#work">Work</a>
     <a href="#capabilities">Capabilities</a>
   </nav>
@@ -620,6 +702,51 @@ section{position:relative;padding-inline:var(--gutter)}
       <div class="manifesto-foot r-fade">
         <span>Los Angeles</span><span>Working worldwide</span><span>Est. 2019</span>
       </div>
+    </div>
+  </section>
+
+  <!-- ======================= ABOUT ======================= -->
+  <section id="about">
+    <div class="wrap about-grid">
+
+      <div class="figure-stage">
+        <span class="halo" aria-hidden="true"></span>
+        <span class="pedestal" aria-hidden="true"></span>
+        <div class="figure-parallax">
+          <div class="figure-reveal">
+            <div class="figure">
+              <img src="assets/brandon-figure.webp" width="820" height="1813"
+                   alt="Brandon Franklin, founder of Brandon Franklin Studios, standing with a hand extended in greeting."
+                   loading="lazy" decoding="async">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-body">
+        <p class="eyebrow r-fade">About</p>
+        <h2 class="sec-title r-line"><span>The person you&rsquo;ll actually work with</span></h2>
+        <p class="r-fade">
+          I&rsquo;m Brandon. I started this studio in 2019 after a decade of watching
+          good strategy die somewhere between the deck and the build. So I kept the
+          team small and the handoffs at zero &mdash; the person who draws the logotype
+          is the person who writes the shader it ends up living inside.
+        </p>
+        <p class="r-fade">
+          That means fewer projects a year, and a lot more of me on each one.
+          No account layer, no junior doing the parts nobody wants. If we work
+          together, you&rsquo;re working with me.
+        </p>
+
+        <div class="about-stats r-fade">
+          <div><b>12</b><span>Years in</span></div>
+          <div><b>60+</b><span>Brands shipped</span></div>
+          <div><b>4</b><span>Continents</span></div>
+        </div>
+
+        <p class="about-sign r-fade">&mdash; Brandon Franklin, Founder</p>
+      </div>
+
     </div>
   </section>
 
@@ -973,11 +1100,13 @@ if (!REDUCED) {
   // HERO -> MANIFESTO : dolly in, the mark flips over (the logo turn)
   master.to(path, { camZ: 4.3, camY: 0.35, rotY: Math.PI, rotZ: 0.42, fog: 0.085, glow: 0.78, ribScale: 1.18 }, 0)
   // MANIFESTO -> WORK : pull back and slide the mark off-centre
-        .to(path, { camZ: 9.4, camX: 1.9, camY: -0.5, ribX: -2.5, ribY: 0.4, rotY: Math.PI*2.1, rotX: 0.5, ribScale: 0.78, fog: 0.05, glow: 0.4 }, 0.26)
+        .to(path, { camZ: 9.4, camX: 1.9, camY: -0.5, ribX: -2.5, ribY: 0.4, rotY: Math.PI*2.1, rotX: 0.5, ribScale: 0.78, fog: 0.05, glow: 0.4 }, 0.22)
+  // ABOUT : the mark holds well to the left so the figure owns the right
+        .to(path, { camX: 2.9, camY: -0.2, camZ: 10.2, ribX: -3.9, ribY: 0.1, rotY: Math.PI*2.6, rotZ: -0.3, ribScale: 0.72, fog: 0.046, glow: 0.58 }, 0.42)
   // WORK : long slow drift so the case studies stay readable
-        .to(path, { camX: -1.4, camY: 0.25, camZ: 11.5, ribX: 2.9, ribY: -0.3, rotY: Math.PI*3.1, rotZ: -0.6, ribScale: 0.62, fog: 0.042 }, 0.5)
+        .to(path, { camX: -1.4, camY: 0.25, camZ: 11.5, ribX: 2.9, ribY: -0.3, rotY: Math.PI*3.2, rotZ: -0.6, ribScale: 0.62, fog: 0.042 }, 0.56)
   // CAPABILITIES -> CONTACT : the mark returns, centred and close
-        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.74);
+        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.78);
 }
 
 /* ============================================================
@@ -1202,6 +1331,54 @@ if (!REDUCED) {
     });
   });
 
+  /* ---- the about figure ----------------------------------
+     Four independent layers so nothing fights for a transform:
+     parallax (scroll) / reveal (clip) / tilt + float (same el,
+     different properties) / light (halo + pedestal).           */
+  const figWrap   = document.querySelector('.figure-parallax');
+  const figReveal = document.querySelector('.figure-reveal');
+  const figure    = document.querySelector('.figure');
+  const halo      = document.querySelector('.figure-stage .halo');
+  const pedestal  = document.querySelector('.figure-stage .pedestal');
+
+  if (figure) {
+    // 1. entrance — wipes up from the floor as he rises into the light
+    gsap.timeline({
+        scrollTrigger: { trigger:'#about', start:'top 72%', once: true },
+        onComplete: () => gsap.set(figReveal, { clipPath:'none' })
+      })
+      .fromTo(figReveal, { clipPath:'inset(100% 0 0 0)' },
+                         { clipPath:'inset(0% 0 0 0)', duration: 1.25, ease:'power3.inOut' }, 0)
+      .fromTo(figure,    { y: 56, scale: 0.94 },
+                         { y: 0, scale: 1, duration: 1.35, ease:'power3.out' }, 0)
+      .fromTo([halo, pedestal], { opacity: 0, scale: 0.7 },
+                         { opacity: 1, scale: 1, duration: 1.4, ease:'power2.out', stagger: 0.12 }, 0.15);
+
+    // 2. idle float — never stops, so he reads as present rather than pasted on
+    gsap.to(figure, { y: -14, duration: 3.4, ease:'sine.inOut', repeat: -1, yoyo: true });
+    gsap.to(pedestal, { scaleX: 0.9, opacity: 0.72, duration: 3.4, ease:'sine.inOut', repeat: -1, yoyo: true });
+    gsap.to(halo, { scale: 1.07, opacity: 0.82, duration: 5.2, ease:'sine.inOut', repeat: -1, yoyo: true });
+
+    // 3. scroll parallax — he drifts slower than the copy beside him
+    gsap.fromTo(figWrap, { yPercent: 9 }, { yPercent: -9, ease:'none',
+      scrollTrigger: { trigger:'#about', start:'top bottom', end:'bottom top', scrub: true } });
+
+    // 4. pointer tilt — the same 3D language as the project cards
+    if (matchMedia('(hover:hover)').matches) {
+      gsap.set(figure, { transformPerspective: 1100 });
+      const ry = gsap.quickTo(figure, 'rotationY', { duration: 0.9, ease:'power3' });
+      const rx = gsap.quickTo(figure, 'rotationX', { duration: 0.9, ease:'power3' });
+      const hx = gsap.quickTo(halo,  'xPercent',   { duration: 1.2, ease:'power3' });
+      addEventListener('pointermove', (e) => {
+        const r = document.querySelector('#about').getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) return;
+        const nx = (e.clientX / innerWidth  - 0.5) * 2;
+        const ny = (e.clientY / innerHeight - 0.5) * 2;
+        ry(nx * 11); rx(ny * -6); hx(nx * -7);
+      }, { passive: true });
+    }
+  }
+
   // capabilities marquee, tied to scroll direction
   gsap.to('.band-track', {
     xPercent: -50, ease:'none',
@@ -1225,6 +1402,8 @@ if (!REDUCED) {
   });
 } else {
   gsap.set(stmtWords, { opacity: 1 });
+  gsap.set('.figure-reveal', { clipPath: 'none' });
+  gsap.set(['.figure-stage .halo', '.figure-stage .pedestal'], { opacity: 1, scale: 1 });
 }
 
 /* ---- 3D card tilt (pointer devices only) ---- */

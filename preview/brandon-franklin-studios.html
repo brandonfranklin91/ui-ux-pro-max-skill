@@ -104,6 +104,15 @@ a{color:inherit;text-decoration:none}
   display:grid;place-items:center;
   gap:0;
 }
+#loader .lemblem{
+  display:block;
+  width:clamp(64px,9vw,104px);
+  height:auto;
+  margin:0 auto clamp(20px,3.4vh,34px);
+  filter:drop-shadow(0 10px 30px rgba(90,59,140,.7)) drop-shadow(0 0 54px rgba(139,124,199,.35));
+  opacity:0;
+  will-change:transform,opacity;
+}
 #loader .lmark{
   font-family:var(--font-logo);
   font-size:clamp(34px,6vw,76px);
@@ -509,6 +518,176 @@ section{position:relative;padding-inline:var(--gutter)}
 .link-arrow:hover svg{transform:translateX(7px)}
 
 /* ============================================================
+   SHOP — the Franklin Sovereign
+   A sticky product stage whose frames are scrubbed by scroll.
+   Sticky rather than a second ScrollTrigger pin: one pin per page
+   (the manifesto) keeps native scroll feel intact.
+   ============================================================ */
+#shop{padding-block:clamp(70px,12vh,150px) clamp(70px,12vh,150px)}
+.shop-head{margin-bottom:clamp(26px,4vh,52px)}
+
+.shop-pin{position:relative;height:340vh}
+.shop-sticky{
+  position:sticky;top:0;
+  height:100svh;
+  display:grid;place-items:center;
+  overflow:hidden;
+}
+/* one box holds the frame, its caption and the rail, so they can never
+   drift apart as the viewport changes shape */
+.shop-figure{
+  position:relative;
+  width:min(100%,1180px);
+  aspect-ratio:1100/626;
+  max-height:78svh;
+  margin-inline:auto;
+}
+.shop-canvas-wrap{
+  position:absolute;inset:0;
+  overflow:hidden;
+  /* feather all four edges so the lit stage bleeds into the page
+     instead of sitting on it as a bright rectangle */
+  -webkit-mask-image:
+    linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 8%,#000 90%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 8%,#000 90%,transparent 100%);
+  mask-composite:intersect;
+}
+@media(max-width:760px){
+  .shop-pin{height:260vh}
+  .shop-figure{aspect-ratio:5/6;max-height:64svh}
+  .shop-canvas-wrap{
+    -webkit-mask-image:
+      linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%),
+      linear-gradient(180deg,transparent 0,#000 4%,#000 94%,transparent 100%);
+    mask-image:
+      linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%),
+      linear-gradient(180deg,transparent 0,#000 4%,#000 94%,transparent 100%);
+  }
+}
+.shop-canvas-wrap canvas{display:block;width:100%;height:100%}
+.shop-canvas-wrap::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(14,11,29,.42),transparent 34%,transparent 62%,rgba(14,11,29,.5));
+}
+.shop-noscript{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+.shop-beats{
+  position:absolute;left:0;right:0;bottom:0;
+  min-height:clamp(96px,15vh,150px);
+  padding:clamp(28px,5vh,56px) 0 0;
+  background:linear-gradient(180deg,transparent,rgba(14,11,29,.72) 42%,rgba(14,11,29,.92));
+  pointer-events:none;
+}
+.beat{
+  position:absolute;left:0;right:0;bottom:0;
+  margin:0;opacity:0;transform:translateY(14px);
+  transition:opacity .55s var(--ease),transform .55s var(--ease);
+  max-width:40ch;
+}
+.beat.is-on{opacity:1;transform:none}
+.beat b{
+  display:block;
+  font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--lilac);margin-bottom:10px;font-weight:400;
+}
+.beat span{
+  display:block;
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(18px,2.3vw,32px);line-height:1.2;color:var(--paper);
+  text-shadow:0 2px 22px rgba(14,11,29,.8);
+}
+.shop-rail{
+  position:absolute;right:-26px;top:50%;transform:translateY(-50%);
+  width:1px;height:min(38vh,260px);background:var(--line);
+}
+@media(max-width:1180px){ .shop-rail{right:6px} }
+.shop-rail i{display:block;width:100%;height:0%;background:var(--lilac)}
+@media(max-width:700px){ .shop-rail{display:none} }
+
+/* ---- buy block ---- */
+.shop-buy{
+  margin-top:clamp(34px,6vh,72px);
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+  gap:clamp(24px,5vw,72px);
+  align-items:start;
+}
+@media(max-width:860px){ .shop-buy{grid-template-columns:1fr} }
+.buy-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(26px,3.6vw,48px);line-height:1.04;letter-spacing:-.02em;
+  color:var(--paper);margin:0 0 12px;
+}
+.buy-price{
+  font-family:var(--font-display);
+  font-size:clamp(20px,2.2vw,28px);color:var(--lilac);margin:0 0 20px;
+}
+.buy-price small{font-family:var(--font-ui);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-left:12px}
+.buy-desc{max-width:44ch;font-size:14.5px;color:rgba(201,194,227,.82);margin:0 0 26px}
+
+.buy-field{margin-bottom:22px}
+.buy-field > h4{
+  font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 12px;font-weight:400;
+}
+.sizes{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+.sizes button{
+  font:inherit;font-size:13px;
+  min-width:52px;padding:10px 6px;
+  background:transparent;color:var(--mist);
+  border:1px solid var(--line-strong);border-radius:4px;
+  cursor:pointer;
+  transition:background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease);
+}
+.sizes button:hover{border-color:var(--lilac);color:var(--paper)}
+.sizes button[aria-pressed="true"]{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+.sizes button[disabled]{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+.sizes button[disabled]:hover{border-color:var(--line-strong);color:var(--mist)}
+
+.swatches{display:flex;gap:10px;padding:0;margin:0;list-style:none}
+.swatches button{
+  width:36px;height:36px;border-radius:50%;cursor:pointer;
+  border:1px solid var(--line-strong);padding:0;
+  transition:box-shadow .3s var(--ease),border-color .3s var(--ease);
+}
+.swatches button[aria-pressed="true"]{border-color:var(--lilac);box-shadow:0 0 0 3px rgba(139,124,199,.28)}
+.sw-obsidian{background:linear-gradient(145deg,#2a2a30,#0d0d10 70%)}
+.sw-plum{background:linear-gradient(145deg,#6B49A8,#2A1E4D 70%)}
+.sw-bone{background:linear-gradient(145deg,#efe9dc,#c9bda4 70%)}
+
+.buy-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:28px}
+.btn-primary{
+  font:inherit;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  padding:16px 30px;border-radius:999px;cursor:pointer;
+  background:var(--paper);color:var(--ink);border:1px solid var(--paper);
+  transition:background .35s var(--ease),color .35s var(--ease),transform .35s var(--ease);
+}
+.btn-primary:hover{background:var(--lilac);border-color:var(--lilac);transform:translateY(-2px)}
+.btn-ghost{
+  font:inherit;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  padding:16px 26px;border-radius:999px;cursor:pointer;
+  background:transparent;color:var(--mist);border:1px solid var(--line-strong);
+  transition:border-color .35s var(--ease),color .35s var(--ease);
+}
+.btn-ghost:hover{border-color:var(--lilac);color:var(--paper)}
+.buy-status{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);
+  min-height:1.2em;margin-top:14px;
+}
+
+.spec-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.spec-list li{
+  display:flex;justify-content:space-between;gap:18px;
+  padding:14px 0;border-bottom:1px solid var(--line);
+  font-size:13.5px;
+}
+.spec-list dt,.spec-list .k{color:var(--muted);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.spec-list .v{color:rgba(201,194,227,.9);text-align:right}
+
+/* ============================================================
    CAPABILITIES
    ============================================================ */
 #capabilities{padding-block:clamp(80px,14vh,170px)}
@@ -633,6 +812,7 @@ section{position:relative;padding-inline:var(--gutter)}
 <!-- ======================= PRELOADER ======================= -->
 <div id="loader" role="status" aria-live="polite" aria-label="Loading Brandon Franklin Studios">
   <div style="display:grid;place-items:center">
+    <img class="lemblem" src="assets/bf-emblem.webp" width="256" height="259" alt="" aria-hidden="true" fetchpriority="high">
     <div class="lmark">Brandon&nbsp;Franklin</div>
     <div class="lsub">Studios</div>
   </div>
@@ -663,6 +843,7 @@ section{position:relative;padding-inline:var(--gutter)}
     <a href="#manifesto">Studio</a>
     <a href="#about">About</a>
     <a href="#work">Work</a>
+    <a href="#shop">Shop</a>
     <a href="#capabilities">Capabilities</a>
   </nav>
   <a class="nav-cta" href="#contact">Start a project</a>
@@ -826,6 +1007,92 @@ section{position:relative;padding-inline:var(--gutter)}
     </div>
   </section>
 
+  <!-- ======================= SHOP ======================= -->
+  <section id="shop">
+    <div class="wrap shop-head sec-head">
+      <div>
+        <p class="eyebrow r-fade">Shop &mdash; Footwear</p>
+        <h2 class="sec-title r-line"><span>The Franklin Sovereign</span></h2>
+      </div>
+      <p class="sec-note r-fade">Our first object. Made in a forty-pair run, because that is how many a single workshop can finish properly in a season.</p>
+    </div>
+
+    <div class="shop-pin">
+      <div class="shop-sticky">
+       <div class="shop-figure">
+        <div class="shop-canvas-wrap">
+          <canvas id="sovereign" width="1100" height="626" role="img"
+                  aria-label="The Franklin Sovereign boot, rotating slowly on a lit purple stage."></canvas>
+          <noscript><img class="shop-noscript" src="assets/sovereign/f01.webp" alt="The Franklin Sovereign boot."></noscript>
+        </div>
+
+        <div class="shop-beats" aria-hidden="true">
+          <figure class="beat is-on" data-beat="0">
+            <b>01 &mdash; Upper</b><span>Full-grain oil-tanned leather, cut in one piece so the only seam sits behind the heel.</span>
+          </figure>
+          <figure class="beat" data-beat="1">
+            <b>02 &mdash; Sole</b><span>Storm-welted and rebuildable. The lug is cut from natural rubber, not a foam that dies in year two.</span>
+          </figure>
+          <figure class="beat" data-beat="2">
+            <b>03 &mdash; Hardware</b><span>Solid brass eyelets and a bone-tanned collar, both left raw so they take on the wear of whoever owns them.</span>
+          </figure>
+        </div>
+
+        <div class="shop-rail" aria-hidden="true"><i></i></div>
+       </div>
+      </div>
+    </div>
+
+    <div class="wrap shop-buy">
+      <div>
+        <h3 class="buy-name r-line"><span>Sovereign 6&Prime; &mdash; Obsidian</span></h3>
+        <p class="buy-price r-fade">$420 <small>Run of 40</small></p>
+        <p class="buy-desc r-fade">
+          Built on a wide last with a brass-eyeleted facing and a bone collar tab.
+          Resole it twice and it outlives the decade. Ships in six weeks.
+        </p>
+
+        <div class="buy-field r-fade">
+          <h4 id="size-label">Size &mdash; UK</h4>
+          <ul class="sizes" aria-labelledby="size-label">
+            <li><button type="button" aria-pressed="false">6</button></li>
+            <li><button type="button" aria-pressed="false">7</button></li>
+            <li><button type="button" aria-pressed="true">8</button></li>
+            <li><button type="button" aria-pressed="false">9</button></li>
+            <li><button type="button" aria-pressed="false">10</button></li>
+            <li><button type="button" disabled aria-disabled="true">11</button></li>
+            <li><button type="button" aria-pressed="false">12</button></li>
+          </ul>
+        </div>
+
+        <div class="buy-field r-fade">
+          <h4 id="col-label">Colourway</h4>
+          <ul class="swatches" aria-labelledby="col-label">
+            <li><button type="button" class="sw-obsidian" aria-pressed="true" aria-label="Obsidian"></button></li>
+            <li><button type="button" class="sw-plum" aria-pressed="false" aria-label="Plum"></button></li>
+            <li><button type="button" class="sw-bone" aria-pressed="false" aria-label="Bone"></button></li>
+          </ul>
+        </div>
+
+        <div class="buy-actions r-fade">
+          <button type="button" class="btn-primary" id="buy-btn">Add to bag</button>
+          <button type="button" class="btn-ghost">Size guide</button>
+        </div>
+        <p class="buy-status" id="buy-status" role="status"></p>
+      </div>
+
+      <ul class="spec-list r-fade">
+        <li><span class="k">Last</span><span class="v">BF-04, wide</span></li>
+        <li><span class="k">Upper</span><span class="v">Oil-tanned full grain</span></li>
+        <li><span class="k">Construction</span><span class="v">Storm welt, rebuildable</span></li>
+        <li><span class="k">Sole</span><span class="v">Natural rubber lug</span></li>
+        <li><span class="k">Hardware</span><span class="v">Solid brass, raw</span></li>
+        <li><span class="k">Made in</span><span class="v">Northampton, UK</span></li>
+        <li><span class="k">Lead time</span><span class="v">Six weeks</span></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- ======================= CAPABILITIES ======================= -->
   <section id="capabilities">
     <div class="wrap">
@@ -900,7 +1167,7 @@ gsap.registerPlugin(ScrollTrigger);
    ============================================================ */
 let lenis = null;
 if (!REDUCED) {
-  lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, anchors: true });
+  lenis = new Lenis({ lerp: 0.072, wheelMultiplier: 0.92, anchors: true });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -1113,9 +1380,13 @@ if (!REDUCED) {
   // ABOUT : the mark holds well to the left so the figure owns the right
         .to(path, { camX: 2.9, camY: -0.2, camZ: 10.2, ribX: -3.9, ribY: 0.1, rotY: Math.PI*2.6, rotZ: -0.3, ribScale: 0.72, fog: 0.046, glow: 0.58 }, 0.42)
   // WORK : long slow drift so the case studies stay readable
-        .to(path, { camX: -1.4, camY: 0.25, camZ: 11.5, ribX: 2.9, ribY: -0.3, rotY: Math.PI*3.2, rotZ: -0.6, ribScale: 0.62, fog: 0.042 }, 0.56)
+        .to(path, { camX: -1.4, camY: 0.25, camZ: 11.5, ribX: 2.9, ribY: -0.3, rotY: Math.PI*3.2, rotZ: -0.6, ribScale: 0.62, fog: 0.042 }, 0.52)
+  // SHOP : the product stage is the hero here, so the mark recedes
+        .to(path, { camX: 0.4, camY: 0.6, camZ: 15, ribX: 4.6, ribY: -1.2, rotY: Math.PI*3.6, ribScale: 0.4, fog: 0.03, glow: 0.14 }, 0.66)
+  // ...and holds there while the buy panel is read
+        .to(path, { camX: 0.6, camY: 0.5, camZ: 15.4, ribX: 5.0, ribY: -1.3, rotY: Math.PI*3.8, ribScale: 0.38, glow: 0.12 }, 0.78)
   // CAPABILITIES -> CONTACT : the mark returns, centred and close
-        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.78);
+        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4.3, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.87);
 }
 
 /* ============================================================
@@ -1272,7 +1543,8 @@ function heroIn(){
 
 function bootDone(){
   const tl = gsap.timeline();
-  tl.to(loader.querySelectorAll('.lmark, .lsub, .lbar, .lnum'), { opacity: 0, duration: 0.45, ease:'power2.in' })
+  tl.to(loader.querySelector('.lemblem'), { scale: 1.18, opacity: 0, duration: 0.55, ease:'power2.in' }, 0)
+    .to(loader.querySelectorAll('.lmark, .lsub, .lbar, .lnum'), { opacity: 0, duration: 0.45, ease:'power2.in' }, 0)
     .set(curtain, { transformOrigin:'bottom', y:'100%' })
     .to(curtain, { y:'0%', duration: 0.6, ease:'power3.inOut' }, '-=0.1')
     .set(loader, { display:'none' })
@@ -1295,8 +1567,10 @@ if (REDUCED) {
     },
     onComplete: bootDone
   });
-  gsap.to(loader.querySelector('.lmark'), { opacity: 1, duration: 1.0, ease:'power2.out' });
-  gsap.to(loader.querySelector('.lsub'),  { opacity: 1, duration: 1.0, delay: 0.25, ease:'power2.out' });
+  gsap.set(loader.querySelector('.lemblem'), { transformPerspective: 700 });
+  gsap.to(loader.querySelector('.lemblem'), { opacity: 1, rotationY: 0, duration: 1.35, ease:'power3.out', startAt:{ rotationY: -180, scale: .82 }, scale: 1 });
+  gsap.to(loader.querySelector('.lmark'), { opacity: 1, duration: 1.0, delay: 0.3, ease:'power2.out' });
+  gsap.to(loader.querySelector('.lsub'),  { opacity: 1, duration: 1.0, delay: 0.5, ease:'power2.out' });
 }
 
 /* ---- scroll-triggered DOM reveals ---- */
@@ -1429,6 +1703,142 @@ if (!REDUCED && matchMedia('(hover:hover)').matches) {
     card.addEventListener('pointerleave', () => { qx(0); qy(0); });
   });
 }
+
+/* ============================================================
+   THE SOVEREIGN — a scroll-scrubbed frame sequence.
+   The source move is one continuous camera orbit (no cuts), so the
+   frames read as a single smooth rotation tied to the scrollbar.
+   ============================================================ */
+(() => {
+  const canvas = document.getElementById('sovereign');
+  if (!canvas) return;
+
+  const COUNT = 44;
+  const ctx   = canvas.getContext('2d', { alpha: false });
+  const wrap  = canvas.parentElement;
+  const imgs  = new Array(COUNT);
+  const ready = new Array(COUNT).fill(false);
+  const state = { i: 0 };
+  let loadedAny = false;
+
+  const src = (n) => `assets/sovereign/f${String(n + 1).padStart(2, '0')}.webp`;
+
+  function load(n, priority) {
+    if (imgs[n]) return;
+    // NB: never set loading='lazy' on a detached Image() — Chromium then
+    // never fetches it at all, because it is not in the document.
+    const im = new Image();
+    im.decoding = 'async';
+    im.fetchPriority = priority ? 'high' : 'low';
+    im.onload = () => {
+      ready[n] = true;
+      if (!loadedAny) { loadedAny = true; draw(); }
+      else if (Math.round(state.i) === n) draw();
+    };
+    im.src = src(n);
+    imgs[n] = im;
+  }
+
+  // nearest already-decoded frame, so scrubbing never shows a blank
+  function pick(n) {
+    if (ready[n]) return imgs[n];
+    for (let d = 1; d < COUNT; d++) {
+      if (ready[n - d]) return imgs[n - d];
+      if (ready[n + d]) return imgs[n + d];
+    }
+    return null;
+  }
+
+  function size() {
+    const r = wrap.getBoundingClientRect();
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width  = Math.max(1, Math.round(r.width  * dpr));
+    canvas.height = Math.max(1, Math.round(r.height * dpr));
+    draw();
+  }
+
+  function draw() {
+    const im = pick(Math.round(state.i));
+    if (!im) return;
+    const cw = canvas.width, ch = canvas.height;
+    const scale = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
+    const w = im.naturalWidth * scale, h = im.naturalHeight * scale;
+    ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+
+  load(0, true);                    // first frame eagerly: it is the poster
+
+  // the rest only once the section is within reach, so the sequence never
+  // competes with the hero for bandwidth
+  let fetched = false;
+  ScrollTrigger.create({
+    trigger: '#shop', start: 'top bottom+=120%',
+    once: true,
+    onEnter: () => {
+      if (fetched) return;
+      fetched = true;
+      for (let n = 1; n < COUNT; n++) load(n, n < 6);
+    }
+  });
+
+  const beats = Array.from(document.querySelectorAll('#shop .beat'));
+  const rail  = document.querySelector('.shop-rail i');
+
+  function setBeat(p) {
+    const idx = p < 0.34 ? 0 : p < 0.68 ? 1 : 2;
+    beats.forEach((b, i) => b.classList.toggle('is-on', i === idx));
+    if (rail) rail.style.height = (p * 100).toFixed(1) + '%';
+  }
+
+  if (REDUCED) {
+    size();
+    setBeat(0);
+    beats.forEach((b, i) => b.classList.toggle('is-on', i === 0));
+  } else {
+    gsap.to(state, {
+      i: COUNT - 1, ease: 'none',
+      scrollTrigger: {
+        trigger: '.shop-pin', start: 'top top', end: 'bottom bottom', scrub: 0.45,
+        onUpdate: (self) => setBeat(self.progress)
+      },
+      onUpdate: draw
+    });
+    size();
+  }
+
+  let rz;
+  addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(size, 150); }, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
+})();
+
+/* ---- shop: size / colourway pickers ---- */
+(() => {
+  const group = (sel) => {
+    const btns = Array.from(document.querySelectorAll(sel));
+    btns.forEach((b) => b.addEventListener('click', () => {
+      if (b.disabled) return;
+      btns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+    }));
+    return btns;
+  };
+  group('.sizes button');
+  const shades = group('.swatches button');
+  const nameEl = document.querySelector('.buy-name span');
+  shades.forEach((b) => b.addEventListener('click', () => {
+    if (nameEl) nameEl.textContent = `Sovereign 6\u2033 \u2014 ${b.getAttribute('aria-label')}`;
+  }));
+
+  const buy = document.getElementById('buy-btn');
+  const out = document.getElementById('buy-status');
+  if (buy && out) {
+    buy.addEventListener('click', () => {
+      const size  = document.querySelector('.sizes button[aria-pressed="true"]');
+      const shade = document.querySelector('.swatches button[aria-pressed="true"]');
+      out.textContent = `Sovereign 6" · ${shade ? shade.getAttribute('aria-label') : 'Obsidian'} · UK ${size ? size.textContent : '8'} added \u2014 demo only, nothing is charged`;
+      gsap.fromTo(out, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
+    });
+  }
+})();
 
 /* ---- brand emblem: turns over on hover, like the brand film ---- */
 (() => {

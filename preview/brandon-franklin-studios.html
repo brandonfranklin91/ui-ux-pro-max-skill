@@ -147,12 +147,25 @@ a{color:inherit;text-decoration:none}
   opacity:0;transition:opacity .4s var(--ease);
 }
 .site-nav.is-stuck::before{opacity:1}
-.brand{display:flex;align-items:center;gap:12px}
-.brand svg{width:26px;height:26px;overflow:visible}
+.brand{display:flex;align-items:center;gap:13px}
+.brand-mark{
+  display:block;
+  width:clamp(32px,2.5vw,40px);
+  perspective:420px;
+  flex:none;
+}
+.brand-mark img{
+  display:block;width:100%;height:auto;
+  filter:drop-shadow(0 4px 14px rgba(90,59,140,.6)) drop-shadow(0 0 22px rgba(139,124,199,.28));
+  transform-origin:50% 50%;
+  will-change:transform;
+  backface-visibility:visible;
+}
 .brand .bname{
   font-family:var(--font-logo);
-  font-size:19px;letter-spacing:.03em;color:var(--paper);line-height:1;
+  font-size:clamp(17px,1.4vw,20px);letter-spacing:.03em;color:var(--paper);line-height:1;
 }
+@media(max-width:400px){ .brand .bname{display:none} }
 .nav-links{display:flex;gap:clamp(18px,2.4vw,36px);align-items:center}
 .nav-links a{
   font-size:11px;letter-spacing:.22em;text-transform:uppercase;
@@ -640,14 +653,10 @@ section{position:relative;padding-inline:var(--gutter)}
 <!-- ======================= NAV ======================= -->
 <header class="site-nav">
   <a class="brand" href="#hero" aria-label="Brandon Franklin Studios, home">
-    <svg viewBox="0 0 32 32" aria-hidden="true">
-      <defs>
-        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#C9C2E3"/><stop offset=".5" stop-color="#8B7CC7"/><stop offset="1" stop-color="#5A3B8C"/>
-        </linearGradient>
-      </defs>
-      <path d="M10 27c-5-7-2-14 5-16 6-1.8 11 1.5 11 6.5 0 5.5-6 8-12 6.5-6.5-1.6-9-8-5-13" fill="none" stroke="url(#g1)" stroke-width="2.6" stroke-linecap="round"/>
-    </svg>
+    <span class="brand-mark">
+      <img src="assets/bf-emblem.webp" width="256" height="259" alt="" aria-hidden="true"
+           decoding="async" fetchpriority="high">
+    </span>
     <span class="bname">Brandon&nbsp;Franklin</span>
   </a>
   <nav class="nav-links" aria-label="Primary">
@@ -1420,6 +1429,27 @@ if (!REDUCED && matchMedia('(hover:hover)').matches) {
     card.addEventListener('pointerleave', () => { qx(0); qy(0); });
   });
 }
+
+/* ---- brand emblem: turns over on hover, like the brand film ---- */
+(() => {
+  const mark = document.querySelector('.brand-mark img');
+  if (!mark) return;
+  if (REDUCED) return;
+
+  gsap.set(mark, { transformPerspective: 420 });
+  gsap.from(mark, { rotationY: -140, opacity: 0, duration: 1.1, ease: 'power3.out', delay: 0.35 });
+
+  const brand = document.querySelector('.brand');
+  let turning = false;
+  brand.addEventListener('pointerenter', () => {
+    if (turning) return;
+    turning = true;
+    gsap.to(mark, {
+      rotationY: '+=360', duration: 1.1, ease: 'power3.inOut',
+      onComplete: () => { turning = false; }
+    });
+  });
+})();
 
 /* ---- custom cursor ---- */
 const cur = document.querySelector('.cursor');

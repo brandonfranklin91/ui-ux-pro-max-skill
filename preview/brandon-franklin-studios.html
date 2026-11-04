@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Brandon Franklin Studios</title>
+<meta name="description" content="Immersive 3D scroll portfolio for Brandon Franklin Studios — a multidisciplinary design studio building brand worlds." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap">
+<style>
+/* lenis@1.3.27 — inlined (keeps the page to a single stylesheet request) */
+html.lenis,html.lenis body{height:auto}
+.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}
+.lenis [data-lenis-prevent],.lenis [data-lenis-prevent-wheel],.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],.lenis [data-lenis-prevent-horizontal]{overscroll-behavior:contain}
+.lenis.lenis-smooth iframe{pointer-events:none}
+.lenis.lenis-autoToggle{transition-property:overflow;transition-duration:1ms;transition-behavior:allow-discrete}
+
+/* ============================================================
+   DESIGN TOKENS — palette from the supplied swatch reference
+   ============================================================ */
+:root{
+  --ink:#0E0B1D;          /* deepest ground          */
+  --plum:#2A1E4D;         /* elevated surface        */
+  --violet:#5A3B8C;       /* primary accent          */
+  --lilac:#8B7CC7;        /* interactive / highlight */
+  --mist:#C9C2E3;         /* body text               */
+  --slate:#3A3A52;        /* decorative only         */
+  --muted:#8E88A8;        /* small text, 5.7:1 on ink*/
+
+  --paper:#F4F1FA;
+  --line:rgba(201,194,227,.14);
+  --line-strong:rgba(201,194,227,.28);
+
+  /* type — mirrors the "Arkalune" logotype reference:
+     high-contrast elegant display + wide-tracked caps  */
+  --font-logo:'Italiana', 'Playfair Display', serif;
+  --font-display:'Playfair Display', Georgia, serif;
+  --font-ui:'Jost', 'Helvetica Neue', Arial, sans-serif;
+
+  --tracking-caps:.42em;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --gutter:clamp(20px,5vw,80px);
+  --maxw:1440px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);
+  color:var(--mist);
+  font-family:var(--font-ui);
+  font-weight:300;
+  font-size:clamp(15px,1.05vw,17px);
+  line-height:1.65;
+  overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--violet);color:#fff}
+
+/* focus — never removed, only restyled */
+:focus-visible{
+  outline:2px solid var(--lilac);
+  outline-offset:4px;
+  border-radius:2px;
+}
+
+/* ============================================================
+   FIXED 3D STAGE  (persistent WebGL layer behind all content)
+   ============================================================ */
+#stage{
+  position:fixed; inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+#stage canvas{display:block;width:100%;height:100%}
+
+/* atmosphere layers stacked over the canvas */
+.atmos{position:fixed;inset:0;z-index:1;pointer-events:none}
+.atmos--vignette{
+  background:radial-gradient(130% 95% at 50% 42%,transparent 28%,rgba(14,11,29,.55) 72%,var(--ink) 100%);
+}
+.atmos--grain{
+  opacity:.055; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.atmos--scan{
+  opacity:.5;
+  background:repeating-linear-gradient(180deg,transparent 0 3px,rgba(14,11,29,.22) 3px 4px);
+  mix-blend-mode:multiply;
+}
+
+/* ============================================================
+   PRELOADER — echoes the studio's logo-build intro
+   ============================================================ */
+#loader{
+  position:fixed;inset:0;z-index:120;
+  background:var(--ink);
+  display:grid;place-items:center;
+  gap:0;
+}
+#loader .lmark{
+  font-family:var(--font-logo);
+  font-size:clamp(34px,6vw,76px);
+  color:var(--paper);
+  line-height:1;
+  letter-spacing:.01em;
+  opacity:0;
+}
+#loader .lsub{
+  margin-top:18px;
+  font-size:11px;letter-spacing:var(--tracking-caps);
+  text-transform:uppercase;color:var(--lilac);
+  opacity:0;
+}
+#loader .lbar{
+  position:absolute;left:var(--gutter);right:var(--gutter);bottom:clamp(28px,6vh,64px);
+  height:1px;background:var(--line);
+}
+#loader .lbar i{display:block;height:100%;width:0%;background:var(--lilac)}
+#loader .lnum{
+  position:absolute;right:var(--gutter);bottom:clamp(40px,7vh,80px);
+  font-size:11px;letter-spacing:.2em;color:var(--mist);
+  font-variant-numeric:tabular-nums;
+}
+.curtain{position:fixed;inset:0;z-index:119;background:var(--plum);transform:translateY(100%)}
+
+/* ============================================================
+   CHROME — nav + fixed rails
+   ============================================================ */
+.site-nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;
+  padding:clamp(18px,2.4vw,30px) var(--gutter);
+  mix-blend-mode:normal;
+}
+.site-nav::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(14,11,29,.78),transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  opacity:0;transition:opacity .4s var(--ease);
+}
+.site-nav.is-stuck::before{opacity:1}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:26px;height:26px;overflow:visible}
+.brand .bname{
+  font-family:var(--font-logo);
+  font-size:19px;letter-spacing:.03em;color:var(--paper);line-height:1;
+}
+.nav-links{display:flex;gap:clamp(18px,2.4vw,36px);align-items:center}
+.nav-links a{
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mist);opacity:.75;position:relative;padding:6px 0;
+  transition:opacity .3s var(--ease),color .3s var(--ease);
+}
+.nav-links a::after{
+  content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;
+  background:var(--lilac);transform:scaleX(0);transform-origin:right;
+  transition:transform .45s var(--ease);
+}
+.nav-links a:hover{opacity:1;color:var(--paper)}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-cta{
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid var(--line-strong);border-radius:999px;
+  padding:11px 20px;color:var(--paper);
+  transition:background .4s var(--ease),border-color .4s var(--ease),color .4s var(--ease);
+}
+.nav-cta:hover{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+@media(max-width:860px){ .nav-links{display:none} }
+@media(max-width:560px){
+  .nav-cta{padding:9px 14px;font-size:10px;letter-spacing:.14em;white-space:nowrap}
+  .brand .bname{font-size:16px}
+  .hero-lede{max-width:40ch}
+  .hero-logotype{font-size:clamp(40px,11.4vw,166px)}
+}
+
+.rail{
+  position:fixed;z-index:55;
+  font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--muted);
+  pointer-events:none;
+}
+.rail--l{left:22px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl}
+.rail--r{right:22px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl}
+@media(max-width:1100px){ .rail{display:none} }
+
+/* scroll progress */
+.progress{position:fixed;left:0;top:0;height:2px;width:100%;z-index:70;background:transparent}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--lilac),var(--mist))}
+
+/* ============================================================
+   LAYOUT PRIMITIVES
+   ============================================================ */
+main{position:relative;z-index:10}
+section[id]{scroll-margin-top:clamp(70px,9vh,110px)}
+section{position:relative;padding-inline:var(--gutter)}
+.wrap{max-width:var(--maxw);margin-inline:auto;width:100%}
+.eyebrow{
+  font-size:10px;letter-spacing:var(--tracking-caps);text-transform:uppercase;
+  color:var(--lilac);display:flex;align-items:center;gap:14px;
+}
+.eyebrow::before{content:"";width:clamp(24px,4vw,56px);height:1px;background:var(--lilac);opacity:.6}
+
+/* reveal primitives driven by GSAP */
+.r-line{overflow:hidden;display:block}
+.r-line > *{display:block;will-change:transform}
+.r-fade{will-change:transform,opacity}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+#hero{
+  min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding-block:clamp(110px,16vh,180px) clamp(96px,15vh,150px);
+}
+.hero-grid{
+  display:grid;gap:clamp(16px,2.6vh,30px);justify-items:center;text-align:center;
+  position:relative;
+}
+/* a soft scrim keeps the logotype readable over the live 3D mark */
+.hero-grid::before{
+  content:"";position:absolute;z-index:-1;
+  inset:-20% 0;
+  background:radial-gradient(74% 54% at 50% 50%,rgba(14,11,29,.72) 0%,rgba(14,11,29,.44) 52%,transparent 80%);
+  pointer-events:none;
+}
+.hero-logotype{
+  font-family:var(--font-logo);
+  font-size:clamp(44px,10.6vw,166px);
+  line-height:.9;
+  letter-spacing:.005em;
+  color:var(--paper);
+  margin:0;
+  position:relative;
+}
+.hero-logotype .word{display:inline-block;white-space:nowrap}
+.hero-logotype .ch{display:inline-block;will-change:transform,opacity}
+/* the swash flourish under the wordmark, as in the logotype reference */
+.flourish{width:min(52vw,560px);height:30px;overflow:visible;margin-top:-10px}
+.flourish path{
+  fill:none;stroke:var(--mist);stroke-width:1.1;stroke-linecap:round;
+  opacity:.8;
+}
+.hero-sub{
+  font-size:clamp(10px,1.1vw,12px);
+  letter-spacing:var(--tracking-caps);
+  text-transform:uppercase;
+  color:var(--lilac);
+  margin:0;
+}
+.hero-lede{
+  max-width:54ch;
+  margin-top:clamp(4px,1.2vh,12px);
+  font-size:clamp(15px,1.35vw,19px);
+  color:rgba(201,194,227,.82);
+  margin:0;
+}
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:clamp(16px,3.4vw,46px);justify-content:center;
+  margin-top:clamp(6px,1.6vh,16px);
+  font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+}
+.scroll-cue{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:clamp(22px,4vh,44px);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);
+}
+.scroll-cue .track{width:1px;height:54px;background:var(--line);overflow:hidden;position:relative}
+.scroll-cue .track i{
+  position:absolute;inset-inline:0;top:-100%;height:100%;background:var(--lilac);
+  animation:cue 2.4s var(--ease) infinite;
+}
+@keyframes cue{0%{top:-100%}60%,100%{top:100%}}
+
+/* ============================================================
+   MANIFESTO — pinned, scrub-revealed statement
+   ============================================================ */
+#manifesto{min-height:100svh;display:grid;place-items:center;padding-block:clamp(90px,14vh,170px)}
+.statement{
+  font-family:var(--font-display);
+  font-weight:400;
+  font-size:clamp(26px,4.6vw,66px);
+  line-height:1.16;
+  letter-spacing:-.012em;
+  color:var(--paper);
+  max-width:19ch;
+  margin:0 auto;
+  text-align:center;
+  text-wrap:balance;
+}
+.statement em{font-style:italic;color:var(--lilac)}
+.statement .w{display:inline-block;opacity:.12;will-change:opacity,filter}
+.statement .w.on{opacity:1}
+.manifesto-foot{
+  margin-top:clamp(34px,6vh,70px);
+  display:flex;justify-content:center;gap:clamp(20px,5vw,70px);flex-wrap:wrap;
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
+}
+
+/* ============================================================
+   WORK
+   ============================================================ */
+#work{padding-block:clamp(90px,16vh,190px)}
+.sec-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:30px;
+  padding-bottom:clamp(26px,4vh,46px);
+  border-bottom:1px solid var(--line);
+  margin-bottom:clamp(30px,4.6vh,60px);
+  flex-wrap:wrap;
+}
+.sec-title{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(28px,4.4vw,60px);line-height:1;letter-spacing:-.02em;
+  color:var(--paper);margin:14px 0 0;
+}
+.sec-note{max-width:34ch;font-size:13.5px;color:rgba(201,194,227,.76)}
+
+.project{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:clamp(22px,4vw,64px);
+  align-items:center;
+  padding-block:clamp(30px,5.4vh,64px);
+  border-bottom:1px solid var(--line);
+}
+.project:nth-of-type(odd) .project-visual{order:2}
+.project:nth-of-type(odd) .project-body{order:1}
+@media(max-width:880px){
+  .project{grid-template-columns:1fr;gap:22px}
+  .project:nth-of-type(odd) .project-visual,
+  .project:nth-of-type(odd) .project-body{order:initial}
+}
+.project-visual{
+  position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden;
+  border:1px solid var(--line);
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.project-visual .art{
+  position:absolute;inset:-16%;
+  will-change:transform;
+  background-size:cover;background-position:center;
+}
+.project-visual::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(14,11,29,.62));
+  pointer-events:none;
+}
+.art-1{background:
+  radial-gradient(38% 52% at 26% 22%,rgba(201,194,227,.9) 0%,rgba(139,124,199,.5) 40%,transparent 72%),
+  radial-gradient(44% 58% at 76% 72%,rgba(90,59,140,.95) 0%,transparent 66%),
+  repeating-linear-gradient(118deg,rgba(201,194,227,.09) 0 1px,transparent 1px 22px),
+  linear-gradient(145deg,#3A2A66 0%,#2A1E4D 46%,#0E0B1D 100%);}
+.art-2{background:
+  radial-gradient(17% 23% at 70% 30%,rgba(244,241,250,.82) 0%,rgba(201,194,227,.2) 55%,transparent 78%),
+  radial-gradient(46% 60% at 24% 74%,rgba(90,59,140,.92) 0%,transparent 68%),
+  repeating-linear-gradient(0deg,rgba(201,194,227,.08) 0 1px,transparent 1px 15px),
+  repeating-linear-gradient(90deg,rgba(201,194,227,.05) 0 1px,transparent 1px 15px),
+  linear-gradient(200deg,#443E63 0%,#1A1430 56%,#0E0B1D 100%);}
+.art-3{background:
+  conic-gradient(from 198deg at 46% 52%,#6A46A4,#140F2A 26%,#8B7CC7 52%,#2A1E4D 74%,#6A46A4 100%),
+  linear-gradient(#0E0B1D,#0E0B1D);}
+.art-3::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(42% 42% at 46% 52%,rgba(14,11,29,.92),transparent 70%);
+}
+/* editorial furniture inside each visual */
+.art-num{
+  position:absolute;left:18px;bottom:10px;z-index:2;
+  font-family:var(--font-logo);
+  font-size:clamp(54px,7vw,104px);line-height:.8;
+  color:rgba(244,241,250,.18);
+  letter-spacing:.02em;pointer-events:none;
+}
+.art-tag{
+  position:absolute;right:16px;top:14px;z-index:2;
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(244,241,250,.55);pointer-events:none;
+}
+.art-rule{
+  position:absolute;left:18px;right:18px;bottom:0;height:1px;z-index:2;
+  background:linear-gradient(90deg,rgba(201,194,227,.45),transparent 70%);
+  pointer-events:none;
+}
+.project-index{
+  font-size:10px;letter-spacing:.3em;color:var(--lilac);
+  display:block;margin-bottom:16px;
+}
+.project-title{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(24px,3.2vw,44px);line-height:1.05;letter-spacing:-.02em;
+  color:var(--paper);margin:0 0 14px;
+}
+.project-desc{max-width:40ch;font-size:14.5px;color:rgba(201,194,227,.82);margin:0 0 22px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.tags span{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid var(--line-strong);border-radius:999px;padding:6px 12px;
+  color:var(--mist);opacity:.78;
+}
+.link-arrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--paper);
+}
+.link-arrow svg{width:22px;height:8px;transition:transform .45s var(--ease)}
+.link-arrow:hover svg{transform:translateX(7px)}
+
+/* ============================================================
+   CAPABILITIES
+   ============================================================ */
+#capabilities{padding-block:clamp(80px,14vh,170px)}
+.cap-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.cap{
+  display:grid;grid-template-columns:auto 1fr auto;gap:clamp(14px,3vw,40px);
+  align-items:baseline;
+  padding:clamp(20px,3.4vh,34px) 0;
+  border-bottom:1px solid var(--line);
+  position:relative;
+}
+.cap::before{
+  content:"";position:absolute;left:0;right:0;top:0;bottom:0;
+  background:linear-gradient(90deg,transparent,rgba(90,59,140,.2),transparent);
+  opacity:0;transition:opacity .5s var(--ease);pointer-events:none;
+}
+.cap:hover::before{opacity:1}
+.cap-n{font-size:11px;letter-spacing:.26em;color:var(--muted)}
+.cap-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(20px,2.7vw,38px);line-height:1.1;color:var(--paper);
+  transition:color .4s var(--ease),transform .5s var(--ease);
+}
+.cap:hover .cap-name{color:var(--lilac);transform:translateX(10px)}
+.cap-meta{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right}
+@media(max-width:700px){ .cap{grid-template-columns:auto 1fr} .cap-meta{display:none} }
+
+/* marquee band */
+.band{
+  margin-top:clamp(50px,9vh,110px);
+  border-block:1px solid var(--line);
+  padding-block:clamp(16px,2.6vh,26px);
+  overflow:hidden;white-space:nowrap;
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+}
+.band-track{display:inline-flex;gap:clamp(26px,5vw,66px);will-change:transform}
+.band-track span{
+  font-family:var(--font-display);font-style:italic;font-weight:400;
+  font-size:clamp(17px,2.1vw,30px);color:rgba(201,194,227,.5);
+}
+.band-track span::after{content:"✦";margin-left:clamp(26px,5vw,66px);color:var(--violet);font-style:normal}
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+#contact{
+  min-height:92svh;display:flex;align-items:center;
+  padding-block:clamp(80px,14vh,170px);
+}
+.contact-inner{text-align:center;width:100%}
+.contact-kicker{
+  font-size:10px;letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--lilac);
+  margin-bottom:clamp(22px,4vh,40px);
+}
+.contact-big{
+  font-family:var(--font-logo);
+  font-size:clamp(44px,10.5vw,170px);
+  line-height:.9;color:var(--paper);margin:0;letter-spacing:.01em;
+}
+.contact-mail{
+  display:inline-block;margin-top:clamp(28px,5vh,52px);
+  font-family:var(--font-display);font-style:italic;
+  font-size:clamp(18px,2.4vw,32px);color:var(--mist);
+  border-bottom:1px solid var(--line-strong);padding-bottom:6px;
+  transition:color .4s var(--ease),border-color .4s var(--ease);
+}
+.contact-mail:hover{color:var(--paper);border-color:var(--lilac)}
+.contact-grid{
+  margin-top:clamp(44px,8vh,90px);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:clamp(20px,4vw,48px);text-align:left;
+  border-top:1px solid var(--line);padding-top:clamp(26px,4vh,44px);
+}
+.contact-grid h4{
+  font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 12px;font-weight:400;
+}
+.contact-grid p,.contact-grid a{font-size:14px;color:rgba(201,194,227,.82);margin:0 0 6px}
+.contact-grid a:hover{color:var(--paper)}
+
+.site-foot{
+  padding:clamp(26px,4vh,40px) var(--gutter) clamp(30px,5vh,48px);
+  display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  border-top:1px solid var(--line);
+  position:relative;z-index:10;
+}
+
+/* ============================================================
+   CURSOR
+   ============================================================ */
+.cursor{
+  position:fixed;top:0;left:0;z-index:200;pointer-events:none;
+  width:26px;height:26px;border-radius:50%;
+  border:1px solid rgba(201,194,227,.5);
+  transform:translate(-50%,-50%);
+  transition:width .35s var(--ease),height .35s var(--ease),background .35s var(--ease),border-color .35s var(--ease);
+  mix-blend-mode:difference;
+}
+.cursor.is-hot{width:58px;height:58px;background:rgba(201,194,227,.14);border-color:transparent}
+@media(hover:none),(pointer:coarse){ .cursor{display:none} }
+
+/* ============================================================
+   REDUCED MOTION — honour the user's system preference
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .atmos--scan{display:none}
+  .hero-logotype .ch,.statement .w,.r-fade{opacity:1 !important;transform:none !important}
+  .statement .w{opacity:1 !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= PRELOADER ======================= -->
+<div id="loader" role="status" aria-live="polite" aria-label="Loading Brandon Franklin Studios">
+  <div style="display:grid;place-items:center">
+    <div class="lmark">Brandon&nbsp;Franklin</div>
+    <div class="lsub">Studios</div>
+  </div>
+  <div class="lbar"><i></i></div>
+  <div class="lnum">000</div>
+</div>
+<div class="curtain" aria-hidden="true"></div>
+
+<!-- ======================= 3D STAGE ======================= -->
+<div id="stage" aria-hidden="true"></div>
+<div class="atmos atmos--vignette" aria-hidden="true"></div>
+<div class="atmos atmos--scan" aria-hidden="true"></div>
+<div class="atmos atmos--grain" aria-hidden="true"></div>
+
+<div class="progress" aria-hidden="true"><i></i></div>
+<div class="cursor" aria-hidden="true"></div>
+
+<!-- ======================= NAV ======================= -->
+<header class="site-nav">
+  <a class="brand" href="#hero" aria-label="Brandon Franklin Studios, home">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#C9C2E3"/><stop offset=".5" stop-color="#8B7CC7"/><stop offset="1" stop-color="#5A3B8C"/>
+        </linearGradient>
+      </defs>
+      <path d="M10 27c-5-7-2-14 5-16 6-1.8 11 1.5 11 6.5 0 5.5-6 8-12 6.5-6.5-1.6-9-8-5-13" fill="none" stroke="url(#g1)" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+    <span class="bname">Brandon&nbsp;Franklin</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#manifesto">Studio</a>
+    <a href="#work">Work</a>
+    <a href="#capabilities">Capabilities</a>
+  </nav>
+  <a class="nav-cta" href="#contact">Start a project</a>
+</header>
+
+<div class="rail rail--l" aria-hidden="true">Brandon Franklin Studios — Est. 2019</div>
+<div class="rail rail--r" aria-hidden="true">Scroll to explore</div>
+
+<main>
+
+  <!-- ======================= HERO ======================= -->
+  <section id="hero">
+    <div class="wrap hero-grid">
+      <p class="hero-sub r-fade">Multidisciplinary Design Studio</p>
+
+      <h1 class="hero-logotype" data-split="chars">Brandon Franklin</h1>
+
+      <svg class="flourish" viewBox="0 0 620 38" aria-hidden="true" preserveAspectRatio="none">
+        <path id="swash" d="M8 20C92 36 150 6 232 14c60 6 76 20 140 17 54-3 66-16 118-14 44 2 80 10 122 3"/>
+      </svg>
+
+      <p class="hero-sub r-fade" style="letter-spacing:.58em">S T U D I O S</p>
+
+      <p class="hero-lede r-fade">
+        We build immersive brand worlds — identity, motion and real-time 3D
+        for companies that would rather be felt than scrolled past.
+      </p>
+
+      <div class="hero-meta r-fade">
+        <span>Brand Identity</span><span>Motion</span><span>Real-time 3D</span><span>Web</span>
+      </div>
+    </div>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span>Scroll</span>
+      <span class="track"><i></i></span>
+    </div>
+  </section>
+
+  <!-- ======================= MANIFESTO ======================= -->
+  <section id="manifesto">
+    <div class="wrap">
+      <p class="statement" data-split="words">
+        A brand is not a logo. It is the <em>atmosphere</em> a person walks into — and we design the whole room.
+      </p>
+      <div class="manifesto-foot r-fade">
+        <span>Los Angeles</span><span>Working worldwide</span><span>Est. 2019</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= WORK ======================= -->
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow r-fade">Selected Work</p>
+          <h2 class="sec-title r-line"><span>Recent chapters</span></h2>
+        </div>
+        <p class="sec-note r-fade">Three of the last twelve. Each one built end to end — strategy, identity, motion system and the site it lives on.</p>
+      </div>
+
+      <article class="project">
+        <div class="project-visual" data-tilt>
+          <div class="art art-1" data-parallax="-12"></div>
+          <span class="art-tag" aria-hidden="true">Identity</span>
+          <span class="art-num" aria-hidden="true">01</span>
+          <span class="art-rule" aria-hidden="true"></span>
+        </div>
+        <div class="project-body">
+          <span class="project-index r-fade">01 — 2026</span>
+          <h3 class="project-title r-line"><span>Arkalune</span></h3>
+          <p class="project-desc r-fade">A fragrance house rebuilt around a single ligature. Variable-weight logotype, scent-mapped colour system and a shop that opens like a jewellery box.</p>
+          <div class="tags r-fade"><span>Identity</span><span>Art Direction</span><span>E-commerce</span></div>
+          <a class="link-arrow r-fade" href="#contact" data-hot>View case study
+            <svg viewBox="0 0 22 8" aria-hidden="true"><path d="M0 4h20M16 1l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project-visual" data-tilt>
+          <div class="art art-2" data-parallax="14"></div>
+          <span class="art-tag" aria-hidden="true">Real-time 3D</span>
+          <span class="art-num" aria-hidden="true">02</span>
+          <span class="art-rule" aria-hidden="true"></span>
+        </div>
+        <div class="project-body">
+          <span class="project-index r-fade">02 — 2025</span>
+          <h3 class="project-title r-line"><span>Vessel Audio</span></h3>
+          <p class="project-desc r-fade">Hardware brand for a studio monitor. We modelled the product in real time so the site ships one GLB instead of forty renders.</p>
+          <div class="tags r-fade"><span>Brand System</span><span>Real-time 3D</span><span>Product Film</span></div>
+          <a class="link-arrow r-fade" href="#contact" data-hot>View case study
+            <svg viewBox="0 0 22 8" aria-hidden="true"><path d="M0 4h20M16 1l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project-visual" data-tilt>
+          <div class="art art-3" data-parallax="-16"></div>
+          <span class="art-tag" aria-hidden="true">Editorial</span>
+          <span class="art-num" aria-hidden="true">03</span>
+          <span class="art-rule" aria-hidden="true"></span>
+        </div>
+        <div class="project-body">
+          <span class="project-index r-fade">03 — 2025</span>
+          <h3 class="project-title r-line"><span>Nocturne Index</span></h3>
+          <p class="project-desc r-fade">An editorial platform for night-economy research. Dense data, high-contrast serif, and a reading mode that actually gets used.</p>
+          <div class="tags r-fade"><span>Editorial</span><span>Data Viz</span><span>Design System</span></div>
+          <a class="link-arrow r-fade" href="#contact" data-hot>View case study
+            <svg viewBox="0 0 22 8" aria-hidden="true"><path d="M0 4h20M16 1l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ======================= CAPABILITIES ======================= -->
+  <section id="capabilities">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow r-fade">Capabilities</p>
+          <h2 class="sec-title r-line"><span>What we actually do</span></h2>
+        </div>
+        <p class="sec-note r-fade">Small studio, full stack. Strategy through shipped code, with no handoff gap in the middle.</p>
+      </div>
+
+      <ul class="cap-list">
+        <li class="cap r-fade"><span class="cap-n">01</span><span class="cap-name">Brand Identity &amp; Logotype</span><span class="cap-meta">4–8 weeks</span></li>
+        <li class="cap r-fade"><span class="cap-n">02</span><span class="cap-name">Motion &amp; Title Design</span><span class="cap-meta">2–5 weeks</span></li>
+        <li class="cap r-fade"><span class="cap-n">03</span><span class="cap-name">Real-time 3D &amp; WebGL</span><span class="cap-meta">3–10 weeks</span></li>
+        <li class="cap r-fade"><span class="cap-n">04</span><span class="cap-name">Design Systems</span><span class="cap-meta">Ongoing</span></li>
+        <li class="cap r-fade"><span class="cap-n">05</span><span class="cap-name">Site Design &amp; Build</span><span class="cap-meta">6–12 weeks</span></li>
+      </ul>
+
+      <div class="band" aria-hidden="true">
+        <div class="band-track">
+          <span>Identity</span><span>Motion</span><span>WebGL</span><span>Art Direction</span><span>Type Design</span><span>Systems</span>
+          <span>Identity</span><span>Motion</span><span>WebGL</span><span>Art Direction</span><span>Type Design</span><span>Systems</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CONTACT ======================= -->
+  <section id="contact">
+    <div class="wrap contact-inner">
+      <p class="contact-kicker r-fade">Currently booking Q2 2026</p>
+      <h2 class="contact-big" data-split="chars">Let&rsquo;s build</h2>
+      <a class="contact-mail" href="mailto:studio@brandonfranklin.studio" data-hot>studio@brandonfranklin.studio</a>
+
+      <div class="contact-grid">
+        <div class="r-fade"><h4>Studio</h4><p>Los Angeles, CA</p><p>Working worldwide</p></div>
+        <div class="r-fade"><h4>New business</h4><a href="mailto:studio@brandonfranklin.studio">studio@brandonfranklin.studio</a></div>
+        <div class="r-fade"><h4>Social</h4><a href="#contact">Instagram</a><br><a href="#contact">Behance</a><br><a href="#contact">LinkedIn</a></div>
+        <div class="r-fade"><h4>Next opening</h4><p>April 2026</p><p>Two slots</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-foot">
+    <span>© 2026 Brandon Franklin Studios</span>
+    <span>Built with Three.js &amp; GSAP</span>
+    <span>Back to <a href="#hero">top</a></span>
+  </footer>
+</main>
+
+<!-- ======================= LIBS ======================= -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.3.27/dist/lenis.min.js"></script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const COLORS = { ink:0x0E0B1D, plum:0x2A1E4D, violet:0x5A3B8C, lilac:0x8B7CC7, mist:0xC9C2E3, slate:0x3A3A52 };
+
+gsap.registerPlugin(ScrollTrigger);
+
+/* ============================================================
+   1. SMOOTH SCROLL — one shared loop so Lenis + ScrollTrigger
+      read the same frame (no double rAF).
+   ============================================================ */
+let lenis = null;
+if (!REDUCED) {
+  lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.95, anchors: true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((t) => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+/* ============================================================
+   2. THE 3D STAGE
+   ============================================================ */
+const stageEl = document.getElementById('stage');
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.34;
+stageEl.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(COLORS.ink, 0.055);
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 0, 7.2);
+
+/* --- procedural studio environment (no external HDR fetch) --- */
+function makeEnvTexture(){
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 256;
+  const g = c.getContext('2d');
+  const grd = g.createLinearGradient(0, 0, 0, 256);
+  grd.addColorStop(0.00, '#DCD6F0');
+  grd.addColorStop(0.34, '#8B7CC7');
+  grd.addColorStop(0.62, '#2A1E4D');
+  grd.addColorStop(1.00, '#0E0B1D');
+  g.fillStyle = grd; g.fillRect(0, 0, 512, 256);
+  // soft key + fill highlights that the metal will catch
+  const spot = (x, y, r, a) => {
+    const s = g.createRadialGradient(x, y, 0, x, y, r);
+    s.addColorStop(0, `rgba(255,255,255,${a})`);
+    s.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = s; g.fillRect(x-r, y-r, r*2, r*2);
+  };
+  spot(120, 70, 95, 0.95);
+  spot(380, 50, 70, 0.55);
+  spot(300, 195, 110, 0.22);
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envRT = pmrem.fromEquirectangular(makeEnvTexture());
+scene.environment = envRT.texture;
+
+/* --- lights --- */
+scene.add(new THREE.AmbientLight(COLORS.mist, 0.55));
+const keyLight  = new THREE.PointLight(COLORS.mist,   72, 46, 2); keyLight.position.set(4, 5, 6);
+const rimLight  = new THREE.PointLight(COLORS.violet, 96, 46, 2); rimLight.position.set(-6, -2, -4);
+const fillLight = new THREE.PointLight(COLORS.lilac,  54, 42, 2); fillLight.position.set(-3, 4, 5);
+scene.add(keyLight, rimLight, fillLight);
+
+/* ============================================================
+   3. THE RIBBON MONOGRAM
+      A flat, twisting ribbon swept along a closed curve —
+      the studio mark, rebuilt as live geometry.
+   ============================================================ */
+function ribbonGeometry({ segments = 620, width = 0.46, twists = 3 } = {}) {
+  const pts = [];
+  const N = 240;
+  for (let i = 0; i < N; i++) {
+    const t = (i / N) * Math.PI * 2;
+    pts.push(new THREE.Vector3(
+      1.45 * Math.sin(t) * (1 + 0.30 * Math.cos(2 * t)),
+      1.30 * Math.cos(t) + 0.34 * Math.sin(3 * t),
+      0.72 * Math.sin(2 * t) + 0.22 * Math.cos(t)
+    ));
+  }
+  const curve = new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0.5);
+  const frames = curve.computeFrenetFrames(segments, true);
+
+  const pos = [], uv = [], idx = [];
+  const half = width / 2;
+  for (let i = 0; i <= segments; i++) {
+    const u = i / segments;
+    const p = curve.getPointAt(u % 1);
+    const n = frames.normals[i % segments];
+    const b = frames.binormals[i % segments];
+    const a = twists * Math.PI * 2 * u;                  // progressive twist
+    const dir = new THREE.Vector3()
+      .addScaledVector(n, Math.cos(a))
+      .addScaledVector(b, Math.sin(a))
+      .normalize();
+    // taper the ribbon toward the seam so it reads like real material
+    const w = half * (0.62 + 0.38 * Math.sin(Math.PI * u) ** 0.5);
+    pos.push(p.x + dir.x*w, p.y + dir.y*w, p.z + dir.z*w);
+    pos.push(p.x - dir.x*w, p.y - dir.y*w, p.z - dir.z*w);
+    uv.push(u, 1, u, 0);
+    if (i < segments) {
+      const a0 = i*2, b0 = i*2+1, a1 = i*2+2, b1 = i*2+3;
+      idx.push(a0, b0, a1,  b0, b1, a1);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+const ribbonMat = new THREE.MeshPhysicalMaterial({
+  color: 0x6B49A8,
+  emissive: 0x1B1036,
+  emissiveIntensity: 0.9,
+  metalness: 0.52,
+  roughness: 0.15,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.07,
+  iridescence: 0.9,
+  iridescenceIOR: 1.55,
+  iridescenceThicknessRange: [120, 520],
+  sheen: 0.4,
+  sheenColor: new THREE.Color(COLORS.mist),
+  envMapIntensity: 1.5,
+  side: THREE.DoubleSide
+});
+
+const ribbon = new THREE.Mesh(ribbonGeometry(), ribbonMat);
+const ribbonRig = new THREE.Group();   // scroll-driven transform
+const ribbonSpin = new THREE.Group();  // idle rotation, kept separate
+ribbonSpin.add(ribbon);
+ribbonRig.add(ribbonSpin);
+scene.add(ribbonRig);
+
+/* a second, ghosted copy adds depth without a second draw-heavy material */
+const ghost = new THREE.Mesh(
+  ribbon.geometry,
+  new THREE.MeshBasicMaterial({ color: COLORS.lilac, transparent: true, opacity: 0.1, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })
+);
+ghost.scale.setScalar(1.13);
+ribbonSpin.add(ghost);
+
+/* ============================================================
+   4. GLOW SPRITES + DUST FIELD
+   ============================================================ */
+function softSprite(hex){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const r = g.createRadialGradient(64,64,0,64,64,64);
+  r.addColorStop(0,   `rgba(${hex.join(',')},1)`);
+  r.addColorStop(0.35,`rgba(${hex.join(',')},0.35)`);
+  r.addColorStop(1,   `rgba(${hex.join(',')},0)`);
+  g.fillStyle = r; g.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const glowTex = softSprite([139,124,199]);
+
+const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: COLORS.violet, transparent:true, opacity:0.5, blending:THREE.AdditiveBlending, depthWrite:false }));
+glow.scale.set(9, 9, 1);
+glow.position.z = -2.2;
+scene.add(glow);
+
+const DUST = REDUCED ? 0 : (innerWidth < 760 ? 700 : 1600);
+let dust = null;
+if (DUST) {
+  const dp = new Float32Array(DUST * 3);
+  const ds = new Float32Array(DUST);
+  for (let i = 0; i < DUST; i++) {
+    const r = 2.0 + Math.random() * 9;
+    const th = Math.random() * Math.PI * 2;
+    dp[i*3+0] = Math.cos(th) * r * 0.75;
+    dp[i*3+1] = (Math.random() - 0.5) * 16;
+    dp[i*3+2] = Math.sin(th) * r * 0.75 - 4;
+    ds[i] = 0.02 + Math.random() * 0.07;
+  }
+  const dg = new THREE.BufferGeometry();
+  dg.setAttribute('position', new THREE.Float32BufferAttribute(dp, 3));
+  dg.setAttribute('size', new THREE.Float32BufferAttribute(ds, 1));
+  dust = new THREE.Points(dg, new THREE.PointsMaterial({
+    map: softSprite([201,194,227]),
+    color: COLORS.mist, size: 0.075, sizeAttenuation: true,
+    transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending
+  }));
+  scene.add(dust);
+}
+
+/* a faint grid floor gives the camera move something to read against */
+const floor = new THREE.GridHelper(60, 60, COLORS.violet, COLORS.plum);
+floor.material.transparent = true;
+floor.material.opacity = 0.16;
+floor.position.y = -4.4;
+scene.add(floor);
+
+/* ============================================================
+   5. SCROLL-DRIVEN CAMERA + OBJECT PATH
+      One scrubbed master timeline across the whole document —
+      scrub:1 so the camera reads as continuous, never snapping.
+   ============================================================ */
+const path = { camX:0, camY:0, camZ:7.2, lookY:0, ribX:0, ribY:0, ribScale:1, rotX:0, rotY:0, rotZ:0, fog:0.055, glow:0.5 };
+
+if (!REDUCED) {
+  const master = gsap.timeline({
+    defaults: { ease:'none' },
+    scrollTrigger: { trigger: document.body, start:'top top', end:'bottom bottom', scrub: 1 }
+  });
+
+  // HERO -> MANIFESTO : dolly in, the mark flips over (the logo turn)
+  master.to(path, { camZ: 4.3, camY: 0.35, rotY: Math.PI, rotZ: 0.42, fog: 0.085, glow: 0.78, ribScale: 1.18 }, 0)
+  // MANIFESTO -> WORK : pull back and slide the mark off-centre
+        .to(path, { camZ: 9.4, camX: 1.9, camY: -0.5, ribX: -2.5, ribY: 0.4, rotY: Math.PI*2.1, rotX: 0.5, ribScale: 0.78, fog: 0.05, glow: 0.4 }, 0.26)
+  // WORK : long slow drift so the case studies stay readable
+        .to(path, { camX: -1.4, camY: 0.25, camZ: 11.5, ribX: 2.9, ribY: -0.3, rotY: Math.PI*3.1, rotZ: -0.6, ribScale: 0.62, fog: 0.042 }, 0.5)
+  // CAPABILITIES -> CONTACT : the mark returns, centred and close
+        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.74);
+}
+
+/* ============================================================
+   6. RENDER LOOP — pauses when the tab is hidden
+   ============================================================ */
+const pointer = { x:0, y:0, tx:0, ty:0 };
+addEventListener('pointermove', (e) => {
+  pointer.tx = (e.clientX / innerWidth  - 0.5) * 2;
+  pointer.ty = (e.clientY / innerHeight - 0.5) * 2;
+}, { passive:true });
+
+let visible = true;
+document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+const clock = new THREE.Clock();
+function frame(){
+  if (!visible) return;
+  const t = clock.getElapsedTime();
+
+  pointer.x += (pointer.tx - pointer.x) * 0.055;
+  pointer.y += (pointer.ty - pointer.y) * 0.055;
+
+  // camera: scroll path + a small parallax lean toward the pointer
+  camera.position.x = path.camX + pointer.x * 0.55;
+  camera.position.y = path.camY - pointer.y * 0.38;
+  camera.position.z = path.camZ;
+  camera.lookAt(path.ribX * 0.35, path.lookY, 0);
+
+  // ribbon: scroll path, plus an idle rotation that never stops
+  ribbonRig.position.set(path.ribX, path.ribY, 0);
+  ribbonRig.scale.setScalar(path.ribScale);
+  ribbonRig.rotation.set(path.rotX, path.rotY, path.rotZ);
+  if (!REDUCED) {
+    ribbonSpin.rotation.y = t * 0.22;
+    ribbonSpin.rotation.x = Math.sin(t * 0.33) * 0.16;
+    ribbonSpin.position.y = Math.sin(t * 0.6) * 0.1;
+  }
+
+  glow.position.set(path.ribX, path.ribY, -2.4);
+  glow.material.opacity = path.glow;
+  glow.scale.setScalar(8 + Math.sin(t * 0.8) * 0.5);
+  scene.fog.density = path.fog;
+
+  if (dust) {
+    dust.rotation.y = t * 0.016;
+    dust.position.y = (path.camY * 0.4) + Math.sin(t * 0.2) * 0.3;
+  }
+  floor.position.z = -6 + path.camZ * 0.35;
+
+  keyLight.position.x  = Math.sin(t * 0.4) * 5;
+  rimLight.position.z  = -4 + Math.cos(t * 0.3) * 2.5;
+
+  renderer.render(scene, camera);
+}
+renderer.setAnimationLoop(frame);
+document.addEventListener('visibilitychange', () => { if (visible) renderer.setAnimationLoop(frame); });
+
+/* resize */
+let rsz;
+addEventListener('resize', () => {
+  clearTimeout(rsz);
+  rsz = setTimeout(() => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+    ScrollTrigger.refresh();
+  }, 140);
+}, { passive:true });
+
+if (REDUCED) { camera.position.set(0.6, 0.3, 6.4); renderer.render(scene, camera); }
+
+/* ============================================================
+   7. DOM CHOREOGRAPHY
+   ============================================================ */
+
+/* split text into spans we can animate without a paid plugin */
+function split(el, mode){
+  const raw = el.textContent.trim().replace(/\s+/g, ' ');
+  el.setAttribute('aria-label', raw);
+  el.textContent = '';
+  const frag = document.createDocumentFragment();
+  if (mode === 'chars') {
+    raw.split(' ').forEach((word, wi, arr) => {
+      const w = document.createElement('span');
+      w.className = 'word'; w.setAttribute('aria-hidden', 'true');
+      [...word].forEach(c => {
+        const s = document.createElement('span');
+        s.className = 'ch'; s.textContent = c;
+        w.appendChild(s);
+      });
+      frag.appendChild(w);
+      if (wi < arr.length - 1) frag.appendChild(document.createTextNode(' '));
+    });
+  } else {
+    raw.split(' ').forEach((word, i, arr) => {
+      const s = document.createElement('span');
+      s.className = 'w'; s.textContent = word;
+      s.setAttribute('aria-hidden', 'true');
+      frag.appendChild(s);
+      if (i < arr.length - 1) frag.appendChild(document.createTextNode(' '));
+    });
+  }
+  el.appendChild(frag);
+  return el.querySelectorAll(mode === 'chars' ? '.ch' : '.w');
+}
+
+/* the manifesto keeps its <em>, so split it by hand */
+function splitWordsPreservingMarkup(el){
+  const out = [];
+  const walk = (node) => {
+    [...node.childNodes].forEach(child => {
+      if (child.nodeType === 3) {
+        const parts = child.textContent.split(/(\s+)/);
+        const frag = document.createDocumentFragment();
+        parts.forEach(p => {
+          if (!p.trim()) { frag.appendChild(document.createTextNode(p)); return; }
+          const s = document.createElement('span');
+          s.className = 'w'; s.textContent = p;
+          frag.appendChild(s); out.push(s);
+        });
+        child.replaceWith(frag);
+      } else if (child.nodeType === 1) walk(child);
+    });
+  };
+  el.setAttribute('aria-label', el.textContent.trim().replace(/\s+/g,' '));
+  walk(el);
+  return out;
+}
+
+const heroChars    = split(document.querySelector('.hero-logotype'), 'chars');
+const contactChars = split(document.querySelector('.contact-big'), 'chars');
+const stmtWords    = splitWordsPreservingMarkup(document.querySelector('.statement'));
+
+/* ---- preloader ---- */
+const loader   = document.getElementById('loader');
+const loadBar  = loader.querySelector('.lbar i');
+const loadNum  = loader.querySelector('.lnum');
+const curtain  = document.querySelector('.curtain');
+
+function heroIn(){
+  const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
+  tl.from(heroChars, { yPercent: 118, rotateX: -62, opacity: 0, duration: 1.15, stagger: 0.022 }, 0)
+    .from('#hero .flourish path', {
+      drawSVG: undefined,
+      strokeDasharray: 900, strokeDashoffset: 900, duration: 1.5, ease:'power2.inOut',
+      onComplete(){ this.targets()[0].style.strokeDasharray = 'none'; }
+    }, 0.45)
+    .from('#hero .r-fade', { y: 26, opacity: 0, duration: 0.9, stagger: 0.09 }, 0.55)
+    .from('.site-nav > *', { y: -18, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.3)
+    .from('.scroll-cue', { opacity: 0, duration: 0.8 }, 1.1);
+  return tl;
+}
+
+function bootDone(){
+  const tl = gsap.timeline();
+  tl.to(loader.querySelectorAll('.lmark, .lsub, .lbar, .lnum'), { opacity: 0, duration: 0.45, ease:'power2.in' })
+    .set(curtain, { transformOrigin:'bottom', y:'100%' })
+    .to(curtain, { y:'0%', duration: 0.6, ease:'power3.inOut' }, '-=0.1')
+    .set(loader, { display:'none' })
+    .to(curtain, { y:'-100%', duration: 0.75, ease:'power3.inOut' })
+    .set(curtain, { display:'none' })
+    .add(heroIn(), '-=0.45');
+}
+
+if (REDUCED) {
+  loader.style.display = 'none';
+  curtain.style.display = 'none';
+} else {
+  const counter = { v: 0 };
+  gsap.to(counter, {
+    v: 100, duration: 1.9, ease: 'power2.inOut',
+    onUpdate(){
+      const n = Math.round(counter.v);
+      loadNum.textContent = String(n).padStart(3, '0');
+      loadBar.style.width = n + '%';
+    },
+    onComplete: bootDone
+  });
+  gsap.to(loader.querySelector('.lmark'), { opacity: 1, duration: 1.0, ease:'power2.out' });
+  gsap.to(loader.querySelector('.lsub'),  { opacity: 1, duration: 1.0, delay: 0.25, ease:'power2.out' });
+}
+
+/* ---- scroll-triggered DOM reveals ---- */
+if (!REDUCED) {
+  // generic fades
+  gsap.utils.toArray('main section:not(#hero) .r-fade').forEach(el => {
+    gsap.from(el, {
+      y: 30, opacity: 0, duration: 0.9, ease:'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+    });
+  });
+
+  // masked line reveals
+  gsap.utils.toArray('.r-line > *').forEach(el => {
+    gsap.from(el, {
+      yPercent: 115, duration: 1.05, ease:'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+    });
+  });
+
+  // manifesto: word-by-word, scrubbed and pinned — the one pinned section
+  gsap.to(stmtWords, {
+    opacity: 1, duration: 0.4, stagger: 0.5, ease:'none',
+    scrollTrigger: { trigger: '#manifesto', start: 'top top', end: '+=140%', scrub: 0.6, pin: true, anticipatePin: 1 }
+  });
+
+  // project art parallax (decorative layers only — never the copy)
+  gsap.utils.toArray('[data-parallax]').forEach(el => {
+    gsap.fromTo(el,
+      { yPercent: Number(el.dataset.parallax) },
+      { yPercent: -Number(el.dataset.parallax), ease:'none',
+        scrollTrigger: { trigger: el.closest('.project'), start:'top bottom', end:'bottom top', scrub: true } }
+    );
+  });
+
+  // project cards rise + settle
+  gsap.utils.toArray('.project-visual').forEach(el => {
+    gsap.from(el, {
+      y: 70, opacity: 0, scale: 0.96, duration: 1.1, ease:'power3.out',
+      scrollTrigger: { trigger: el, start:'top 85%', once: true }
+    });
+  });
+
+  // capabilities marquee, tied to scroll direction
+  gsap.to('.band-track', {
+    xPercent: -50, ease:'none',
+    scrollTrigger: { trigger:'.band', start:'top bottom', end:'bottom top', scrub: 0.8 }
+  });
+
+  // contact logotype
+  gsap.from(contactChars, {
+    yPercent: 110, opacity: 0, duration: 1, ease:'power3.out', stagger: 0.03,
+    scrollTrigger: { trigger:'#contact', start:'top 70%', once: true }
+  });
+
+  // nav background + scroll progress bar
+  ScrollTrigger.create({
+    start: 'top -80',
+    onUpdate: (self) => document.querySelector('.site-nav').classList.toggle('is-stuck', self.scroll() > 80)
+  });
+  gsap.to('.progress i', {
+    width: '100%', ease:'none',
+    scrollTrigger: { trigger: document.body, start:'top top', end:'bottom bottom', scrub: 0.3 }
+  });
+} else {
+  gsap.set(stmtWords, { opacity: 1 });
+}
+
+/* ---- 3D card tilt (pointer devices only) ---- */
+if (!REDUCED && matchMedia('(hover:hover)').matches) {
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    const qx = gsap.quickTo(card, 'rotationY', { duration: 0.6, ease:'power3' });
+    const qy = gsap.quickTo(card, 'rotationX', { duration: 0.6, ease:'power3' });
+    gsap.set(card, { transformPerspective: 900, transformOrigin:'center' });
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      qx(((e.clientX - r.left) / r.width  - 0.5) * 13);
+      qy(((e.clientY - r.top)  / r.height - 0.5) * -11);
+    });
+    card.addEventListener('pointerleave', () => { qx(0); qy(0); });
+  });
+}
+
+/* ---- custom cursor ---- */
+const cur = document.querySelector('.cursor');
+if (matchMedia('(hover:hover)').matches) {
+  const cx = gsap.quickTo(cur, 'x', { duration: 0.35, ease:'power3' });
+  const cy = gsap.quickTo(cur, 'y', { duration: 0.35, ease:'power3' });
+  addEventListener('pointermove', (e) => { cx(e.clientX); cy(e.clientY); }, { passive:true });
+  document.querySelectorAll('a, button, [data-hot], [data-tilt]').forEach(el => {
+    el.addEventListener('pointerenter', () => cur.classList.add('is-hot'));
+    el.addEventListener('pointerleave', () => cur.classList.remove('is-hot'));
+  });
+}
+
+/* ---- refresh once webfonts have settled, so pins measure correctly ---- */
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => ScrollTrigger.refresh());
+}
+addEventListener('load', () => ScrollTrigger.refresh());
+</script>
+</body>
+</html>

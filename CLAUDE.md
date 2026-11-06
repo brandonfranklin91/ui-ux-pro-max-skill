@@ -24,7 +24,8 @@ python3 src/ui-ux-pro-max/scripts/search.py "<query>" --domain <domain> [-n <max
 - `react` - React/Next.js performance patterns
 - `web` - App interface guidelines (iOS/Android/React Native)
 - `google-fonts` - Individual Google Fonts lookup
-- `gsap` - GSAP animation skeletons by intensity tier (hover, scroll reveal, stagger, page transition, parallax, loading)
+- `gsap` - GSAP animation skeletons by intensity tier (hover, scroll reveal, stagger, page transition, parallax, loading, SplitText), plus `Setup` rows (install/registerPlugin, `useGSAP`, `gsap.matchMedia`) and Lenis smooth scroll (CDN, ScrollTrigger sync, `lenis/react`, anchors/modals)
+- `reactbits` - React Bits component catalog (217 animated components/backgrounds) with rendering tech, dependencies, shadcn/jsrepo install commands, perf + a11y notes; regenerated from the upstream registry, not hand-edited
 
 **Design dials (optional, only with `--design-system`):**
 ```bash

@@ -1,0 +1,2646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Brandon Franklin Studios</title>
+<meta name="description" content="Immersive 3D scroll portfolio for Brandon Franklin Studios — a multidisciplinary design studio building brand worlds." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap">
+<style>
+/* lenis@1.3.27 — inlined (keeps the page to a single stylesheet request) */
+html.lenis,html.lenis body{height:auto}
+.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}
+.lenis [data-lenis-prevent],.lenis [data-lenis-prevent-wheel],.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],.lenis [data-lenis-prevent-horizontal]{overscroll-behavior:contain}
+.lenis.lenis-smooth iframe{pointer-events:none}
+.lenis.lenis-autoToggle{transition-property:overflow;transition-duration:1ms;transition-behavior:allow-discrete}
+
+/* ============================================================
+   DESIGN TOKENS — palette from the supplied swatch reference
+   ============================================================ */
+:root{
+  --ink:#0E0B1D;          /* deepest ground          */
+  --plum:#2A1E4D;         /* elevated surface        */
+  --violet:#5A3B8C;       /* primary accent          */
+  --lilac:#8B7CC7;        /* interactive / highlight */
+  --mist:#C9C2E3;         /* body text               */
+  --slate:#3A3A52;        /* decorative only         */
+  --muted:#8E88A8;        /* small text, 5.7:1 on ink*/
+
+  --paper:#F4F1FA;
+  --line:rgba(201,194,227,.14);
+  --line-strong:rgba(201,194,227,.28);
+
+  /* type — mirrors the "Arkalune" logotype reference:
+     high-contrast elegant display + wide-tracked caps  */
+  --font-logo:'Italiana', 'Playfair Display', serif;
+  --font-display:'Playfair Display', Georgia, serif;
+  --font-ui:'Jost', 'Helvetica Neue', Arial, sans-serif;
+
+  --tracking-caps:.42em;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --gutter:clamp(20px,5vw,80px);
+  --maxw:1440px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);
+  color:var(--mist);
+  font-family:var(--font-ui);
+  font-weight:300;
+  font-size:clamp(15px,1.05vw,17px);
+  line-height:1.65;
+  overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--violet);color:#fff}
+
+/* focus — never removed, only restyled */
+:focus-visible{
+  outline:2px solid var(--lilac);
+  outline-offset:4px;
+  border-radius:2px;
+}
+
+/* ============================================================
+   FIXED 3D STAGE  (persistent WebGL layer behind all content)
+   ============================================================ */
+#stage{
+  position:fixed; inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+#stage canvas{display:block;width:100%;height:100%}
+
+/* atmosphere layers stacked over the canvas */
+.atmos{position:fixed;inset:0;z-index:1;pointer-events:none}
+.atmos--vignette{
+  background:radial-gradient(130% 95% at 50% 42%,transparent 28%,rgba(14,11,29,.55) 72%,var(--ink) 100%);
+}
+.atmos--grain{
+  opacity:.055; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.atmos--scan{
+  opacity:.5;
+  background:repeating-linear-gradient(180deg,transparent 0 3px,rgba(14,11,29,.22) 3px 4px);
+  mix-blend-mode:multiply;
+}
+
+/* ============================================================
+   PRELOADER — echoes the studio's logo-build intro
+   ============================================================ */
+#loader{
+  position:fixed;inset:0;z-index:120;
+  background:var(--ink);
+  display:grid;place-items:center;
+  gap:0;
+}
+#loader .lemblem{
+  display:block;
+  width:clamp(64px,9vw,104px);
+  height:auto;
+  margin:0 auto clamp(20px,3.4vh,34px);
+  filter:drop-shadow(0 10px 30px rgba(90,59,140,.7)) drop-shadow(0 0 54px rgba(139,124,199,.35));
+  opacity:0;
+  will-change:transform,opacity;
+}
+#loader .lmark{
+  font-family:var(--font-logo);
+  font-size:clamp(34px,6vw,76px);
+  color:var(--paper);
+  line-height:1;
+  letter-spacing:.01em;
+  opacity:0;
+}
+#loader .lsub{
+  margin-top:18px;
+  font-size:11px;letter-spacing:var(--tracking-caps);
+  text-transform:uppercase;color:var(--lilac);
+  opacity:0;
+}
+#loader .lbar{
+  position:absolute;left:var(--gutter);right:var(--gutter);bottom:clamp(28px,6vh,64px);
+  height:1px;background:var(--line);
+}
+#loader .lbar i{display:block;height:100%;width:0%;background:var(--lilac)}
+#loader .lnum{
+  position:absolute;right:var(--gutter);bottom:clamp(40px,7vh,80px);
+  font-size:11px;letter-spacing:.2em;color:var(--mist);
+  font-variant-numeric:tabular-nums;
+}
+.curtain{position:fixed;inset:0;z-index:119;background:var(--plum);transform:translateY(100%)}
+
+/* ============================================================
+   CHROME — nav + fixed rails
+   ============================================================ */
+.site-nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;
+  padding:clamp(18px,2.4vw,30px) var(--gutter);
+  mix-blend-mode:normal;
+}
+.site-nav::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(14,11,29,.78),transparent);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  opacity:0;transition:opacity .4s var(--ease);
+}
+.site-nav.is-stuck::before{opacity:1}
+.brand{display:flex;align-items:center;gap:13px}
+.brand-mark{
+  display:block;
+  width:clamp(32px,2.5vw,40px);
+  perspective:420px;
+  flex:none;
+}
+.brand-mark img{
+  display:block;width:100%;height:auto;
+  filter:drop-shadow(0 4px 14px rgba(90,59,140,.6)) drop-shadow(0 0 22px rgba(139,124,199,.28));
+  transform-origin:50% 50%;
+  will-change:transform;
+  backface-visibility:visible;
+}
+.brand .bname{
+  font-family:var(--font-logo);
+  font-size:clamp(17px,1.4vw,20px);letter-spacing:.03em;color:var(--paper);line-height:1;
+}
+@media(max-width:400px){ .brand .bname{display:none} }
+.nav-links{display:flex;gap:clamp(18px,2.4vw,36px);align-items:center}
+.nav-links a{
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mist);opacity:.75;position:relative;padding:6px 0;
+  transition:opacity .3s var(--ease),color .3s var(--ease);
+}
+.nav-links a::after{
+  content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;
+  background:var(--lilac);transform:scaleX(0);transform-origin:right;
+  transition:transform .45s var(--ease);
+}
+.nav-links a:hover{opacity:1;color:var(--paper)}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-cta{
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid var(--line-strong);border-radius:999px;
+  padding:11px 20px;color:var(--paper);
+  transition:background .4s var(--ease),border-color .4s var(--ease),color .4s var(--ease);
+}
+.nav-cta:hover{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+@media(max-width:1080px){ .nav-links{display:none} }
+@media(max-width:560px){
+  .nav-cta{padding:9px 14px;font-size:10px;letter-spacing:.14em;white-space:nowrap}
+  .brand .bname{font-size:16px}
+  .hero-lede{max-width:38ch}
+  .hero-logotype{font-size:clamp(40px,11.4vw,124px)}
+}
+
+.rail{
+  position:fixed;z-index:55;
+  font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--muted);
+  pointer-events:none;
+}
+.rail--l{left:22px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl}
+.rail--r{right:22px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl}
+@media(max-width:1100px){ .rail{display:none} }
+
+/* scroll progress */
+.progress{position:fixed;left:0;top:0;height:2px;width:100%;z-index:70;background:transparent}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--lilac),var(--mist))}
+
+/* ============================================================
+   LAYOUT PRIMITIVES
+   ============================================================ */
+main{position:relative;z-index:10}
+section[id]{scroll-margin-top:clamp(70px,9vh,110px)}
+section{position:relative;padding-inline:var(--gutter)}
+.wrap{max-width:var(--maxw);margin-inline:auto;width:100%}
+.eyebrow{
+  font-size:10px;letter-spacing:var(--tracking-caps);text-transform:uppercase;
+  color:var(--lilac);display:flex;align-items:center;gap:14px;
+}
+.eyebrow::before{content:"";width:clamp(24px,4vw,56px);height:1px;background:var(--lilac);opacity:.6}
+
+/* reveal primitives driven by GSAP */
+.r-line{overflow:hidden;display:block}
+.r-line > *{display:block;will-change:transform}
+.r-fade{will-change:transform,opacity}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+#hero{
+  min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding-block:clamp(104px,15vh,170px) clamp(90px,14vh,140px);
+}
+/* type left, the emblem turning on the right */
+.hero-grid{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);
+  gap:clamp(18px,3.4vw,56px);
+  align-items:center;
+}
+.hero-copy{
+  display:grid;gap:clamp(13px,2vh,24px);
+  justify-items:start;text-align:left;
+}
+/* a soft scrim keeps the logotype readable over the live 3D mark */
+.hero-grid::before{
+  content:"";position:absolute;z-index:-1;
+  inset:-20% 0;
+  background:radial-gradient(64% 58% at 34% 50%,rgba(14,11,29,.76) 0%,rgba(14,11,29,.44) 50%,transparent 80%);
+  pointer-events:none;
+}
+
+/* ---- the emblem, given real depth ------------------------------
+   The source is a flat render, so the dimensionality is built: a
+   stack of alpha copies pushed back in Z becomes the extruded side
+   wall, and that wall is what sells the turn. Rotation is capped
+   well short of edge-on, where a stack of planes would give itself
+   away.                                                            */
+.hero-emblem{
+  position:relative;
+  display:grid;place-items:center;
+  min-height:clamp(260px,46vh,440px);
+  perspective:1000px;
+  isolation:isolate;
+}
+/* one element per animation driver: scroll / idle / pointer. Two tweens
+   on one property is how the turn previously compounded past edge-on. */
+.emblem-scroll{
+  position:relative;
+  width:min(80%,390px);
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.emblem-3d{
+  position:relative;
+  width:100%;
+  aspect-ratio:256/259;
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.emblem-stack{position:absolute;inset:0;transform-style:preserve-3d}
+.emblem-stack img{
+  position:absolute;inset:0;
+  width:100%;height:auto;
+  backface-visibility:hidden;
+}
+.emblem-stack img.emblem-face{
+  filter:drop-shadow(0 18px 34px rgba(14,11,29,.8)) drop-shadow(0 0 44px rgba(139,124,199,.45));
+}
+.emblem-glow{
+  position:absolute;z-index:-1;
+  left:50%;top:48%;transform:translate(-50%,-50%);
+  width:min(120%,520px);aspect-ratio:1;
+  background:radial-gradient(circle at 50% 50%,rgba(139,124,199,.44) 0%,rgba(90,59,140,.24) 38%,transparent 70%);
+  filter:blur(8px);pointer-events:none;
+  will-change:transform,opacity;
+}
+.emblem-floor{
+  position:absolute;z-index:-1;
+  left:50%;bottom:6%;transform:translateX(-50%);
+  width:min(62%,250px);height:clamp(16px,3vh,34px);
+  border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(201,194,227,.34) 0%,rgba(139,124,199,.14) 44%,transparent 72%);
+  filter:blur(9px);pointer-events:none;
+  will-change:transform,opacity;
+}
+
+.hero-logotype{
+  font-family:var(--font-logo);
+  font-size:clamp(44px,7.4vw,124px);
+  line-height:.88;
+  letter-spacing:.005em;
+  color:var(--paper);
+  margin:0;
+  position:relative;
+}
+.hero-logotype .word{display:inline-block;white-space:nowrap}
+.hero-logotype .ch{display:inline-block;will-change:transform,opacity}
+.flourish{width:min(44vw,440px);height:26px;overflow:visible;margin-top:-8px}
+.flourish path{
+  fill:none;stroke:var(--mist);stroke-width:1.1;stroke-linecap:round;
+  opacity:.8;
+}
+.hero-sub{
+  font-size:clamp(10px,1.1vw,12px);
+  letter-spacing:var(--tracking-caps);
+  text-transform:uppercase;
+  color:var(--lilac);
+  margin:0;
+}
+.hero-lede{
+  max-width:42ch;
+  margin-top:clamp(4px,1.2vh,12px);
+  font-size:clamp(15px,1.35vw,19px);
+  color:rgba(201,194,227,.82);
+  margin-bottom:0;
+}
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:clamp(14px,2.4vw,34px);justify-content:flex-start;
+  margin-top:clamp(6px,1.6vh,16px);
+  font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+}
+.scroll-cue{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:clamp(22px,4vh,44px);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);
+}
+.scroll-cue .track{width:1px;height:54px;background:var(--line);overflow:hidden;position:relative}
+.scroll-cue .track i{
+  position:absolute;inset-inline:0;top:-100%;height:100%;background:var(--lilac);
+  animation:cue 2.4s var(--ease) infinite;
+}
+@keyframes cue{0%{top:-100%}60%,100%{top:100%}}
+
+@media(max-width:900px){
+  /* the emblem sits above the wordmark, the way the printed lockup does */
+  .hero-grid{grid-template-columns:1fr;gap:clamp(14px,3vh,30px)}
+  .hero-copy{justify-items:center;text-align:center}
+  .hero-emblem{order:-1;min-height:0}
+  .emblem-scroll{width:min(42%,170px)}
+  .hero-meta{justify-content:center}
+  .hero-grid::before{
+    inset:-22% -6%;
+    background:radial-gradient(76% 64% at 50% 50%,rgba(14,11,29,.8) 0%,rgba(14,11,29,.5) 52%,transparent 84%);
+  }
+}
+@media(max-width:560px){
+  .hero-lede{max-width:38ch}
+  .hero-logotype{font-size:clamp(40px,11.4vw,124px)}
+}
+@media(max-width:700px){ .scroll-cue{display:none} }
+
+/* ============================================================
+   MANIFESTO — pinned, scrub-revealed statement
+   ============================================================ */
+#manifesto{min-height:100svh;display:grid;place-items:center;padding-block:clamp(90px,14vh,170px)}
+.statement{
+  font-family:var(--font-display);
+  font-weight:400;
+  font-size:clamp(26px,4.6vw,66px);
+  line-height:1.16;
+  letter-spacing:-.012em;
+  color:var(--paper);
+  max-width:19ch;
+  margin:0 auto;
+  text-align:center;
+  text-wrap:balance;
+}
+.statement em{font-style:italic;color:var(--lilac)}
+.statement .w{display:inline-block;opacity:.12;will-change:opacity,filter}
+.statement .w.on{opacity:1}
+.manifesto-foot{
+  margin-top:clamp(34px,6vh,70px);
+  display:flex;justify-content:center;gap:clamp(20px,5vw,70px);flex-wrap:wrap;
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
+}
+
+/* ============================================================
+   ABOUT — the studio figure, lit and floating
+   ============================================================ */
+#about{padding-block:clamp(80px,14vh,170px)}
+.about-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  gap:clamp(24px,5vw,80px);
+  align-items:center;
+}
+@media(max-width:900px){
+  .about-grid{grid-template-columns:1fr;gap:clamp(20px,5vh,44px)}
+  .figure-stage{order:-1}
+  .hero-meta{justify-content:center}
+}
+
+.figure-stage{
+  position:relative;
+  display:flex;justify-content:center;align-items:flex-end;
+  min-height:clamp(350px,60vh,620px);
+  isolation:isolate;
+}
+/* violet key light behind the figure */
+.figure-stage .halo{
+  position:absolute;z-index:0;
+  left:50%;top:46%;transform:translate(-50%,-50%);
+  width:min(96%,480px);aspect-ratio:1;
+  background:radial-gradient(circle at 50% 50%,rgba(139,124,199,.42) 0%,rgba(90,59,140,.26) 36%,transparent 68%);
+  filter:blur(6px);
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+/* the pool of light he stands in */
+.figure-stage .pedestal{
+  position:absolute;z-index:0;bottom:4%;left:50%;transform:translateX(-50%);
+  width:min(70%,330px);height:clamp(26px,4.4vh,50px);
+  border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(201,194,227,.4) 0%,rgba(139,124,199,.18) 42%,transparent 72%);
+  filter:blur(10px);
+  pointer-events:none;
+  will-change:transform,opacity;
+}
+.figure-parallax{
+  position:relative;z-index:1;
+  display:flex;justify-content:center;width:100%;
+  will-change:transform;
+}
+.figure-reveal{clip-path:inset(0 0 0 0);will-change:clip-path}
+.figure{will-change:transform;transform-origin:50% 94%}
+.figure img{
+  display:block;
+  height:clamp(330px,58vh,600px);
+  width:auto;max-width:100%;
+  filter:drop-shadow(0 26px 40px rgba(14,11,29,.75)) drop-shadow(0 0 48px rgba(139,124,199,.3));
+}
+[data-figure="about"] .figure img{
+  filter:drop-shadow(0 0 54px rgba(139,124,199,.34));
+  -webkit-mask-image:linear-gradient(180deg,#000 70%,rgba(0,0,0,.4) 90%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 70%,rgba(0,0,0,.4) 90%,transparent 100%);
+}
+[data-figure="about"] .pedestal{display:none}
+
+.about-body .sec-title{margin-bottom:clamp(16px,2.6vh,26px)}
+.about-body p{
+  max-width:46ch;
+  font-size:clamp(14.5px,1.2vw,16.5px);
+  color:rgba(201,194,227,.84);
+  margin:0 0 18px;
+}
+.about-stats{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(12px,2.4vw,30px);
+  margin:clamp(24px,4vh,42px) 0 clamp(22px,3.6vh,36px);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding-block:clamp(16px,2.6vh,26px);
+}
+.about-stats b{
+  display:block;
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(24px,3vw,40px);line-height:1;color:var(--paper);
+  margin-bottom:8px;
+}
+.about-stats span{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.about-sign{
+  font-family:var(--font-display);font-style:italic;
+  font-size:clamp(16px,1.8vw,22px);color:var(--lilac);
+}
+
+/* ============================================================
+   WORK
+   ============================================================ */
+#work{padding-block:clamp(90px,16vh,190px)}
+.sec-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:30px;
+  padding-bottom:clamp(26px,4vh,46px);
+  border-bottom:1px solid var(--line);
+  margin-bottom:clamp(30px,4.6vh,60px);
+  flex-wrap:wrap;
+}
+.sec-title{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(28px,4.4vw,60px);line-height:1;letter-spacing:-.02em;
+  color:var(--paper);margin:14px 0 0;
+}
+.sec-note{max-width:34ch;font-size:13.5px;color:rgba(201,194,227,.76)}
+
+.project{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:clamp(22px,4vw,64px);
+  align-items:center;
+  padding-block:clamp(30px,5.4vh,64px);
+  border-bottom:1px solid var(--line);
+}
+.project:nth-of-type(odd) .project-visual{order:2}
+.project:nth-of-type(odd) .project-body{order:1}
+@media(max-width:880px){
+  .project{grid-template-columns:1fr;gap:22px}
+  .project:nth-of-type(odd) .project-visual,
+  .project:nth-of-type(odd) .project-body{order:initial}
+}
+.project-visual{
+  position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden;
+  border:1px solid var(--line);
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.project-visual .art{
+  position:absolute;inset:-16%;
+  will-change:transform;
+  background-size:cover;background-position:center;
+}
+.project-visual::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(14,11,29,.62));
+  pointer-events:none;
+}
+.art-1{background:
+  radial-gradient(38% 52% at 26% 22%,rgba(201,194,227,.9) 0%,rgba(139,124,199,.5) 40%,transparent 72%),
+  radial-gradient(44% 58% at 76% 72%,rgba(90,59,140,.95) 0%,transparent 66%),
+  repeating-linear-gradient(118deg,rgba(201,194,227,.09) 0 1px,transparent 1px 22px),
+  linear-gradient(145deg,#3A2A66 0%,#2A1E4D 46%,#0E0B1D 100%);}
+.art-2{background:
+  radial-gradient(17% 23% at 70% 30%,rgba(244,241,250,.82) 0%,rgba(201,194,227,.2) 55%,transparent 78%),
+  radial-gradient(46% 60% at 24% 74%,rgba(90,59,140,.92) 0%,transparent 68%),
+  repeating-linear-gradient(0deg,rgba(201,194,227,.08) 0 1px,transparent 1px 15px),
+  repeating-linear-gradient(90deg,rgba(201,194,227,.05) 0 1px,transparent 1px 15px),
+  linear-gradient(200deg,#443E63 0%,#1A1430 56%,#0E0B1D 100%);}
+.art-3{background:
+  conic-gradient(from 198deg at 46% 52%,#6A46A4,#140F2A 26%,#8B7CC7 52%,#2A1E4D 74%,#6A46A4 100%),
+  linear-gradient(#0E0B1D,#0E0B1D);}
+.art-3::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(42% 42% at 46% 52%,rgba(14,11,29,.92),transparent 70%);
+}
+/* editorial furniture inside each visual */
+.art-num{
+  position:absolute;left:18px;bottom:10px;z-index:2;
+  font-family:var(--font-logo);
+  font-size:clamp(54px,7vw,104px);line-height:.8;
+  color:rgba(244,241,250,.18);
+  letter-spacing:.02em;pointer-events:none;
+}
+.art-tag{
+  position:absolute;right:16px;top:14px;z-index:2;
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(244,241,250,.55);pointer-events:none;
+}
+.art-rule{
+  position:absolute;left:18px;right:18px;bottom:0;height:1px;z-index:2;
+  background:linear-gradient(90deg,rgba(201,194,227,.45),transparent 70%);
+  pointer-events:none;
+}
+.project-index{
+  font-size:10px;letter-spacing:.3em;color:var(--lilac);
+  display:block;margin-bottom:16px;
+}
+.project-title{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(24px,3.2vw,44px);line-height:1.05;letter-spacing:-.02em;
+  color:var(--paper);margin:0 0 14px;
+}
+.project-desc{max-width:40ch;font-size:14.5px;color:rgba(201,194,227,.82);margin:0 0 22px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.tags span{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid var(--line-strong);border-radius:999px;padding:6px 12px;
+  color:var(--mist);opacity:.78;
+}
+.link-arrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--paper);
+}
+.link-arrow svg{width:22px;height:8px;transition:transform .45s var(--ease)}
+.link-arrow:hover svg{transform:translateX(7px)}
+
+/* ============================================================
+   SHOP — the Franklin Sovereign
+   A sticky product stage whose frames are scrubbed by scroll.
+   Sticky rather than a second ScrollTrigger pin: one pin per page
+   (the manifesto) keeps native scroll feel intact.
+   ============================================================ */
+#shop{padding-block:clamp(70px,12vh,150px) clamp(70px,12vh,150px)}
+.shop-head{margin-bottom:clamp(26px,4vh,52px)}
+
+.shop-pin{position:relative;height:340vh}
+.shop-sticky{
+  position:sticky;top:0;
+  height:100svh;
+  display:grid;place-items:center;
+  overflow:hidden;
+}
+/* one box holds the frame, its caption and the rail, so they can never
+   drift apart as the viewport changes shape */
+.shop-figure{
+  position:relative;
+  width:min(100%,1180px);
+  aspect-ratio:1100/626;
+  max-height:78svh;
+  margin-inline:auto;
+}
+.shop-canvas-wrap{
+  position:absolute;inset:0;
+  overflow:hidden;
+  /* feather all four edges so the lit stage bleeds into the page
+     instead of sitting on it as a bright rectangle */
+  -webkit-mask-image:
+    linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 8%,#000 90%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 8%,#000 90%,transparent 100%);
+  mask-composite:intersect;
+}
+@media(max-width:760px){
+  .shop-pin{height:260vh}
+  .shop-figure{aspect-ratio:5/6;max-height:64svh}
+  .shop-canvas-wrap{
+    -webkit-mask-image:
+      linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%),
+      linear-gradient(180deg,transparent 0,#000 4%,#000 94%,transparent 100%);
+    mask-image:
+      linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%),
+      linear-gradient(180deg,transparent 0,#000 4%,#000 94%,transparent 100%);
+  }
+}
+.shop-canvas-wrap canvas{display:block;width:100%;height:100%}
+.shop-canvas-wrap::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(14,11,29,.42),transparent 34%,transparent 62%,rgba(14,11,29,.5));
+}
+.shop-noscript{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+.shop-beats{
+  position:absolute;left:0;right:0;bottom:0;
+  min-height:clamp(96px,15vh,150px);
+  padding:clamp(28px,5vh,56px) 0 0;
+  background:linear-gradient(180deg,transparent,rgba(14,11,29,.72) 42%,rgba(14,11,29,.92));
+  pointer-events:none;
+}
+.beat{
+  position:absolute;left:0;right:0;bottom:0;
+  margin:0;opacity:0;transform:translateY(14px);
+  transition:opacity .55s var(--ease),transform .55s var(--ease);
+  max-width:40ch;
+}
+.beat.is-on{opacity:1;transform:none}
+.beat b{
+  display:block;
+  font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--lilac);margin-bottom:10px;font-weight:400;
+}
+.beat span{
+  display:block;
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(18px,2.3vw,32px);line-height:1.2;color:var(--paper);
+  text-shadow:0 2px 22px rgba(14,11,29,.8);
+}
+.shop-rail{
+  position:absolute;right:-26px;top:50%;transform:translateY(-50%);
+  width:1px;height:min(38vh,260px);background:var(--line);
+}
+@media(max-width:1180px){ .shop-rail{right:6px} }
+.shop-rail i{display:block;width:100%;height:0%;background:var(--lilac)}
+@media(max-width:700px){ .shop-rail{display:none} }
+
+/* ---- buy block ---- */
+.shop-buy{
+  margin-top:clamp(34px,6vh,72px);
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+  gap:clamp(24px,5vw,72px);
+  align-items:start;
+}
+@media(max-width:860px){ .shop-buy{grid-template-columns:1fr} }
+.buy-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(26px,3.6vw,48px);line-height:1.04;letter-spacing:-.02em;
+  color:var(--paper);margin:0 0 12px;
+}
+.buy-price{
+  font-family:var(--font-display);
+  font-size:clamp(20px,2.2vw,28px);color:var(--lilac);margin:0 0 20px;
+}
+.buy-price small{font-family:var(--font-ui);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-left:12px}
+.buy-desc{max-width:44ch;font-size:14.5px;color:rgba(201,194,227,.82);margin:0 0 26px}
+
+.buy-field{margin-bottom:22px}
+.buy-field > h4{
+  font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 12px;font-weight:400;
+}
+.sizes{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+.sizes button{
+  font:inherit;font-size:13px;
+  min-width:52px;padding:10px 6px;
+  background:transparent;color:var(--mist);
+  border:1px solid var(--line-strong);border-radius:4px;
+  cursor:pointer;
+  transition:background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease);
+}
+.sizes button:hover{border-color:var(--lilac);color:var(--paper)}
+.sizes button[aria-pressed="true"]{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+.sizes button[disabled]{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+.sizes button[disabled]:hover{border-color:var(--line-strong);color:var(--mist)}
+
+.swatches{display:flex;gap:10px;padding:0;margin:0;list-style:none}
+.swatches button{
+  width:36px;height:36px;border-radius:50%;cursor:pointer;
+  border:1px solid var(--line-strong);padding:0;
+  transition:box-shadow .3s var(--ease),border-color .3s var(--ease);
+}
+.swatches button[aria-pressed="true"]{border-color:var(--lilac);box-shadow:0 0 0 3px rgba(139,124,199,.28)}
+.sw-obsidian{background:linear-gradient(145deg,#2a2a30,#0d0d10 70%)}
+.sw-plum{background:linear-gradient(145deg,#6B49A8,#2A1E4D 70%)}
+.sw-bone{background:linear-gradient(145deg,#efe9dc,#c9bda4 70%)}
+
+.buy-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:28px}
+.btn-primary{
+  font:inherit;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  padding:16px 30px;border-radius:999px;cursor:pointer;
+  background:var(--paper);color:var(--ink);border:1px solid var(--paper);
+  transition:background .35s var(--ease),color .35s var(--ease),transform .35s var(--ease);
+}
+.btn-primary:hover{background:var(--lilac);border-color:var(--lilac);transform:translateY(-2px)}
+.btn-ghost{
+  font:inherit;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  padding:16px 26px;border-radius:999px;cursor:pointer;
+  background:transparent;color:var(--mist);border:1px solid var(--line-strong);
+  transition:border-color .35s var(--ease),color .35s var(--ease);
+}
+.btn-ghost:hover{border-color:var(--lilac);color:var(--paper)}
+.buy-status{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);
+  min-height:1.2em;margin-top:14px;
+}
+
+.spec-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.spec-list li{
+  display:flex;justify-content:space-between;gap:18px;
+  padding:14px 0;border-bottom:1px solid var(--line);
+  font-size:13.5px;
+}
+.spec-list dt,.spec-list .k{color:var(--muted);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.spec-list .v{color:rgba(201,194,227,.9);text-align:right}
+
+/* ============================================================
+   ESSENTIALS — coming soon campaign
+   Same sticky scrub as the Sovereign; the drop panel takes over
+   from the buy panel because there is nothing to sell yet.
+   ============================================================ */
+#essentials{padding-block:clamp(70px,12vh,150px)}
+
+.ess-pin{position:relative;height:300vh}
+.ess-sticky{
+  position:sticky;top:0;height:100svh;
+  display:grid;place-items:center;overflow:hidden;
+}
+.ess-figure{
+  position:relative;
+  width:min(100%,1180px);
+  aspect-ratio:1100/618;
+  max-height:78svh;
+  margin-inline:auto;
+}
+.ess-canvas-wrap{
+  position:absolute;inset:0;overflow:hidden;
+  -webkit-mask-image:
+    linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 8%,#000 90%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:
+    linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(180deg,transparent 0,#000 8%,#000 90%,transparent 100%);
+  mask-composite:intersect;
+}
+.ess-canvas-wrap canvas{display:block;width:100%;height:100%}
+@media(max-width:760px){
+  .ess-pin{height:240vh}
+  .ess-figure{aspect-ratio:4/5;max-height:64svh}
+  .ess-canvas-wrap{
+    -webkit-mask-image:
+      linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%),
+      linear-gradient(180deg,transparent 0,#000 4%,#000 94%,transparent 100%);
+    mask-image:
+      linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%),
+      linear-gradient(180deg,transparent 0,#000 4%,#000 94%,transparent 100%);
+  }
+}
+
+/* the standing "coming soon" mark over the stage */
+.ess-stamp{
+  position:absolute;z-index:3;right:0;top:4%;
+  display:flex;align-items:center;gap:12px;
+  font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--paper);
+  pointer-events:none;
+}
+.ess-stamp i{
+  width:7px;height:7px;border-radius:50%;background:var(--lilac);
+  box-shadow:0 0 0 0 rgba(139,124,199,.75);
+  animation:pulse 2.6s var(--ease) infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(139,124,199,.6)}
+  70%{box-shadow:0 0 0 14px rgba(139,124,199,0)}
+  100%{box-shadow:0 0 0 0 rgba(139,124,199,0)}
+}
+@media(prefers-reduced-motion:reduce){ .ess-stamp i{animation:none} }
+
+.ess-beats{
+  position:absolute;left:0;right:0;bottom:0;
+  min-height:clamp(96px,15vh,150px);
+  padding:clamp(28px,5vh,56px) 0 0;
+  background:linear-gradient(180deg,transparent,rgba(14,11,29,.72) 42%,rgba(14,11,29,.92));
+  pointer-events:none;
+}
+.ess-rail{
+  position:absolute;right:-26px;top:50%;transform:translateY(-50%);
+  width:1px;height:min(38vh,260px);background:var(--line);
+}
+.ess-rail i{display:block;width:100%;height:0%;background:var(--lilac)}
+@media(max-width:1180px){ .ess-rail{right:6px} }
+@media(max-width:700px){ .ess-rail{display:none} }
+
+/* ---- drop panel ---- */
+.ess-drop{
+  margin-top:clamp(34px,6vh,72px);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(24px,5vw,72px);
+  align-items:start;
+}
+@media(max-width:860px){ .ess-drop{grid-template-columns:1fr} }
+.drop-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(26px,3.6vw,48px);line-height:1.04;letter-spacing:-.02em;
+  color:var(--paper);margin:0 0 14px;
+}
+.drop-desc{max-width:44ch;font-size:14.5px;color:rgba(201,194,227,.82);margin:0 0 28px}
+
+.countdown{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:clamp(8px,1.6vw,18px);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding-block:clamp(16px,2.6vh,26px);
+  margin-bottom:clamp(22px,3.4vh,34px);
+}
+.countdown div{text-align:left}
+.countdown b{
+  display:block;
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(24px,3.2vw,44px);line-height:1;color:var(--paper);
+  font-variant-numeric:tabular-nums;
+  margin-bottom:8px;
+}
+.countdown span{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+
+.waitlist{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.waitlist label{
+  flex:1 1 220px;min-width:0;
+  display:block;position:relative;
+}
+.waitlist input{
+  font:inherit;font-size:14px;width:100%;
+  padding:15px 16px;
+  color:var(--paper);background:rgba(201,194,227,.05);
+  border:1px solid var(--line-strong);border-radius:999px;
+  transition:border-color .3s var(--ease),background .3s var(--ease);
+}
+.waitlist input::placeholder{color:var(--muted)}
+.waitlist input:focus{border-color:var(--lilac);background:rgba(201,194,227,.09)}
+.waitlist .vh{
+  position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;
+}
+.drop-status{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);
+  min-height:1.2em;margin-top:14px;
+}
+
+.ess-still{
+  position:relative;border-radius:6px;overflow:hidden;
+  border:1px solid var(--line);
+  aspect-ratio:920/498;
+}
+.ess-still img{width:100%;height:100%;object-fit:cover;display:block}
+.ess-still::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 52%,rgba(14,11,29,.85));
+}
+.ess-still figcaption{
+  position:absolute;left:18px;right:18px;bottom:14px;z-index:2;
+  font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mist);
+}
+.ess-still{margin:0}
+
+/* ============================================================
+   PRESETS — The Lavender Collection
+   A scroll-sheared rail rather than a third sticky scrub: the page
+   already carries two, and three of the same motion would read as
+   one long gimmick.
+   ============================================================ */
+#presets{padding-block:clamp(70px,12vh,150px);overflow:clip}
+
+.preset-rail{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(14px,2.4vw,34px);
+  align-items:start;
+  perspective:1400px;
+  max-width:1120px;
+  margin-inline:auto;
+}
+@media(max-width:760px){
+  .preset-rail{grid-template-columns:1fr;gap:clamp(22px,4vh,36px);max-width:420px;margin-inline:auto}
+}
+
+.preset{
+  position:relative;
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.preset-shot{
+  position:relative;
+  aspect-ratio:3/4;
+  border-radius:8px;
+  overflow:hidden;
+  border:1px solid var(--line-strong);
+  background:var(--plum);
+  will-change:transform;
+}
+.preset-shot img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transform:scale(1.02);
+  transition:transform .7s var(--ease);
+}
+.preset:hover .preset-shot img{transform:scale(1.06)}
+.preset-shot::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 56%,rgba(14,11,29,.72));
+}
+.preset-no{
+  position:absolute;z-index:2;left:14px;top:12px;
+  font-size:10px;letter-spacing:.3em;color:var(--mist);
+  text-shadow:0 1px 8px rgba(14,11,29,.9);
+}
+.preset-body{padding-top:clamp(14px,2vh,20px)}
+.preset-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(17px,1.9vw,25px);line-height:1.1;letter-spacing:-.01em;
+  color:var(--paper);margin:0 0 8px;
+}
+.preset-note{font-size:13px;color:rgba(201,194,227,.72);margin:0 0 16px;min-height:3.2em}
+.preset-buy{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border-top:1px solid var(--line);padding-top:14px;
+}
+.preset-price{
+  font-family:var(--font-display);
+  font-size:clamp(18px,2vw,24px);color:var(--lilac);
+}
+.btn-small{
+  font:inherit;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  padding:11px 18px;border-radius:999px;cursor:pointer;
+  background:transparent;color:var(--paper);
+  border:1px solid var(--line-strong);
+  transition:background .35s var(--ease),border-color .35s var(--ease),color .35s var(--ease);
+}
+.btn-small:hover{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+.btn-small[aria-pressed="true"]{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+
+/* ---- bundle ---- */
+.preset-bundle{
+  margin-top:clamp(34px,6vh,70px);
+  display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+  gap:clamp(22px,4vw,56px);
+  align-items:center;
+  border:1px solid var(--line-strong);
+  border-radius:10px;
+  padding:clamp(22px,3.6vw,44px);
+  position:relative;
+  isolation:isolate;
+  background:
+    radial-gradient(90% 150% at 88% 50%,rgba(90,59,140,.34),transparent 70%),
+    rgba(20,16,40,.82);
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+}
+@media(max-width:760px){ .preset-bundle{grid-template-columns:1fr} }
+.bundle-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(23px,3vw,38px);line-height:1.08;letter-spacing:-.02em;
+  color:var(--paper);margin:0 0 12px;
+}
+.bundle-desc{max-width:48ch;font-size:14px;color:rgba(201,194,227,.82);margin:0}
+.bundle-buy{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+@media(min-width:761px){ .bundle-buy{align-items:flex-end} }
+.bundle-price{
+  font-family:var(--font-display);
+  font-size:clamp(34px,4.6vw,62px);line-height:1;color:var(--paper);
+}
+.bundle-price small{
+  display:block;margin-top:10px;
+  font-family:var(--font-ui);font-size:10.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--muted);
+}
+.preset-status{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);
+  min-height:1.2em;margin-top:18px;
+}
+.preset-foot{
+  margin-top:clamp(18px,2.6vh,28px);
+  font-size:11.5px;color:var(--muted);font-style:italic;
+}
+
+/* ============================================================
+   CAPABILITIES
+   ============================================================ */
+#capabilities{padding-block:clamp(80px,14vh,170px)}
+.cap-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.cap{
+  display:grid;grid-template-columns:auto 1fr auto;gap:clamp(14px,3vw,40px);
+  align-items:baseline;
+  padding:clamp(20px,3.4vh,34px) 0;
+  border-bottom:1px solid var(--line);
+  position:relative;
+}
+.cap::before{
+  content:"";position:absolute;left:0;right:0;top:0;bottom:0;
+  background:linear-gradient(90deg,transparent,rgba(90,59,140,.2),transparent);
+  opacity:0;transition:opacity .5s var(--ease);pointer-events:none;
+}
+.cap:hover::before{opacity:1}
+.cap-n{font-size:11px;letter-spacing:.26em;color:var(--muted)}
+.cap-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(20px,2.7vw,38px);line-height:1.1;color:var(--paper);
+  transition:color .4s var(--ease),transform .5s var(--ease);
+}
+.cap:hover .cap-name{color:var(--lilac);transform:translateX(10px)}
+.cap-meta{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right}
+@media(max-width:700px){ .cap{grid-template-columns:auto 1fr} .cap-meta{display:none} }
+
+/* marquee band */
+.band{
+  margin-top:clamp(50px,9vh,110px);
+  border-block:1px solid var(--line);
+  padding-block:clamp(16px,2.6vh,26px);
+  overflow:hidden;white-space:nowrap;
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+}
+.band-track{display:inline-flex;gap:clamp(26px,5vw,66px);will-change:transform}
+.band-track span{
+  font-family:var(--font-display);font-style:italic;font-weight:400;
+  font-size:clamp(17px,2.1vw,30px);color:rgba(201,194,227,.5);
+}
+.band-track span::after{content:"✦";margin-left:clamp(26px,5vw,66px);color:var(--violet);font-style:normal}
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+#contact{
+  min-height:92svh;display:flex;align-items:center;
+  padding-block:clamp(80px,14vh,170px);
+}
+.contact-inner{text-align:center;width:100%}
+.contact-kicker{
+  font-size:10px;letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--lilac);
+  margin-bottom:clamp(22px,4vh,40px);
+}
+.contact-big{
+  font-family:var(--font-logo);
+  font-size:clamp(44px,10.5vw,170px);
+  line-height:.9;color:var(--paper);margin:0;letter-spacing:.01em;
+}
+.contact-mail{
+  display:inline-block;margin-top:clamp(28px,5vh,52px);
+  font-family:var(--font-display);font-style:italic;
+  font-size:clamp(18px,2.4vw,32px);color:var(--mist);
+  border-bottom:1px solid var(--line-strong);padding-bottom:6px;
+  transition:color .4s var(--ease),border-color .4s var(--ease);
+}
+.contact-mail:hover{color:var(--paper);border-color:var(--lilac)}
+.contact-grid{
+  margin-top:clamp(44px,8vh,90px);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:clamp(20px,4vw,48px);text-align:left;
+  border-top:1px solid var(--line);padding-top:clamp(26px,4vh,44px);
+}
+.contact-grid h4{
+  font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 12px;font-weight:400;
+}
+.contact-grid p,.contact-grid a{font-size:14px;color:rgba(201,194,227,.82);margin:0 0 6px}
+.contact-grid a:hover{color:var(--paper)}
+
+.site-foot{
+  padding:clamp(26px,4vh,40px) var(--gutter) clamp(30px,5vh,48px);
+  display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  border-top:1px solid var(--line);
+  position:relative;z-index:10;
+}
+
+/* ============================================================
+   CURSOR
+   ============================================================ */
+.cursor{
+  position:fixed;top:0;left:0;z-index:200;pointer-events:none;
+  width:26px;height:26px;border-radius:50%;
+  border:1px solid rgba(201,194,227,.5);
+  transform:translate(-50%,-50%);
+  transition:width .35s var(--ease),height .35s var(--ease),background .35s var(--ease),border-color .35s var(--ease);
+  mix-blend-mode:difference;
+}
+.cursor.is-hot{width:58px;height:58px;background:rgba(201,194,227,.14);border-color:transparent}
+@media(hover:none),(pointer:coarse){ .cursor{display:none} }
+
+/* ============================================================
+   REDUCED MOTION — honour the user's system preference
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .atmos--scan{display:none}
+  .hero-logotype .ch,.statement .w,.r-fade{opacity:1 !important;transform:none !important}
+  .statement .w{opacity:1 !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= PRELOADER ======================= -->
+<div id="loader" role="status" aria-live="polite" aria-label="Loading Brandon Franklin Studios">
+  <div style="display:grid;place-items:center">
+    <img class="lemblem" src="assets/bf-emblem.webp" width="256" height="259" alt="" aria-hidden="true" fetchpriority="high">
+    <div class="lmark">Brandon&nbsp;Franklin</div>
+    <div class="lsub">Studios</div>
+  </div>
+  <div class="lbar"><i></i></div>
+  <div class="lnum">000</div>
+</div>
+<div class="curtain" aria-hidden="true"></div>
+
+<!-- ======================= 3D STAGE ======================= -->
+<div id="stage" aria-hidden="true"></div>
+<div class="atmos atmos--vignette" aria-hidden="true"></div>
+<div class="atmos atmos--scan" aria-hidden="true"></div>
+<div class="atmos atmos--grain" aria-hidden="true"></div>
+
+<div class="progress" aria-hidden="true"><i></i></div>
+<div class="cursor" aria-hidden="true"></div>
+
+<!-- ======================= NAV ======================= -->
+<header class="site-nav">
+  <a class="brand" href="#hero" aria-label="Brandon Franklin Studios, home">
+    <span class="brand-mark">
+      <img src="assets/bf-emblem.webp" width="256" height="259" alt="" aria-hidden="true"
+           decoding="async" fetchpriority="high">
+    </span>
+    <span class="bname">Brandon&nbsp;Franklin</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#manifesto">Studio</a>
+    <a href="#about">About</a>
+    <a href="#work">Work</a>
+    <a href="#shop">Shop</a>
+    <a href="#essentials">Essentials</a>
+    <a href="#presets">Presets</a>
+  </nav>
+  <a class="nav-cta" href="#contact">Start a project</a>
+</header>
+
+<div class="rail rail--l" aria-hidden="true">Brandon Franklin Studios — Est. 2026</div>
+<div class="rail rail--r" aria-hidden="true">Scroll to explore</div>
+
+<main>
+
+  <!-- ======================= HERO ======================= -->
+  <section id="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="hero-sub r-fade">Multidisciplinary Design Studio</p>
+
+        <h1 class="hero-logotype" data-split="chars">Brandon Franklin</h1>
+
+        <svg class="flourish" viewBox="0 0 620 38" aria-hidden="true" preserveAspectRatio="none">
+          <path id="swash" d="M8 20C92 36 150 6 232 14c60 6 76 20 140 17 54-3 66-16 118-14 44 2 80 10 122 3"/>
+        </svg>
+
+        <p class="hero-sub r-fade" style="letter-spacing:.58em">S T U D I O S</p>
+
+        <p class="hero-lede r-fade">
+          We build immersive brand worlds — identity, motion and real-time 3D
+          for companies that would rather be felt than scrolled past.
+        </p>
+
+        <div class="hero-meta r-fade">
+          <span>Brand Identity</span><span>Motion</span><span>Real-time 3D</span><span>Web</span>
+        </div>
+      </div>
+
+      <div class="hero-emblem">
+        <span class="emblem-glow" aria-hidden="true"></span>
+        <span class="emblem-floor" aria-hidden="true"></span>
+        <div class="emblem-scroll">
+         <div class="emblem-3d">
+          <div class="emblem-stack">
+            <img class="emblem-face" src="assets/bf-emblem.webp" width="256" height="259"
+                 alt="The Brandon Franklin Studios emblem." decoding="async" fetchpriority="high">
+          </div>
+         </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span>Scroll</span>
+      <span class="track"><i></i></span>
+    </div>
+  </section>
+
+  <!-- ======================= MANIFESTO ======================= -->
+  <section id="manifesto">
+    <div class="wrap">
+      <p class="statement" data-split="words">
+        A brand is not a logo. It is the <em>atmosphere</em> a person walks into — and we design the whole room.
+      </p>
+      <div class="manifesto-foot r-fade">
+        <span>Oklahoma</span><span>Working worldwide</span><span>Est. 2026</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= ABOUT ======================= -->
+  <section id="about">
+    <div class="wrap about-grid">
+
+      <div class="figure-stage" data-figure="about">
+        <span class="halo" aria-hidden="true"></span>
+        <span class="pedestal" aria-hidden="true"></span>
+        <div class="figure-parallax">
+          <div class="figure-reveal">
+            <div class="figure">
+              <img src="assets/brandon-portrait.webp" width="760" height="903"
+                   alt="Brandon Franklin, founder, pictured from the waist up with a hand extended."
+                   loading="lazy" decoding="async">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-body">
+        <p class="eyebrow r-fade">About</p>
+        <h2 class="sec-title r-line"><span>The person you&rsquo;ll actually work with</span></h2>
+        <p class="r-fade">
+          I&rsquo;m Brandon. I started this studio in 2026 after a decade of watching
+          good strategy die somewhere between the deck and the build. So I kept the
+          team small and the handoffs at zero &mdash; the person who draws the logotype
+          is the person who writes the shader it ends up living inside.
+        </p>
+        <p class="r-fade">
+          That means fewer projects a year, and a lot more of me on each one.
+          No account layer, no junior doing the parts nobody wants. If we work
+          together, you&rsquo;re working with me.
+        </p>
+
+        <div class="about-stats r-fade">
+          <div><b>12</b><span>Years in the craft</span></div>
+          <div><b>60+</b><span>Brands shipped</span></div>
+          <div><b>4</b><span>Continents</span></div>
+        </div>
+
+        <p class="about-sign r-fade">&mdash; Brandon Franklin, Founder</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================= WORK ======================= -->
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow r-fade">Selected Work</p>
+          <h2 class="sec-title r-line"><span>Recent chapters</span></h2>
+        </div>
+        <p class="sec-note r-fade">Three of the last twelve. Each one built end to end — strategy, identity, motion system and the site it lives on.</p>
+      </div>
+
+      <article class="project">
+        <div class="project-visual" data-tilt>
+          <div class="art art-1" data-parallax="-12"></div>
+          <span class="art-tag" aria-hidden="true">Identity</span>
+          <span class="art-num" aria-hidden="true">01</span>
+          <span class="art-rule" aria-hidden="true"></span>
+        </div>
+        <div class="project-body">
+          <span class="project-index r-fade">01 — 2026</span>
+          <h3 class="project-title r-line"><span>Arkalune</span></h3>
+          <p class="project-desc r-fade">A fragrance house rebuilt around a single ligature. Variable-weight logotype, scent-mapped colour system and a shop that opens like a jewellery box.</p>
+          <div class="tags r-fade"><span>Identity</span><span>Art Direction</span><span>E-commerce</span></div>
+          <a class="link-arrow r-fade" href="#contact" data-hot>View case study
+            <svg viewBox="0 0 22 8" aria-hidden="true"><path d="M0 4h20M16 1l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project-visual" data-tilt>
+          <div class="art art-2" data-parallax="14"></div>
+          <span class="art-tag" aria-hidden="true">Real-time 3D</span>
+          <span class="art-num" aria-hidden="true">02</span>
+          <span class="art-rule" aria-hidden="true"></span>
+        </div>
+        <div class="project-body">
+          <span class="project-index r-fade">02 — 2026</span>
+          <h3 class="project-title r-line"><span>Vessel Audio</span></h3>
+          <p class="project-desc r-fade">Hardware brand for a studio monitor. We modelled the product in real time so the site ships one GLB instead of forty renders.</p>
+          <div class="tags r-fade"><span>Brand System</span><span>Real-time 3D</span><span>Product Film</span></div>
+          <a class="link-arrow r-fade" href="#contact" data-hot>View case study
+            <svg viewBox="0 0 22 8" aria-hidden="true"><path d="M0 4h20M16 1l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="project">
+        <div class="project-visual" data-tilt>
+          <div class="art art-3" data-parallax="-16"></div>
+          <span class="art-tag" aria-hidden="true">Editorial</span>
+          <span class="art-num" aria-hidden="true">03</span>
+          <span class="art-rule" aria-hidden="true"></span>
+        </div>
+        <div class="project-body">
+          <span class="project-index r-fade">03 — 2026</span>
+          <h3 class="project-title r-line"><span>Nocturne Index</span></h3>
+          <p class="project-desc r-fade">An editorial platform for night-economy research. Dense data, high-contrast serif, and a reading mode that actually gets used.</p>
+          <div class="tags r-fade"><span>Editorial</span><span>Data Viz</span><span>Design System</span></div>
+          <a class="link-arrow r-fade" href="#contact" data-hot>View case study
+            <svg viewBox="0 0 22 8" aria-hidden="true"><path d="M0 4h20M16 1l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ======================= SHOP ======================= -->
+  <section id="shop">
+    <div class="wrap shop-head sec-head">
+      <div>
+        <p class="eyebrow r-fade">Shop &mdash; Footwear</p>
+        <h2 class="sec-title r-line"><span>The Franklin Sovereign</span></h2>
+      </div>
+      <p class="sec-note r-fade">Our first object. Made in a forty-pair run, because that is how many a single workshop can finish properly in a season.</p>
+    </div>
+
+    <div class="shop-pin">
+      <div class="shop-sticky">
+       <div class="shop-figure">
+        <div class="shop-canvas-wrap">
+          <canvas id="sovereign" width="1100" height="626" role="img"
+                  aria-label="The Franklin Sovereign boot, rotating slowly on a lit purple stage."></canvas>
+          <noscript><img class="shop-noscript" src="assets/sovereign/f01.webp" alt="The Franklin Sovereign boot."></noscript>
+        </div>
+
+        <div class="shop-beats" aria-hidden="true">
+          <figure class="beat is-on" data-beat="0">
+            <b>01 &mdash; Upper</b><span>Full-grain oil-tanned leather, cut in one piece so the only seam sits behind the heel.</span>
+          </figure>
+          <figure class="beat" data-beat="1">
+            <b>02 &mdash; Sole</b><span>Storm-welted and rebuildable. The lug is cut from natural rubber, not a foam that dies in year two.</span>
+          </figure>
+          <figure class="beat" data-beat="2">
+            <b>03 &mdash; Hardware</b><span>Solid brass eyelets and a bone-tanned collar, both left raw so they take on the wear of whoever owns them.</span>
+          </figure>
+        </div>
+
+        <div class="shop-rail" aria-hidden="true"><i></i></div>
+       </div>
+      </div>
+    </div>
+
+    <div class="wrap shop-buy">
+      <div>
+        <h3 class="buy-name r-line"><span>Sovereign 6&Prime; &mdash; Obsidian</span></h3>
+        <p class="buy-price r-fade">$249 <small>Run of 40</small></p>
+        <p class="buy-desc r-fade">
+          Built on a wide last with a brass-eyeleted facing and a bone collar tab.
+          Resole it twice and it outlives the decade. Ships in six weeks.
+        </p>
+
+        <div class="buy-field r-fade">
+          <h4 id="size-label">Size &mdash; UK</h4>
+          <ul class="sizes" aria-labelledby="size-label">
+            <li><button type="button" aria-pressed="false">6</button></li>
+            <li><button type="button" aria-pressed="false">7</button></li>
+            <li><button type="button" aria-pressed="true">8</button></li>
+            <li><button type="button" aria-pressed="false">9</button></li>
+            <li><button type="button" aria-pressed="false">10</button></li>
+            <li><button type="button" disabled aria-disabled="true">11</button></li>
+            <li><button type="button" aria-pressed="false">12</button></li>
+          </ul>
+        </div>
+
+        <div class="buy-field r-fade">
+          <h4 id="col-label">Colourway</h4>
+          <ul class="swatches" aria-labelledby="col-label">
+            <li><button type="button" class="sw-obsidian" aria-pressed="true" aria-label="Obsidian"></button></li>
+            <li><button type="button" class="sw-plum" aria-pressed="false" aria-label="Plum"></button></li>
+            <li><button type="button" class="sw-bone" aria-pressed="false" aria-label="Bone"></button></li>
+          </ul>
+        </div>
+
+        <div class="buy-actions r-fade">
+          <button type="button" class="btn-primary" id="buy-btn">Add to bag</button>
+          <button type="button" class="btn-ghost">Size guide</button>
+        </div>
+        <p class="buy-status" id="buy-status" role="status"></p>
+      </div>
+
+      <ul class="spec-list r-fade">
+        <li><span class="k">Last</span><span class="v">BF-04, wide</span></li>
+        <li><span class="k">Upper</span><span class="v">Oil-tanned full grain</span></li>
+        <li><span class="k">Construction</span><span class="v">Storm welt, rebuildable</span></li>
+        <li><span class="k">Sole</span><span class="v">Natural rubber lug</span></li>
+        <li><span class="k">Hardware</span><span class="v">Solid brass, raw</span></li>
+        <li><span class="k">Made in</span><span class="v">Northampton, UK</span></li>
+        <li><span class="k">Lead time</span><span class="v">Six weeks</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ======================= ESSENTIALS (COMING SOON) ======================= -->
+  <section id="essentials">
+    <div class="wrap sec-head">
+      <div>
+        <p class="eyebrow r-fade">Coming Soon &mdash; Essentials</p>
+        <h2 class="sec-title r-line"><span>The Essentials Hoodie</span></h2>
+      </div>
+      <p class="sec-note r-fade">Heavyweight fleece, boxed shoulder, no logo on the outside. The first piece of a line we have been wearing ourselves for a year.</p>
+    </div>
+
+    <div class="ess-pin">
+      <div class="ess-sticky">
+       <div class="ess-figure">
+        <div class="ess-canvas-wrap">
+          <canvas id="essentials-seq" width="1100" height="618" role="img"
+                  aria-label="The Brandon Franklin Essentials hoodie turning slowly in a lit purple haze."></canvas>
+          <noscript><img src="assets/essentials/h01.webp" alt="The Brandon Franklin Essentials hoodie." style="width:100%;height:100%;object-fit:cover"></noscript>
+        </div>
+
+        <p class="ess-stamp" aria-hidden="true"><i></i>Coming Soon</p>
+
+        <div class="ess-beats" aria-hidden="true">
+          <figure class="beat is-on" data-beat="0">
+            <b>01 &mdash; Weight</b><span>540&nbsp;gsm loopback fleece, garment-dyed so it reads black in daylight and charcoal under a lamp.</span>
+          </figure>
+          <figure class="beat" data-beat="1">
+            <b>02 &mdash; Cut</b><span>Boxed shoulder and a dropped armhole, so it hangs the same whether you are 5&prime;8&Prime; or 6&prime;4&Prime;.</span>
+          </figure>
+          <figure class="beat" data-beat="2">
+            <b>03 &mdash; Mark</b><span>No logo on the outside. The emblem is woven into the inner collar, where only the wearer finds it.</span>
+          </figure>
+        </div>
+
+        <div class="ess-rail" aria-hidden="true"><i></i></div>
+       </div>
+      </div>
+    </div>
+
+    <div class="wrap ess-drop">
+      <div>
+        <h3 class="drop-name r-line"><span>Essentials 01 &mdash; Black</span></h3>
+        <p class="drop-desc r-fade">
+          Not for sale yet. The first run is being cut now and goes up to the list
+          before it goes anywhere else.
+        </p>
+
+        <div class="countdown r-fade" id="countdown" role="timer" aria-live="off"
+             aria-label="Time remaining until the Essentials drop">
+          <div><b data-cd="d">--</b><span>Days</span></div>
+          <div><b data-cd="h">--</b><span>Hours</span></div>
+          <div><b data-cd="m">--</b><span>Minutes</span></div>
+          <div><b data-cd="s">--</b><span>Seconds</span></div>
+        </div>
+
+        <form class="waitlist r-fade" id="waitlist" novalidate>
+          <label>
+            <span class="vh">Email address for the Essentials waiting list</span>
+            <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          </label>
+          <button type="submit" class="btn-primary">Join the list</button>
+        </form>
+        <p class="drop-status" id="drop-status" role="status"></p>
+      </div>
+
+      <figure class="ess-still r-fade">
+        <img src="assets/essentials/room.webp" width="920" height="498"
+             alt="Brandon Franklin wearing the Essentials hoodie and matching trousers, seated on a couch."
+             loading="lazy" decoding="async">
+        <figcaption>Essentials 01, worn &mdash; campaign still</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ======================= PRESETS ======================= -->
+  <section id="presets">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow r-fade">Presets &mdash; The Lavender Collection</p>
+          <h2 class="sec-title r-line"><span>Three moods. One signature.</span></h2>
+        </div>
+        <p class="sec-note r-fade">Cinematic Lightroom presets built from our own campaign grades. Desktop and mobile, with the camera profiles we actually shoot on.</p>
+      </div>
+
+      <div class="preset-rail">
+        <article class="preset" data-depth="-1">
+          <div class="preset-shot">
+            <img src="assets/presets/p1.webp" width="640" height="1006"
+                 alt="Lavender Soft: the portrait graded with lifted shadows and a warm lilac cast."
+                 loading="lazy" decoding="async">
+            <span class="preset-no" aria-hidden="true">01</span>
+          </div>
+          <div class="preset-body">
+            <h3 class="preset-name">Lavender Soft</h3>
+            <p class="preset-note">Lifted blacks and a warm lilac cast. The daylight one &mdash; skin stays skin.</p>
+            <div class="preset-buy">
+              <span class="preset-price">$5</span>
+              <button type="button" class="btn-small" data-preset="Lavender Soft" aria-pressed="false">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="preset" data-depth="0">
+          <div class="preset-shot">
+            <img src="assets/presets/p2.webp" width="640" height="1006"
+                 alt="Lavender Noir: the same portrait graded with deeper contrast and a cooler haze."
+                 loading="lazy" decoding="async">
+            <span class="preset-no" aria-hidden="true">02</span>
+          </div>
+          <div class="preset-body">
+            <h3 class="preset-name">Lavender Noir</h3>
+            <p class="preset-note">Contrast pulled down into the shadows, haze left in. The studio one.</p>
+            <div class="preset-buy">
+              <span class="preset-price">$5</span>
+              <button type="button" class="btn-small" data-preset="Lavender Noir" aria-pressed="false">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="preset" data-depth="1">
+          <div class="preset-shot">
+            <img src="assets/presets/p3.webp" width="640" height="1006"
+                 alt="Lavender After Dark: the same portrait graded darkest, with a cold violet edge."
+                 loading="lazy" decoding="async">
+            <span class="preset-no" aria-hidden="true">03</span>
+          </div>
+          <div class="preset-body">
+            <h3 class="preset-name">Lavender After Dark</h3>
+            <p class="preset-note">Crushed and cold, violet on the edges. For anything shot after nine.</p>
+            <div class="preset-buy">
+              <span class="preset-price">$5</span>
+              <button type="button" class="btn-small" data-preset="Lavender After Dark" aria-pressed="false">Add</button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="preset-bundle r-fade">
+        <div>
+          <h3 class="bundle-name">The Lavender Collection &mdash; all three</h3>
+          <p class="bundle-desc">
+            Every mood in one install, plus the .XMP and .DNG files so they load
+            on desktop and on mobile Lightroom.
+          </p>
+        </div>
+        <div class="bundle-buy">
+          <span class="bundle-price">$15<small>Same as buying all three</small></span>
+          <button type="button" class="btn-primary" id="bundle-btn">Get the collection</button>
+        </div>
+      </div>
+
+      <p class="preset-status" id="preset-status" role="status"></p>
+      <p class="preset-foot r-fade">Colour mood previews &mdash; final results vary by photo.</p>
+    </div>
+  </section>
+
+  <!-- ======================= CAPABILITIES ======================= -->
+  <section id="capabilities">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow r-fade">Capabilities</p>
+          <h2 class="sec-title r-line"><span>What we actually do</span></h2>
+        </div>
+        <p class="sec-note r-fade">Small studio, full stack. Strategy through shipped code, with no handoff gap in the middle.</p>
+      </div>
+
+      <ul class="cap-list">
+        <li class="cap r-fade"><span class="cap-n">01</span><span class="cap-name">Brand Identity &amp; Logotype</span><span class="cap-meta">4–8 weeks</span></li>
+        <li class="cap r-fade"><span class="cap-n">02</span><span class="cap-name">Motion &amp; Title Design</span><span class="cap-meta">2–5 weeks</span></li>
+        <li class="cap r-fade"><span class="cap-n">03</span><span class="cap-name">Real-time 3D &amp; WebGL</span><span class="cap-meta">3–10 weeks</span></li>
+        <li class="cap r-fade"><span class="cap-n">04</span><span class="cap-name">Design Systems</span><span class="cap-meta">Ongoing</span></li>
+        <li class="cap r-fade"><span class="cap-n">05</span><span class="cap-name">Site Design &amp; Build</span><span class="cap-meta">6–12 weeks</span></li>
+      </ul>
+
+      <div class="band" aria-hidden="true">
+        <div class="band-track">
+          <span>Identity</span><span>Motion</span><span>WebGL</span><span>Art Direction</span><span>Type Design</span><span>Systems</span>
+          <span>Identity</span><span>Motion</span><span>WebGL</span><span>Art Direction</span><span>Type Design</span><span>Systems</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CONTACT ======================= -->
+  <section id="contact">
+    <div class="wrap contact-inner">
+      <p class="contact-kicker r-fade">Currently booking Q1 2027</p>
+      <h2 class="contact-big" data-split="chars">Let&rsquo;s build</h2>
+      <a class="contact-mail" href="mailto:studio@brandonfranklin.studio" data-hot>studio@brandonfranklin.studio</a>
+
+      <div class="contact-grid">
+        <div class="r-fade"><h4>Studio</h4><p>Oklahoma</p><p>Working worldwide</p></div>
+        <div class="r-fade"><h4>New business</h4><a href="mailto:studio@brandonfranklin.studio">studio@brandonfranklin.studio</a></div>
+        <div class="r-fade"><h4>Social</h4><a href="#contact">Instagram</a><br><a href="#contact">Behance</a><br><a href="#contact">LinkedIn</a></div>
+        <div class="r-fade"><h4>Next opening</h4><p>January 2027</p><p>Two slots</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-foot">
+    <span>© 2026 Brandon Franklin Studios</span>
+    <span>Built with Three.js &amp; GSAP</span>
+    <span>Back to <a href="#hero">top</a></span>
+  </footer>
+</main>
+
+<!-- ======================= LIBS ======================= -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.3.27/dist/lenis.min.js"></script>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const COLORS = { ink:0x0E0B1D, plum:0x2A1E4D, violet:0x5A3B8C, lilac:0x8B7CC7, mist:0xC9C2E3, slate:0x3A3A52 };
+
+gsap.registerPlugin(ScrollTrigger);
+
+/* ============================================================
+   1. SMOOTH SCROLL — one shared loop so Lenis + ScrollTrigger
+      read the same frame (no double rAF).
+   ============================================================ */
+let lenis = null;
+if (!REDUCED) {
+  lenis = new Lenis({ lerp: 0.072, wheelMultiplier: 0.92, anchors: true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((t) => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+/* ============================================================
+   2. THE 3D STAGE
+   ============================================================ */
+const stageEl = document.getElementById('stage');
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.34;
+stageEl.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(COLORS.ink, 0.055);
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 0, 7.2);
+
+/* --- procedural studio environment (no external HDR fetch) --- */
+function makeEnvTexture(){
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 256;
+  const g = c.getContext('2d');
+  const grd = g.createLinearGradient(0, 0, 0, 256);
+  grd.addColorStop(0.00, '#DCD6F0');
+  grd.addColorStop(0.34, '#8B7CC7');
+  grd.addColorStop(0.62, '#2A1E4D');
+  grd.addColorStop(1.00, '#0E0B1D');
+  g.fillStyle = grd; g.fillRect(0, 0, 512, 256);
+  // soft key + fill highlights that the metal will catch
+  const spot = (x, y, r, a) => {
+    const s = g.createRadialGradient(x, y, 0, x, y, r);
+    s.addColorStop(0, `rgba(255,255,255,${a})`);
+    s.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = s; g.fillRect(x-r, y-r, r*2, r*2);
+  };
+  spot(120, 70, 95, 0.95);
+  spot(380, 50, 70, 0.55);
+  spot(300, 195, 110, 0.22);
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envRT = pmrem.fromEquirectangular(makeEnvTexture());
+scene.environment = envRT.texture;
+
+/* --- lights --- */
+scene.add(new THREE.AmbientLight(COLORS.mist, 0.55));
+const keyLight  = new THREE.PointLight(COLORS.mist,   72, 46, 2); keyLight.position.set(4, 5, 6);
+const rimLight  = new THREE.PointLight(COLORS.violet, 96, 46, 2); rimLight.position.set(-6, -2, -4);
+const fillLight = new THREE.PointLight(COLORS.lilac,  54, 42, 2); fillLight.position.set(-3, 4, 5);
+scene.add(keyLight, rimLight, fillLight);
+
+/* ============================================================
+   3. THE RIBBON MONOGRAM
+      A flat, twisting ribbon swept along a closed curve —
+      the studio mark, rebuilt as live geometry.
+   ============================================================ */
+function ribbonGeometry({ segments = 620, width = 0.46, twists = 3 } = {}) {
+  const pts = [];
+  const N = 240;
+  for (let i = 0; i < N; i++) {
+    const t = (i / N) * Math.PI * 2;
+    pts.push(new THREE.Vector3(
+      1.45 * Math.sin(t) * (1 + 0.30 * Math.cos(2 * t)),
+      1.30 * Math.cos(t) + 0.34 * Math.sin(3 * t),
+      0.72 * Math.sin(2 * t) + 0.22 * Math.cos(t)
+    ));
+  }
+  const curve = new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0.5);
+  const frames = curve.computeFrenetFrames(segments, true);
+
+  const pos = [], uv = [], idx = [];
+  const half = width / 2;
+  for (let i = 0; i <= segments; i++) {
+    const u = i / segments;
+    const p = curve.getPointAt(u % 1);
+    const n = frames.normals[i % segments];
+    const b = frames.binormals[i % segments];
+    const a = twists * Math.PI * 2 * u;                  // progressive twist
+    const dir = new THREE.Vector3()
+      .addScaledVector(n, Math.cos(a))
+      .addScaledVector(b, Math.sin(a))
+      .normalize();
+    // taper the ribbon toward the seam so it reads like real material
+    const w = half * (0.62 + 0.38 * Math.sin(Math.PI * u) ** 0.5);
+    pos.push(p.x + dir.x*w, p.y + dir.y*w, p.z + dir.z*w);
+    pos.push(p.x - dir.x*w, p.y - dir.y*w, p.z - dir.z*w);
+    uv.push(u, 1, u, 0);
+    if (i < segments) {
+      const a0 = i*2, b0 = i*2+1, a1 = i*2+2, b1 = i*2+3;
+      idx.push(a0, b0, a1,  b0, b1, a1);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+const ribbonMat = new THREE.MeshPhysicalMaterial({
+  color: 0x6B49A8,
+  emissive: 0x1B1036,
+  emissiveIntensity: 0.9,
+  metalness: 0.52,
+  roughness: 0.15,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.07,
+  iridescence: 0.9,
+  iridescenceIOR: 1.55,
+  iridescenceThicknessRange: [120, 520],
+  sheen: 0.4,
+  sheenColor: new THREE.Color(COLORS.mist),
+  envMapIntensity: 1.5,
+  side: THREE.DoubleSide
+});
+
+const ribbon = new THREE.Mesh(ribbonGeometry(), ribbonMat);
+const ribbonRig = new THREE.Group();   // scroll-driven transform
+const ribbonSpin = new THREE.Group();  // idle rotation, kept separate
+ribbonSpin.add(ribbon);
+ribbonRig.add(ribbonSpin);
+scene.add(ribbonRig);
+
+/* a second, ghosted copy adds depth without a second draw-heavy material */
+const ghost = new THREE.Mesh(
+  ribbon.geometry,
+  new THREE.MeshBasicMaterial({ color: COLORS.lilac, transparent: true, opacity: 0.1, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })
+);
+ghost.scale.setScalar(1.13);
+ribbonSpin.add(ghost);
+
+/* ============================================================
+   4. GLOW SPRITES + DUST FIELD
+   ============================================================ */
+function softSprite(hex){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const r = g.createRadialGradient(64,64,0,64,64,64);
+  r.addColorStop(0,   `rgba(${hex.join(',')},1)`);
+  r.addColorStop(0.35,`rgba(${hex.join(',')},0.35)`);
+  r.addColorStop(1,   `rgba(${hex.join(',')},0)`);
+  g.fillStyle = r; g.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const glowTex = softSprite([139,124,199]);
+
+const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: COLORS.violet, transparent:true, opacity:0.5, blending:THREE.AdditiveBlending, depthWrite:false }));
+glow.scale.set(9, 9, 1);
+glow.position.z = -2.2;
+scene.add(glow);
+
+const DUST = REDUCED ? 0 : (innerWidth < 760 ? 700 : 1600);
+let dust = null;
+if (DUST) {
+  const dp = new Float32Array(DUST * 3);
+  const ds = new Float32Array(DUST);
+  for (let i = 0; i < DUST; i++) {
+    const r = 2.0 + Math.random() * 9;
+    const th = Math.random() * Math.PI * 2;
+    dp[i*3+0] = Math.cos(th) * r * 0.75;
+    dp[i*3+1] = (Math.random() - 0.5) * 16;
+    dp[i*3+2] = Math.sin(th) * r * 0.75 - 4;
+    ds[i] = 0.02 + Math.random() * 0.07;
+  }
+  const dg = new THREE.BufferGeometry();
+  dg.setAttribute('position', new THREE.Float32BufferAttribute(dp, 3));
+  dg.setAttribute('size', new THREE.Float32BufferAttribute(ds, 1));
+  dust = new THREE.Points(dg, new THREE.PointsMaterial({
+    map: softSprite([201,194,227]),
+    color: COLORS.mist, size: 0.075, sizeAttenuation: true,
+    transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending
+  }));
+  scene.add(dust);
+}
+
+/* a faint grid floor gives the camera move something to read against */
+const floor = new THREE.GridHelper(60, 60, COLORS.violet, COLORS.plum);
+floor.material.transparent = true;
+floor.material.opacity = 0.16;
+floor.position.y = -4.4;
+scene.add(floor);
+
+/* ============================================================
+   5. SCROLL-DRIVEN CAMERA + OBJECT PATH
+      One scrubbed master timeline across the whole document —
+      scrub:1 so the camera reads as continuous, never snapping.
+   ============================================================ */
+const path = { camX:3.4, camY:0, camZ:9.4, lookY:0, ribX:-2.6, ribY:0, ribScale:0.58, rotX:0, rotY:0, rotZ:0, fog:0.055, glow:0.22 };
+
+if (!REDUCED) {
+  const master = gsap.timeline({
+    defaults: { ease:'none' },
+    scrollTrigger: { trigger: document.body, start:'top top', end:'bottom bottom', scrub: 1 }
+  });
+
+  // HERO -> MANIFESTO : dolly in, the mark flips over (the logo turn)
+  master.to(path, { camX: 0, camZ: 4.3, camY: 0.35, ribX: 0, rotY: Math.PI, rotZ: 0.42, fog: 0.085, glow: 0.78, ribScale: 1.18 }, 0)
+  // MANIFESTO -> WORK : pull back and slide the mark off-centre
+        .to(path, { camZ: 9.4, camX: 1.9, camY: -0.5, ribX: -2.5, ribY: 0.4, rotY: Math.PI*2.1, rotX: 0.5, ribScale: 0.78, fog: 0.05, glow: 0.4 }, 0.22)
+  // ABOUT : the mark holds well to the left so the figure owns the right
+        .to(path, { camX: 2.9, camY: -0.2, camZ: 10.2, ribX: -3.9, ribY: 0.1, rotY: Math.PI*2.6, rotZ: -0.3, ribScale: 0.72, fog: 0.046, glow: 0.58 }, 0.42)
+  // WORK : long slow drift so the case studies stay readable
+        .to(path, { camX: -1.4, camY: 0.25, camZ: 11.5, ribX: 2.9, ribY: -0.3, rotY: Math.PI*3.2, rotZ: -0.6, ribScale: 0.62, fog: 0.042 }, 0.52)
+  // SHOP : the product stage is the hero here, so the mark recedes
+        .to(path, { camX: 0.4, camY: 0.6, camZ: 15, ribX: 4.6, ribY: -1.2, rotY: Math.PI*3.6, ribScale: 0.4, fog: 0.03, glow: 0.14 }, 0.60)
+  // ...and stays back through the buy panel and the Essentials stage
+        .to(path, { camX: 0.6, camY: 0.5, camZ: 15.4, ribX: 5.0, ribY: -1.3, rotY: Math.PI*3.9, ribScale: 0.38, glow: 0.12 }, 0.70)
+  // PRESETS : the grades carry the colour here, so the mark stays dim
+        .to(path, { camX: 0.5, camY: 0.4, camZ: 14.6, ribX: -5.2, ribY: -1.0, rotY: Math.PI*4.1, ribScale: 0.42, glow: 0.16 }, 0.82)
+  // CONTACT : the mark returns, centred and close
+        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4.4, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.91);
+}
+
+/* ============================================================
+   6. RENDER LOOP — pauses when the tab is hidden
+   ============================================================ */
+const pointer = { x:0, y:0, tx:0, ty:0 };
+addEventListener('pointermove', (e) => {
+  pointer.tx = (e.clientX / innerWidth  - 0.5) * 2;
+  pointer.ty = (e.clientY / innerHeight - 0.5) * 2;
+}, { passive:true });
+
+let visible = true;
+document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+const clock = new THREE.Clock();
+function frame(){
+  if (!visible) return;
+  const t = clock.getElapsedTime();
+
+  pointer.x += (pointer.tx - pointer.x) * 0.055;
+  pointer.y += (pointer.ty - pointer.y) * 0.055;
+
+  // camera: scroll path + a small parallax lean toward the pointer
+  camera.position.x = path.camX + pointer.x * 0.55;
+  camera.position.y = path.camY - pointer.y * 0.38;
+  camera.position.z = path.camZ;
+  camera.lookAt(path.ribX * 0.35, path.lookY, 0);
+
+  // ribbon: scroll path, plus an idle rotation that never stops
+  ribbonRig.position.set(path.ribX, path.ribY, 0);
+  ribbonRig.scale.setScalar(path.ribScale);
+  ribbonRig.rotation.set(path.rotX, path.rotY, path.rotZ);
+  if (!REDUCED) {
+    ribbonSpin.rotation.y = t * 0.22;
+    ribbonSpin.rotation.x = Math.sin(t * 0.33) * 0.16;
+    ribbonSpin.position.y = Math.sin(t * 0.6) * 0.1;
+  }
+
+  glow.position.set(path.ribX, path.ribY, -2.4);
+  glow.material.opacity = path.glow;
+  glow.scale.setScalar(8 + Math.sin(t * 0.8) * 0.5);
+  scene.fog.density = path.fog;
+
+  if (dust) {
+    dust.rotation.y = t * 0.016;
+    dust.position.y = (path.camY * 0.4) + Math.sin(t * 0.2) * 0.3;
+  }
+  floor.position.z = -6 + path.camZ * 0.35;
+
+  keyLight.position.x  = Math.sin(t * 0.4) * 5;
+  rimLight.position.z  = -4 + Math.cos(t * 0.3) * 2.5;
+
+  renderer.render(scene, camera);
+}
+renderer.setAnimationLoop(frame);
+document.addEventListener('visibilitychange', () => { if (visible) renderer.setAnimationLoop(frame); });
+
+/* resize */
+let rsz;
+addEventListener('resize', () => {
+  clearTimeout(rsz);
+  rsz = setTimeout(() => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+    ScrollTrigger.refresh();
+  }, 140);
+}, { passive:true });
+
+if (REDUCED) { camera.position.set(0.6, 0.3, 6.4); renderer.render(scene, camera); }
+
+/* ============================================================
+   7. DOM CHOREOGRAPHY
+   ============================================================ */
+
+/* split text into spans we can animate without a paid plugin */
+function split(el, mode){
+  const raw = el.textContent.trim().replace(/\s+/g, ' ');
+  el.setAttribute('aria-label', raw);
+  el.textContent = '';
+  const frag = document.createDocumentFragment();
+  if (mode === 'chars') {
+    raw.split(' ').forEach((word, wi, arr) => {
+      const w = document.createElement('span');
+      w.className = 'word'; w.setAttribute('aria-hidden', 'true');
+      [...word].forEach(c => {
+        const s = document.createElement('span');
+        s.className = 'ch'; s.textContent = c;
+        w.appendChild(s);
+      });
+      frag.appendChild(w);
+      if (wi < arr.length - 1) frag.appendChild(document.createTextNode(' '));
+    });
+  } else {
+    raw.split(' ').forEach((word, i, arr) => {
+      const s = document.createElement('span');
+      s.className = 'w'; s.textContent = word;
+      s.setAttribute('aria-hidden', 'true');
+      frag.appendChild(s);
+      if (i < arr.length - 1) frag.appendChild(document.createTextNode(' '));
+    });
+  }
+  el.appendChild(frag);
+  return el.querySelectorAll(mode === 'chars' ? '.ch' : '.w');
+}
+
+/* the manifesto keeps its <em>, so split it by hand */
+function splitWordsPreservingMarkup(el){
+  const out = [];
+  const walk = (node) => {
+    [...node.childNodes].forEach(child => {
+      if (child.nodeType === 3) {
+        const parts = child.textContent.split(/(\s+)/);
+        const frag = document.createDocumentFragment();
+        parts.forEach(p => {
+          if (!p.trim()) { frag.appendChild(document.createTextNode(p)); return; }
+          const s = document.createElement('span');
+          s.className = 'w'; s.textContent = p;
+          frag.appendChild(s); out.push(s);
+        });
+        child.replaceWith(frag);
+      } else if (child.nodeType === 1) walk(child);
+    });
+  };
+  el.setAttribute('aria-label', el.textContent.trim().replace(/\s+/g,' '));
+  walk(el);
+  return out;
+}
+
+const heroChars    = split(document.querySelector('.hero-logotype'), 'chars');
+const contactChars = split(document.querySelector('.contact-big'), 'chars');
+const stmtWords    = splitWordsPreservingMarkup(document.querySelector('.statement'));
+
+/* ---- preloader ---- */
+const loader   = document.getElementById('loader');
+const loadBar  = loader.querySelector('.lbar i');
+const loadNum  = loader.querySelector('.lnum');
+const curtain  = document.querySelector('.curtain');
+
+function heroIn(){
+  const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
+  tl.from(heroChars, { yPercent: 118, rotateX: -62, opacity: 0, duration: 1.15, stagger: 0.022 }, 0)
+    .from('#hero .flourish path', {
+      drawSVG: undefined,
+      strokeDasharray: 900, strokeDashoffset: 900, duration: 1.5, ease:'power2.inOut',
+      onComplete(){ this.targets()[0].style.strokeDasharray = 'none'; }
+    }, 0.45)
+    .from('#hero .r-fade', { y: 26, opacity: 0, duration: 0.9, stagger: 0.09 }, 0.55)
+    .from('.site-nav > *', { y: -18, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.3)
+    .from('.scroll-cue', { opacity: 0, duration: 0.8 }, 1.1);
+  if (window.__heroEmblemIn) tl.add(window.__heroEmblemIn.play(), 0.2);
+  return tl;
+}
+
+function bootDone(){
+  const tl = gsap.timeline();
+  tl.to(loader.querySelector('.lemblem'), { scale: 1.18, opacity: 0, duration: 0.55, ease:'power2.in' }, 0)
+    .to(loader.querySelectorAll('.lmark, .lsub, .lbar, .lnum'), { opacity: 0, duration: 0.45, ease:'power2.in' }, 0)
+    .set(curtain, { transformOrigin:'bottom', y:'100%' })
+    .to(curtain, { y:'0%', duration: 0.6, ease:'power3.inOut' }, '-=0.1')
+    .set(loader, { display:'none' })
+    .to(curtain, { y:'-100%', duration: 0.75, ease:'power3.inOut' })
+    .set(curtain, { display:'none' })
+    .add(heroIn(), '-=0.45');
+}
+
+if (REDUCED) {
+  loader.style.display = 'none';
+  curtain.style.display = 'none';
+} else {
+  const counter = { v: 0 };
+  gsap.to(counter, {
+    v: 100, duration: 1.9, ease: 'power2.inOut',
+    onUpdate(){
+      const n = Math.round(counter.v);
+      loadNum.textContent = String(n).padStart(3, '0');
+      loadBar.style.width = n + '%';
+    },
+    onComplete: bootDone
+  });
+  gsap.set(loader.querySelector('.lemblem'), { transformPerspective: 700 });
+  gsap.to(loader.querySelector('.lemblem'), { opacity: 1, rotationY: 0, duration: 1.35, ease:'power3.out', startAt:{ rotationY: -180, scale: .82 }, scale: 1 });
+  gsap.to(loader.querySelector('.lmark'), { opacity: 1, duration: 1.0, delay: 0.3, ease:'power2.out' });
+  gsap.to(loader.querySelector('.lsub'),  { opacity: 1, duration: 1.0, delay: 0.5, ease:'power2.out' });
+}
+
+/* ---- scroll-triggered DOM reveals ---- */
+if (!REDUCED) {
+  // generic fades
+  gsap.utils.toArray('main section:not(#hero) .r-fade').forEach(el => {
+    gsap.from(el, {
+      y: 30, opacity: 0, duration: 0.9, ease:'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+    });
+  });
+
+  // masked line reveals
+  gsap.utils.toArray('.r-line > *').forEach(el => {
+    gsap.from(el, {
+      yPercent: 115, duration: 1.05, ease:'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+    });
+  });
+
+  // manifesto: word-by-word, scrubbed and pinned — the one pinned section
+  gsap.to(stmtWords, {
+    opacity: 1, duration: 0.4, stagger: 0.5, ease:'none',
+    scrollTrigger: { trigger: '#manifesto', start: 'top top', end: '+=140%', scrub: 0.6, pin: true, anticipatePin: 1 }
+  });
+
+  // project art parallax (decorative layers only — never the copy)
+  gsap.utils.toArray('[data-parallax]').forEach(el => {
+    gsap.fromTo(el,
+      { yPercent: Number(el.dataset.parallax) },
+      { yPercent: -Number(el.dataset.parallax), ease:'none',
+        scrollTrigger: { trigger: el.closest('.project'), start:'top bottom', end:'bottom top', scrub: true } }
+    );
+  });
+
+  // project cards rise + settle
+  gsap.utils.toArray('.project-visual').forEach(el => {
+    gsap.from(el, {
+      y: 70, opacity: 0, scale: 0.96, duration: 1.1, ease:'power3.out',
+      scrollTrigger: { trigger: el, start:'top 85%', once: true }
+    });
+  });
+
+  /* ---- the studio figure, in the hero and again in About ---------
+     Four independent layers per stage so nothing fights for a single
+     transform: parallax (scroll) / reveal (clip) / tilt + float (same
+     element, different properties) / light (halo + pedestal).        */
+  document.querySelectorAll('.figure-stage').forEach((stage) => {
+    const where    = stage.dataset.figure || 'about';   // only About ships one now
+    const figWrap  = stage.querySelector('.figure-parallax');
+    const figReveal= stage.querySelector('.figure-reveal');
+    const figure   = stage.querySelector('.figure');
+    const halo     = stage.querySelector('.halo');
+    const pedestal = stage.querySelector('.pedestal');
+    if (!figure) return;
+
+    const entrance = gsap.timeline({ paused: true })
+      .fromTo(figReveal, { clipPath:'inset(100% 0 0 0)' },
+                         { clipPath:'inset(0% 0 0 0)', duration: 1.25, ease:'power3.inOut' }, 0)
+      .fromTo(figure,    { y: 56, scale: 0.94 },
+                         { y: 0, scale: 1, duration: 1.35, ease:'power3.out' }, 0)
+      .fromTo([halo, pedestal], { opacity: 0, scale: 0.7 },
+                         { opacity: 1, scale: 1, duration: 1.4, ease:'power2.out', stagger: 0.12 }, 0.15)
+      .eventCallback('onComplete', () => gsap.set(figReveal, { clipPath:'none' }));
+
+    ScrollTrigger.create({ trigger: stage, start:'top 72%', once: true, onEnter: () => entrance.play() });
+
+    // idle float — present in the room rather than pasted on
+    gsap.to(figure, { y: -14, duration: 3.4, ease:'sine.inOut', repeat: -1, yoyo: true, delay: 1.4 });
+    gsap.to(pedestal, { scaleX: 0.9, opacity: 0.72, duration: 3.4, ease:'sine.inOut', repeat: -1, yoyo: true, delay: 1.4 });
+    gsap.to(halo, { scale: 1.07, opacity: 0.82, duration: 5.2, ease:'sine.inOut', repeat: -1, yoyo: true, delay: 1.4 });
+
+    // scroll parallax — he drifts slower than the copy beside him
+    gsap.fromTo(figWrap, { yPercent: 9 },
+      { yPercent: -9, ease:'none',
+        scrollTrigger: { trigger: stage, start:'top bottom', end:'bottom top', scrub: true } });
+
+    // pointer tilt — the same 3D language as the project cards
+    if (matchMedia('(hover:hover)').matches) {
+      gsap.set(figure, { transformPerspective: 1100 });
+      const ry = gsap.quickTo(figure, 'rotationY', { duration: 0.9, ease:'power3' });
+      const rx = gsap.quickTo(figure, 'rotationX', { duration: 0.9, ease:'power3' });
+      const hx = gsap.quickTo(halo,  'xPercent',   { duration: 1.2, ease:'power3' });
+      addEventListener('pointermove', (e) => {
+        const r = stage.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) return;
+        const nx = (e.clientX / innerWidth  - 0.5) * 2;
+        const ny = (e.clientY / innerHeight - 0.5) * 2;
+        ry(nx * 11); rx(ny * -6); hx(nx * -7);
+      }, { passive: true });
+    }
+  });
+
+  // capabilities marquee, tied to scroll direction
+  gsap.to('.band-track', {
+    xPercent: -50, ease:'none',
+    scrollTrigger: { trigger:'.band', start:'top bottom', end:'bottom top', scrub: 0.8 }
+  });
+
+  // contact logotype
+  gsap.from(contactChars, {
+    yPercent: 110, opacity: 0, duration: 1, ease:'power3.out', stagger: 0.03,
+    scrollTrigger: { trigger:'#contact', start:'top 70%', once: true }
+  });
+
+  // nav background + scroll progress bar
+  ScrollTrigger.create({
+    start: 'top -80',
+    onUpdate: (self) => document.querySelector('.site-nav').classList.toggle('is-stuck', self.scroll() > 80)
+  });
+  gsap.to('.progress i', {
+    width: '100%', ease:'none',
+    scrollTrigger: { trigger: document.body, start:'top top', end:'bottom bottom', scrub: 0.3 }
+  });
+} else {
+  gsap.set(stmtWords, { opacity: 1 });
+  gsap.set('.figure-reveal', { clipPath: 'none' });
+  gsap.set('.figure-stage .halo, .figure-stage .pedestal', { opacity: 1, scale: 1 });
+}
+
+/* ---- 3D card tilt (pointer devices only) ---- */
+if (!REDUCED && matchMedia('(hover:hover)').matches) {
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    const qx = gsap.quickTo(card, 'rotationY', { duration: 0.6, ease:'power3' });
+    const qy = gsap.quickTo(card, 'rotationX', { duration: 0.6, ease:'power3' });
+    gsap.set(card, { transformPerspective: 900, transformOrigin:'center' });
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      qx(((e.clientX - r.left) / r.width  - 0.5) * 13);
+      qy(((e.clientY - r.top)  / r.height - 0.5) * -11);
+    });
+    card.addEventListener('pointerleave', () => { qx(0); qy(0); });
+  });
+}
+
+/* ============================================================
+   SCROLL-SCRUBBED FRAME SEQUENCES
+   Both product films are one continuous camera move with no cuts, so
+   their frames read as a single rotation tied to the scrollbar.
+   One helper drives both; the Sovereign and the Essentials hoodie
+   differ only in their frames, track and captions.
+   ============================================================ */
+function frameSequence({ canvasId, count, src, track, section, beatSel, railSel }) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  const ctx   = canvas.getContext('2d', { alpha: false });
+  const wrap  = canvas.parentElement;
+  const imgs  = new Array(count);
+  const ready = new Array(count).fill(false);
+  const state = { i: 0 };
+  let painted = false;
+
+  function load(n, priority) {
+    if (imgs[n]) return;
+    // NB: never set loading='lazy' on a detached Image() — Chromium then
+    // never fetches it at all, because it is not in the document.
+    const im = new Image();
+    im.decoding = 'async';
+    im.fetchPriority = priority ? 'high' : 'low';
+    im.onload = () => {
+      ready[n] = true;
+      if (!painted) { painted = true; draw(); }
+      else if (Math.round(state.i) === n) draw();
+    };
+    im.src = src(n);
+    imgs[n] = im;
+  }
+
+  // nearest already-decoded frame, so scrubbing ahead of the network
+  // shows the closest image rather than blank canvas
+  function pick(n) {
+    if (ready[n]) return imgs[n];
+    for (let d = 1; d < count; d++) {
+      if (ready[n - d]) return imgs[n - d];
+      if (ready[n + d]) return imgs[n + d];
+    }
+    return null;
+  }
+
+  function size() {
+    const r = wrap.getBoundingClientRect();
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width  = Math.max(1, Math.round(r.width  * dpr));
+    canvas.height = Math.max(1, Math.round(r.height * dpr));
+    draw();
+  }
+
+  function draw() {
+    const im = pick(Math.round(state.i));
+    if (!im) return;
+    const cw = canvas.width, ch = canvas.height;
+    const scale = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
+    const w = im.naturalWidth * scale, h = im.naturalHeight * scale;
+    ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+
+  load(0, true);                       // first frame eagerly: it is the poster
+
+  // the rest only once the section is within reach, so a sequence never
+  // competes with the hero for bandwidth
+  let fetched = false;
+  ScrollTrigger.create({
+    trigger: section, start: 'top bottom+=120%', once: true,
+    onEnter: () => {
+      if (fetched) return;
+      fetched = true;
+      for (let n = 1; n < count; n++) load(n, n < 6);
+    }
+  });
+
+  const beats = Array.from(document.querySelectorAll(beatSel));
+  const rail  = document.querySelector(railSel);
+
+  function setBeat(p) {
+    const idx = p < 0.34 ? 0 : p < 0.68 ? 1 : 2;
+    beats.forEach((b, i) => b.classList.toggle('is-on', i === idx));
+    if (rail) rail.style.height = (p * 100).toFixed(1) + '%';
+  }
+
+  if (REDUCED) {
+    size();
+    setBeat(0);
+  } else {
+    gsap.to(state, {
+      i: count - 1, ease: 'none',
+      scrollTrigger: {
+        trigger: track, start: 'top top', end: 'bottom bottom', scrub: 0.45,
+        onUpdate: (self) => setBeat(self.progress)
+      },
+      onUpdate: draw
+    });
+    size();
+  }
+
+  let rz;
+  addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(size, 150); }, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
+}
+
+frameSequence({
+  canvasId: 'sovereign', count: 44,
+  src: (n) => `assets/sovereign/f${String(n + 1).padStart(2, '0')}.webp`,
+  track: '.shop-pin', section: '#shop',
+  beatSel: '#shop .beat', railSel: '.shop-rail i'
+});
+
+frameSequence({
+  canvasId: 'essentials-seq', count: 46,
+  src: (n) => `assets/essentials/h${String(n + 1).padStart(2, '0')}.webp`,
+  track: '.ess-pin', section: '#essentials',
+  beatSel: '#essentials .beat', railSel: '.ess-rail i'
+});
+
+/* ============================================================
+   PRESETS - scroll-sheared rail.
+   Each card drifts at its own rate so the three shear past one
+   another in depth. One element per driver, as everywhere else:
+   .preset carries the scroll shear, .preset-shot the pointer tilt.
+   ============================================================ */
+(() => {
+  const rail = document.querySelector('.preset-rail');
+  if (!rail) return;
+  const cards = Array.from(rail.querySelectorAll('.preset'));
+  if (!cards.length) return;
+
+  if (!REDUCED) {
+    cards.forEach((card) => {
+      const d = Number(card.dataset.depth) || 0;
+
+      // entrance: rises and settles out of a slight turn
+      gsap.from(card, {
+        y: 70, opacity: 0, rotateY: d * -9, rotateX: 5, duration: 1.15,
+        ease: 'power3.out', delay: Math.abs(d) * 0.08,
+        scrollTrigger: { trigger: rail, start: 'top 82%', once: true }
+      });
+
+      // scroll shear: the outer two drift against the middle
+      gsap.fromTo(card,
+        { yPercent: d * 5 },
+        { yPercent: d * -5, xPercent: d * 1.6, ease: 'none',
+          scrollTrigger: { trigger: '#presets', start: 'top bottom', end: 'bottom top', scrub: true } });
+    });
+
+    // pointer tilt on the shot, so it never fights the scroll shear
+    if (matchMedia('(hover:hover)').matches) {
+      cards.forEach((card) => {
+        const shot = card.querySelector('.preset-shot');
+        gsap.set(shot, { transformPerspective: 900, transformOrigin: 'center' });
+        const qx = gsap.quickTo(shot, 'rotationY', { duration: 0.6, ease: 'power3' });
+        const qy = gsap.quickTo(shot, 'rotationX', { duration: 0.6, ease: 'power3' });
+        card.addEventListener('pointermove', (e) => {
+          const r = shot.getBoundingClientRect();
+          qx(((e.clientX - r.left) / r.width  - 0.5) * 12);
+          qy(((e.clientY - r.top)  / r.height - 0.5) * -9);
+        });
+        card.addEventListener('pointerleave', () => { qx(0); qy(0); });
+      });
+    }
+  }
+
+  /* ---- basket: single presets and the bundle ---- */
+  const status = document.getElementById('preset-status');
+  const bundle = document.getElementById('bundle-btn');
+  const picked = new Set();
+
+  function say(msg) {
+    if (!status) return;
+    status.textContent = msg;
+    if (!REDUCED) gsap.fromTo(status, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+  }
+
+  rail.querySelectorAll('[data-preset]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.preset;
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!on));
+      btn.textContent = on ? 'Add' : 'Added';
+      if (on) picked.delete(name); else picked.add(name);
+
+      if (!picked.size) { say('Basket empty — demo only, nothing is charged'); return; }
+      const total = picked.size * 5;
+      const note = picked.size === 3 ? ' — same price as the collection' : '';
+      say(picked.size + ' preset' + (picked.size > 1 ? 's' : '') +
+          ' · $' + total + note + ' — demo only, nothing is charged');
+    });
+  });
+
+  if (bundle) {
+    bundle.addEventListener('click', () => {
+      rail.querySelectorAll('[data-preset]').forEach((b) => {
+        b.setAttribute('aria-pressed', 'true');
+        b.textContent = 'Added';
+        picked.add(b.dataset.preset);
+      });
+      say('The Lavender Collection · $15 — demo only, nothing is charged');
+    });
+  }
+})();
+
+/* ---- essentials: countdown to the drop, and the waiting list ---- */
+(() => {
+  const el = document.getElementById('countdown');
+  if (!el) return;
+  const DROP = new Date('2027-01-15T10:00:00-06:00');   // 10am Central
+  const out = {};
+  el.querySelectorAll('[data-cd]').forEach((n) => { out[n.dataset.cd] = n; });
+
+  function tick() {
+    let ms = DROP - Date.now();
+    if (ms < 0) ms = 0;
+    const s = Math.floor(ms / 1000);
+    const pad = (n) => String(n).padStart(2, '0');
+    out.d.textContent = String(Math.floor(s / 86400));
+    out.h.textContent = pad(Math.floor(s / 3600) % 24);
+    out.m.textContent = pad(Math.floor(s / 60) % 60);
+    out.s.textContent = pad(s % 60);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  const form   = document.getElementById('waitlist');
+  const status = document.getElementById('drop-status');
+  if (!form || !status) return;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = form.querySelector('input[type="email"]');
+    const v = input.value.trim();
+    if (!v || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) {
+      status.textContent = 'Enter an email address to join the list';
+      return;
+    }
+    // demo page: nothing is sent, stored or subscribed
+    status.textContent = 'Demo only \u2014 no address is sent or stored';
+    input.value = '';
+    gsap.fromTo(status, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
+  });
+})();
+
+/* ---- shop: size / colourway pickers ---- */
+(() => {
+  const group = (sel) => {
+    const btns = Array.from(document.querySelectorAll(sel));
+    btns.forEach((b) => b.addEventListener('click', () => {
+      if (b.disabled) return;
+      btns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+    }));
+    return btns;
+  };
+  group('.sizes button');
+  const shades = group('.swatches button');
+  const nameEl = document.querySelector('.buy-name span');
+  shades.forEach((b) => b.addEventListener('click', () => {
+    if (nameEl) nameEl.textContent = `Sovereign 6\u2033 \u2014 ${b.getAttribute('aria-label')}`;
+  }));
+
+  const buy = document.getElementById('buy-btn');
+  const out = document.getElementById('buy-status');
+  if (buy && out) {
+    buy.addEventListener('click', () => {
+      const size  = document.querySelector('.sizes button[aria-pressed="true"]');
+      const shade = document.querySelector('.swatches button[aria-pressed="true"]');
+      out.textContent = `Sovereign 6" · ${shade ? shade.getAttribute('aria-label') : 'Obsidian'} · UK ${size ? size.textContent : '8'} added \u2014 demo only, nothing is charged`;
+      gsap.fromTo(out, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
+    });
+  }
+})();
+
+/* ============================================================
+   HERO EMBLEM — a flat render given real depth and kept turning.
+
+   The extrusion is a stack of alpha copies pushed back in Z; the side
+   wall that stack forms is what reads as solid. Two rules keep it
+   honest:
+     1. One element per driver (scroll / idle / pointer). Two tweens on
+        one property compound, and this turn compounded past edge-on.
+     2. Absolute values, never '+=' — a relative value re-resolves on
+        every ScrollTrigger refresh and drifts.
+   Total turn tops out near 56deg, short of where a stack of planes
+   gives itself away.
+   ============================================================ */
+(() => {
+  const stage = document.querySelector('.hero-emblem');
+  if (!stage) return;
+
+  const scr   = stage.querySelector('.emblem-scroll');   // scroll
+  const obj   = stage.querySelector('.emblem-3d');       // intro, then idle
+  const stack = stage.querySelector('.emblem-stack');    // pointer
+  const face  = stack.querySelector('.emblem-face');
+  const glow  = stage.querySelector('.emblem-glow');
+  const floor = stage.querySelector('.emblem-floor');
+
+  const SMALL  = innerWidth < 900;
+  const LAYERS = REDUCED ? 0 : (SMALL ? 11 : 18);
+  const DEPTH  = SMALL ? 0.8 : 1.0;   // px between layers, at rendered size
+  const REST   = { ry: -14, rx: 7 };
+
+  // build the side wall behind the lit face
+  for (let i = 1; i <= LAYERS; i++) {
+    const l = face.cloneNode();
+    l.classList.remove('emblem-face');
+    l.removeAttribute('alt');
+    l.setAttribute('aria-hidden', 'true');
+    l.style.transform = `translateZ(${-i * DEPTH}px)`;
+    l.style.filter = `brightness(${(1 - i / LAYERS * 0.72).toFixed(3)}) saturate(${(1 - i / LAYERS * 0.35).toFixed(3)})`;
+    l.style.zIndex = String(-i);
+    stack.appendChild(l);
+  }
+
+  if (REDUCED) {
+    gsap.set(obj, { rotateY: REST.ry, rotateX: REST.rx });
+    return;
+  }
+
+  gsap.set(obj, { rotateY: REST.ry, rotateX: REST.rx });
+
+  // idle only ever starts once the intro has handed the mark over
+  let idle = null;
+  function startIdle() {
+    if (idle) return;
+    idle = gsap.timeline({ repeat: -1, yoyo: true, defaults: { ease: 'sine.inOut' } })
+      .fromTo(obj, { rotationY: REST.ry }, { rotationY: REST.ry + 24, duration: 5.2 }, 0)
+      .fromTo(obj, { rotationX: REST.rx }, { rotationX: REST.rx - 12, duration: 3.6 }, 0)
+      .fromTo(obj, { y: 0 }, { y: -12, duration: 3.0 }, 0);
+    gsap.fromTo(glow,  { scale: 1, opacity: 1 }, { scale: 1.09, opacity: 0.82, duration: 4.8, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    gsap.fromTo(floor, { scaleX: 1, opacity: 1 }, { scaleX: 0.86, opacity: 0.7, duration: 3.0, ease: 'sine.inOut', repeat: -1, yoyo: true });
+  }
+
+  // entrance — turns in with the wordmark
+  const intro = gsap.timeline({ paused: true, onComplete: startIdle })
+    .fromTo(obj,
+      { rotationY: REST.ry - 170, scale: 0.78, opacity: 0 },
+      { rotationY: REST.ry, scale: 1, opacity: 1, duration: 1.5, ease: 'power3.out' }, 0)
+    .fromTo([glow, floor],
+      { opacity: 0, scale: 0.6 },
+      { opacity: 1, scale: 1, duration: 1.4, ease: 'power2.out', stagger: 0.1 }, 0.2);
+
+  window.__heroEmblemIn = intro;
+  // never let a stalled preloader leave the hero mark invisible
+  gsap.delayedCall(5, () => { if (intro.paused()) intro.play(); });
+
+  // pointer adds to the turn on its own element
+  if (matchMedia('(hover:hover)').matches) {
+    const px = gsap.quickTo(stack, 'rotationY', { duration: 1.0, ease: 'power3' });
+    const py = gsap.quickTo(stack, 'rotationX', { duration: 1.0, ease: 'power3' });
+    addEventListener('pointermove', (e) => {
+      const r = stage.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      px((e.clientX / innerWidth  - 0.5) * 2 * 12);
+      py((e.clientY / innerHeight - 0.5) * 2 * -9);
+    }, { passive: true });
+  }
+
+  // scrolling out of the hero carries it through a partial turn
+  gsap.fromTo(scr,
+    { rotationY: 0, rotationX: 0, y: 0 },
+    { rotationY: 34, rotationX: -12, y: 70, ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.6 } });
+})();
+
+/* ---- brand emblem: turns over on hover, like the brand film ---- */
+(() => {
+  const mark = document.querySelector('.brand-mark img');
+  if (!mark) return;
+  if (REDUCED) return;
+
+  gsap.set(mark, { transformPerspective: 420 });
+  gsap.from(mark, { rotationY: -140, opacity: 0, duration: 1.1, ease: 'power3.out', delay: 0.35 });
+
+  const brand = document.querySelector('.brand');
+  let turning = false;
+  brand.addEventListener('pointerenter', () => {
+    if (turning) return;
+    turning = true;
+    gsap.to(mark, {
+      rotationY: '+=360', duration: 1.1, ease: 'power3.inOut',
+      onComplete: () => { turning = false; }
+    });
+  });
+})();
+
+/* ---- custom cursor ---- */
+const cur = document.querySelector('.cursor');
+if (matchMedia('(hover:hover)').matches) {
+  const cx = gsap.quickTo(cur, 'x', { duration: 0.35, ease:'power3' });
+  const cy = gsap.quickTo(cur, 'y', { duration: 0.35, ease:'power3' });
+  addEventListener('pointermove', (e) => { cx(e.clientX); cy(e.clientY); }, { passive:true });
+  document.querySelectorAll('a, button, [data-hot], [data-tilt]').forEach(el => {
+    el.addEventListener('pointerenter', () => cur.classList.add('is-hot'));
+    el.addEventListener('pointerleave', () => cur.classList.remove('is-hot'));
+  });
+}
+
+/* ---- refresh once webfonts have settled, so pins measure correctly ---- */
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => ScrollTrigger.refresh());
+}
+addEventListener('load', () => ScrollTrigger.refresh());
+</script>
+</body>
+</html>

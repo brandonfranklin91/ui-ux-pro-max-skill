@@ -6,7 +6,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS_DIR="$REPO_ROOT/src/ui-ux-pro-max/scripts"
 SEARCH="$SCRIPTS_DIR/search.py"
 QUERY_OVERRIDE="${1:-}"
-EXPECTED_COUNT="${EXPECTED_DOMAIN_COUNT:-12}"
+EXPECTED_COUNT="${EXPECTED_DOMAIN_COUNT:-13}"
 
 smoke_query() {
   case "$1" in
@@ -20,6 +20,7 @@ smoke_query() {
     icons) echo "warning icon glyph symbol" ;;
     gsap) echo "gsap scroll reveal stagger animation" ;;
     react) echo "react performance rerender waterfall suspense" ;;
+    reactbits) echo "react bits split text animated background" ;;
     web) echo "aria form accessibility input outline" ;;
     google-fonts) echo "google font family sans serif variable" ;;
     *) return 1 ;;

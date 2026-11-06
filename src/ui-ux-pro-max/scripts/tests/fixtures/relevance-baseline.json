@@ -645,16 +645,16 @@
       "diagnostics": {
         "abstained": false,
         "calibration_version": "2026-08-12-v1",
-        "margin": 0.47825840830284605,
+        "margin": 0.5322677858258622,
         "normalized_query": "GSAP reveal elements when they enter the viewport on scroll",
         "query_rewrites": [
           "gsap->animation"
         ],
         "reason": "matched",
-        "runner_up_score": 7.3587320792912365,
+        "runner_up_score": 8.656647275910856,
         "search_query": "GSAP reveal elements when they enter the viewport on scroll animation",
         "token_coverage": 0.5555555555555556,
-        "top_score": 7.836990487594083
+        "top_score": 9.188915061736719
       },
       "expectedRoute": null,
       "grades": [
@@ -687,14 +687,14 @@
       "diagnostics": {
         "abstained": false,
         "calibration_version": "2026-08-12-v1",
-        "margin": 0.19985661655781062,
+        "margin": 0.2351868053485875,
         "normalized_query": "skeletn shimmer loader while async content waits",
         "query_rewrites": [],
         "reason": "matched",
-        "runner_up_score": 3.464834479866627,
+        "runner_up_score": 4.28667150548694,
         "search_query": "skeletn shimmer loader while async content waits",
         "token_coverage": 0.42857142857142855,
-        "top_score": 3.6646910964244377
+        "top_score": 4.521858310835528
       },
       "expectedRoute": null,
       "grades": [
@@ -3024,6 +3024,11 @@
     {
       "actual": [
         {
+          "Category": "Kinetic Headline (SplitText)",
+          "Intensity Tier": "Standard",
+          "Trigger": "load or in-view"
+        },
+        {
           "Category": "Stagger List",
           "Intensity Tier": "Complex",
           "Trigger": "load or scroll"
@@ -3032,27 +3037,22 @@
           "Category": "Scroll Reveal",
           "Intensity Tier": "Subtle",
           "Trigger": "scroll (viewport enter)"
-        },
-        {
-          "Category": "Stagger List",
-          "Intensity Tier": "Subtle",
-          "Trigger": "load or scroll"
         }
       ],
       "diagnostics": {
         "abstained": false,
         "calibration_version": "2026-08-12-v1",
-        "margin": 1.2795521952300577,
+        "margin": 0.5270684999951181,
         "normalized_query": "GSAP ScrollTrigger stagger reveal animation",
         "query_rewrites": [
           "gsap->animation",
           "scrolltrigger->scroll"
         ],
         "reason": "matched",
-        "runner_up_score": 3.4546110204576452,
+        "runner_up_score": 5.254692091028411,
         "search_query": "GSAP ScrollTrigger stagger reveal animation animation scroll",
         "token_coverage": 0.6666666666666666,
-        "top_score": 4.734163215687703
+        "top_score": 5.781760591023529
       },
       "expectedRoute": "gsap",
       "grades": [
@@ -3112,22 +3112,240 @@
       }
     },
     {
+      "actual": [
+        {
+          "Category": "Smooth Scroll (Lenis)",
+          "Intensity Tier": "Standard",
+          "Trigger": "scroll (continuous)"
+        },
+        {
+          "Category": "Smooth Scroll (Lenis)",
+          "Intensity Tier": "Complex",
+          "Trigger": "scroll (continuous)"
+        },
+        {
+          "Category": "Smooth Scroll (Lenis)",
+          "Intensity Tier": "Subtle",
+          "Trigger": "page load"
+        }
+      ],
+      "diagnostics": {
+        "abstained": false,
+        "calibration_version": "2026-08-12-v1",
+        "margin": 5.820962692443898,
+        "normalized_query": "sync Lenis smooth scroll with ScrollTrigger scrub",
+        "query_rewrites": [
+          "scrolltrigger->scroll"
+        ],
+        "reason": "matched",
+        "runner_up_score": 6.916236449202349,
+        "search_query": "sync Lenis smooth scroll with ScrollTrigger scrub scroll",
+        "token_coverage": 0.7142857142857143,
+        "top_score": 12.737199141646247
+      },
+      "expectedRoute": null,
+      "grades": [
+        2,
+        1,
+        1
+      ],
+      "id": "domain-gsap-lenis-scrolltrigger",
+      "route": "gsap",
+      "scores": {
+        "mrr3": 1.0,
+        "ndcg3": 1.0,
+        "p1": 1.0,
+        "p3": 1.0
+      }
+    },
+    {
+      "actual": [
+        {
+          "Category": "React Animation Setup (useGSAP)",
+          "Intensity Tier": "Setup",
+          "Trigger": "component mount"
+        },
+        {
+          "Category": "Smooth Scroll (Lenis)",
+          "Intensity Tier": "Complex",
+          "Trigger": "scroll (continuous)"
+        },
+        {
+          "Category": "Hover Micro-interaction",
+          "Intensity Tier": "Complex",
+          "Trigger": "hover + mousemove"
+        }
+      ],
+      "diagnostics": {
+        "abstained": false,
+        "calibration_version": "2026-08-12-v1",
+        "margin": 12.499984998245688,
+        "normalized_query": "useGSAP hook cleanup when a React component unmounts",
+        "query_rewrites": [],
+        "reason": "matched",
+        "runner_up_score": 2.0960879347990367,
+        "search_query": "useGSAP hook cleanup when a React component unmounts",
+        "token_coverage": 0.7142857142857143,
+        "top_score": 14.596072933044725
+      },
+      "expectedRoute": null,
+      "grades": [
+        2,
+        1,
+        0
+      ],
+      "id": "domain-gsap-usegsap-cleanup",
+      "route": "gsap",
+      "scores": {
+        "mrr3": 1.0,
+        "ndcg3": 1.0,
+        "p1": 1.0,
+        "p3": 0.6666666666666666
+      }
+    },
+    {
+      "actual": [
+        {
+          "Category": "Text Animations",
+          "Component": "SplitText"
+        },
+        {
+          "Category": "Text Animations",
+          "Component": "BlurText"
+        },
+        {
+          "Category": "Text Animations",
+          "Component": "SplitFlapText"
+        }
+      ],
+      "diagnostics": {
+        "abstained": false,
+        "calibration_version": "2026-08-12-v1",
+        "margin": 10.472228560384238,
+        "normalized_query": "split text headline reveal with staggered words",
+        "query_rewrites": [],
+        "reason": "matched",
+        "runner_up_score": 11.043026504495138,
+        "search_query": "split text headline reveal with staggered words",
+        "token_coverage": 1.0,
+        "top_score": 21.515255064879376
+      },
+      "expectedRoute": null,
+      "grades": [
+        2,
+        1,
+        0
+      ],
+      "id": "domain-reactbits-split-text",
+      "route": "reactbits",
+      "scores": {
+        "mrr3": 1.0,
+        "ndcg3": 0.878961873034099,
+        "p1": 1.0,
+        "p3": 0.6666666666666666
+      }
+    },
+    {
+      "actual": [
+        {
+          "Category": "Animations",
+          "Component": "LogoLoop"
+        },
+        {
+          "Category": "Text Animations",
+          "Component": "ScrollVelocity"
+        },
+        {
+          "Category": "Components",
+          "Component": "FlowingMenu"
+        }
+      ],
+      "diagnostics": {
+        "abstained": false,
+        "calibration_version": "2026-08-12-v1",
+        "margin": 10.061002562051057,
+        "normalized_query": "infinite scrolling logo marquee for a trusted by section",
+        "query_rewrites": [],
+        "reason": "matched",
+        "runner_up_score": 10.022499867634133,
+        "search_query": "infinite scrolling logo marquee for a trusted by section",
+        "token_coverage": 1.0,
+        "top_score": 20.08350242968519
+      },
+      "expectedRoute": null,
+      "grades": [
+        2,
+        1,
+        0
+      ],
+      "id": "domain-reactbits-logo-marquee",
+      "route": "reactbits",
+      "scores": {
+        "mrr3": 1.0,
+        "ndcg3": 1.0,
+        "p1": 1.0,
+        "p3": 0.6666666666666666
+      }
+    },
+    {
+      "actual": [
+        {
+          "Category": "Backgrounds",
+          "Component": "Aurora"
+        },
+        {
+          "Category": "Backgrounds",
+          "Component": "SoftAurora"
+        },
+        {
+          "Category": "Backgrounds",
+          "Component": "GridDistortion"
+        }
+      ],
+      "diagnostics": {
+        "abstained": false,
+        "calibration_version": "2026-08-12-v1",
+        "margin": 1.4889358255510654,
+        "normalized_query": "React Bits aurora background component",
+        "query_rewrites": [],
+        "reason": "matched",
+        "runner_up_score": 8.869698994080936,
+        "search_query": "React Bits aurora background component",
+        "token_coverage": 0.6,
+        "top_score": 10.358634819632002
+      },
+      "expectedRoute": "reactbits",
+      "grades": [
+        2,
+        1,
+        0
+      ],
+      "id": "auto-route-reactbits",
+      "route": "reactbits",
+      "scores": {
+        "mrr3": 1.0,
+        "ndcg3": 1.0,
+        "p1": 1.0,
+        "p3": 0.6666666666666666
+      }
+    },
+    {
       "falsePositiveTargets": [],
       "falsePositives": 0,
       "id": "negative-gibberish-alpha",
-      "negativeChecks": 34
+      "negativeChecks": 35
     },
     {
       "falsePositiveTargets": [],
       "falsePositives": 0,
       "id": "negative-gibberish-numeric",
-      "negativeChecks": 34
+      "negativeChecks": 35
     },
     {
       "falsePositiveTargets": [],
       "falsePositives": 0,
       "id": "negative-geography-fact",
-      "negativeChecks": 34
+      "negativeChecks": 35
     },
     {
       "falsePositiveTargets": [
@@ -3138,19 +3356,19 @@
       ],
       "falsePositives": 4,
       "id": "negative-math-proof",
-      "negativeChecks": 34
+      "negativeChecks": 35
     },
     {
       "falsePositiveTargets": [],
       "falsePositives": 0,
       "id": "negative-cooking",
-      "negativeChecks": 34
+      "negativeChecks": 35
     },
     {
       "falsePositiveTargets": [],
       "falsePositives": 0,
       "id": "negative-biology",
-      "negativeChecks": 34
+      "negativeChecks": 35
     },
     {
       "actual": {
@@ -3268,34 +3486,35 @@
   ],
   "metrics": {
     "designSystemCoherence": 1.0,
-    "mrrAt3": 0.868421052631579,
-    "ndcgAt3": 0.861015560539328,
-    "negativeAbstention": 0.9803921568627451,
-    "precisionAt1": 0.8157894736842105,
-    "precisionAt3": 0.3815789473684211,
+    "mrrAt3": 0.8765432098765432,
+    "ndcgAt3": 0.8681005490620127,
+    "negativeAbstention": 0.9809523809523809,
+    "precisionAt1": 0.8271604938271605,
+    "precisionAt3": 0.40329218106995884,
     "routingAccuracy": 1.0,
     "typoRecoveryAt3": 1.0
   },
-  "oracleFingerprint": "02e7226428c64a995ec24ae104ce4d186f5f91bf0f062556e90ef9b0fcb6d67a",
-  "runtimeFingerprint": "3f902a88e2f9bd5f12965664cd31a60a31117de69f8b19ad1968536ea3c984b7",
+  "oracleFingerprint": "9cdb48f112eda13c6dad0eb32a0d17cdfc1ed6ba149e94535a1644bb6edfe002",
+  "runtimeFingerprint": "471fee73fd5dd4b1b48bf8ae5b4e85c8782c7034656f442fb470b61be9ad4450",
   "samples": {
-    "cases": 90,
+    "cases": 95,
     "designSystem": 8,
     "domain:chart": 2,
     "domain:color": 2,
     "domain:google-fonts": 2,
-    "domain:gsap": 2,
+    "domain:gsap": 4,
     "domain:icons": 2,
     "domain:landing": 2,
     "domain:product": 2,
     "domain:react": 2,
+    "domain:reactbits": 2,
     "domain:style": 2,
     "domain:typography": 2,
     "domain:ux": 2,
     "domain:web": 2,
-    "negativeChecks": 204,
-    "retrieval": 76,
-    "routing": 8,
+    "negativeChecks": 210,
+    "retrieval": 81,
+    "routing": 9,
     "stack:angular": 2,
     "stack:astro": 2,
     "stack:avalonia": 2,
@@ -3325,39 +3544,39 @@
     "calibration": {
       "metrics": {
         "designSystemCoherence": 1.0,
-        "mrrAt3": 0.9316239316239316,
-        "ndcgAt3": 0.9182517276204706,
+        "mrrAt3": 0.9365079365079365,
+        "ndcgAt3": 0.9212090297674393,
         "negativeAbstention": 1.0,
-        "precisionAt1": 0.8974358974358975,
-        "precisionAt3": 0.40170940170940167,
+        "precisionAt1": 0.9047619047619048,
+        "precisionAt3": 0.42857142857142855,
         "routingAccuracy": 1.0,
         "typoRecoveryAt3": 0.0
       },
       "samples": {
-        "cases": 46,
+        "cases": 49,
         "designSystem": 4,
-        "negativeChecks": 102,
-        "retrieval": 39,
-        "routing": 5,
+        "negativeChecks": 105,
+        "retrieval": 42,
+        "routing": 6,
         "typo": 0
       }
     },
     "held_out": {
       "metrics": {
         "designSystemCoherence": 1.0,
-        "mrrAt3": 0.8018018018018018,
-        "ndcgAt3": 0.8006855465889345,
-        "negativeAbstention": 0.9607843137254902,
-        "precisionAt1": 0.7297297297297297,
-        "precisionAt3": 0.36036036036036034,
+        "mrrAt3": 0.811965811965812,
+        "ndcgAt3": 0.8109068006100149,
+        "negativeAbstention": 0.9619047619047619,
+        "precisionAt1": 0.7435897435897436,
+        "precisionAt3": 0.37606837606837606,
         "routingAccuracy": 1.0,
         "typoRecoveryAt3": 1.0
       },
       "samples": {
-        "cases": 44,
+        "cases": 46,
         "designSystem": 4,
-        "negativeChecks": 102,
-        "retrieval": 37,
+        "negativeChecks": 105,
+        "retrieval": 39,
         "routing": 3,
         "typo": 5
       }

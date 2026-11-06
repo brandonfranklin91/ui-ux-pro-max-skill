@@ -195,7 +195,7 @@ a{color:inherit;text-decoration:none}
   transition:background .4s var(--ease),border-color .4s var(--ease),color .4s var(--ease);
 }
 .nav-cta:hover{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
-@media(max-width:860px){ .nav-links{display:none} }
+@media(max-width:1080px){ .nav-links{display:none} }
 @media(max-width:560px){
   .nav-cta{padding:9px 14px;font-size:10px;letter-spacing:.14em;white-space:nowrap}
   .brand .bname{font-size:16px}
@@ -926,6 +926,125 @@ section{position:relative;padding-inline:var(--gutter)}
 .ess-still{margin:0}
 
 /* ============================================================
+   PRESETS — The Lavender Collection
+   A scroll-sheared rail rather than a third sticky scrub: the page
+   already carries two, and three of the same motion would read as
+   one long gimmick.
+   ============================================================ */
+#presets{padding-block:clamp(70px,12vh,150px);overflow:clip}
+
+.preset-rail{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(14px,2.4vw,34px);
+  align-items:start;
+  perspective:1400px;
+  max-width:1120px;
+  margin-inline:auto;
+}
+@media(max-width:760px){
+  .preset-rail{grid-template-columns:1fr;gap:clamp(22px,4vh,36px);max-width:420px;margin-inline:auto}
+}
+
+.preset{
+  position:relative;
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+.preset-shot{
+  position:relative;
+  aspect-ratio:3/4;
+  border-radius:8px;
+  overflow:hidden;
+  border:1px solid var(--line-strong);
+  background:var(--plum);
+  will-change:transform;
+}
+.preset-shot img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transform:scale(1.02);
+  transition:transform .7s var(--ease);
+}
+.preset:hover .preset-shot img{transform:scale(1.06)}
+.preset-shot::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 56%,rgba(14,11,29,.72));
+}
+.preset-no{
+  position:absolute;z-index:2;left:14px;top:12px;
+  font-size:10px;letter-spacing:.3em;color:var(--mist);
+  text-shadow:0 1px 8px rgba(14,11,29,.9);
+}
+.preset-body{padding-top:clamp(14px,2vh,20px)}
+.preset-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(17px,1.9vw,25px);line-height:1.1;letter-spacing:-.01em;
+  color:var(--paper);margin:0 0 8px;
+}
+.preset-note{font-size:13px;color:rgba(201,194,227,.72);margin:0 0 16px;min-height:3.2em}
+.preset-buy{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border-top:1px solid var(--line);padding-top:14px;
+}
+.preset-price{
+  font-family:var(--font-display);
+  font-size:clamp(18px,2vw,24px);color:var(--lilac);
+}
+.btn-small{
+  font:inherit;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  padding:11px 18px;border-radius:999px;cursor:pointer;
+  background:transparent;color:var(--paper);
+  border:1px solid var(--line-strong);
+  transition:background .35s var(--ease),border-color .35s var(--ease),color .35s var(--ease);
+}
+.btn-small:hover{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+.btn-small[aria-pressed="true"]{background:var(--lilac);border-color:var(--lilac);color:var(--ink)}
+
+/* ---- bundle ---- */
+.preset-bundle{
+  margin-top:clamp(34px,6vh,70px);
+  display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+  gap:clamp(22px,4vw,56px);
+  align-items:center;
+  border:1px solid var(--line-strong);
+  border-radius:10px;
+  padding:clamp(22px,3.6vw,44px);
+  position:relative;
+  isolation:isolate;
+  background:
+    radial-gradient(90% 150% at 88% 50%,rgba(90,59,140,.34),transparent 70%),
+    rgba(20,16,40,.82);
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+}
+@media(max-width:760px){ .preset-bundle{grid-template-columns:1fr} }
+.bundle-name{
+  font-family:var(--font-display);font-weight:400;
+  font-size:clamp(23px,3vw,38px);line-height:1.08;letter-spacing:-.02em;
+  color:var(--paper);margin:0 0 12px;
+}
+.bundle-desc{max-width:48ch;font-size:14px;color:rgba(201,194,227,.82);margin:0}
+.bundle-buy{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+@media(min-width:761px){ .bundle-buy{align-items:flex-end} }
+.bundle-price{
+  font-family:var(--font-display);
+  font-size:clamp(34px,4.6vw,62px);line-height:1;color:var(--paper);
+}
+.bundle-price small{
+  display:block;margin-top:10px;
+  font-family:var(--font-ui);font-size:10.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--muted);
+}
+.preset-status{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);
+  min-height:1.2em;margin-top:18px;
+}
+.preset-foot{
+  margin-top:clamp(18px,2.6vh,28px);
+  font-size:11.5px;color:var(--muted);font-style:italic;
+}
+
+/* ============================================================
    CAPABILITIES
    ============================================================ */
 #capabilities{padding-block:clamp(80px,14vh,170px)}
@@ -1083,7 +1202,7 @@ section{position:relative;padding-inline:var(--gutter)}
     <a href="#work">Work</a>
     <a href="#shop">Shop</a>
     <a href="#essentials">Essentials</a>
-    <a href="#capabilities">Capabilities</a>
+    <a href="#presets">Presets</a>
   </nav>
   <a class="nav-cta" href="#contact">Start a project</a>
 </header>
@@ -1420,6 +1539,89 @@ section{position:relative;padding-inline:var(--gutter)}
     </div>
   </section>
 
+  <!-- ======================= PRESETS ======================= -->
+  <section id="presets">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow r-fade">Presets &mdash; The Lavender Collection</p>
+          <h2 class="sec-title r-line"><span>Three moods. One signature.</span></h2>
+        </div>
+        <p class="sec-note r-fade">Cinematic Lightroom presets built from our own campaign grades. Desktop and mobile, with the camera profiles we actually shoot on.</p>
+      </div>
+
+      <div class="preset-rail">
+        <article class="preset" data-depth="-1">
+          <div class="preset-shot">
+            <img src="assets/presets/p1.webp" width="640" height="1006"
+                 alt="Lavender Soft: the portrait graded with lifted shadows and a warm lilac cast."
+                 loading="lazy" decoding="async">
+            <span class="preset-no" aria-hidden="true">01</span>
+          </div>
+          <div class="preset-body">
+            <h3 class="preset-name">Lavender Soft</h3>
+            <p class="preset-note">Lifted blacks and a warm lilac cast. The daylight one &mdash; skin stays skin.</p>
+            <div class="preset-buy">
+              <span class="preset-price">$5</span>
+              <button type="button" class="btn-small" data-preset="Lavender Soft" aria-pressed="false">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="preset" data-depth="0">
+          <div class="preset-shot">
+            <img src="assets/presets/p2.webp" width="640" height="1006"
+                 alt="Lavender Noir: the same portrait graded with deeper contrast and a cooler haze."
+                 loading="lazy" decoding="async">
+            <span class="preset-no" aria-hidden="true">02</span>
+          </div>
+          <div class="preset-body">
+            <h3 class="preset-name">Lavender Noir</h3>
+            <p class="preset-note">Contrast pulled down into the shadows, haze left in. The studio one.</p>
+            <div class="preset-buy">
+              <span class="preset-price">$5</span>
+              <button type="button" class="btn-small" data-preset="Lavender Noir" aria-pressed="false">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="preset" data-depth="1">
+          <div class="preset-shot">
+            <img src="assets/presets/p3.webp" width="640" height="1006"
+                 alt="Lavender After Dark: the same portrait graded darkest, with a cold violet edge."
+                 loading="lazy" decoding="async">
+            <span class="preset-no" aria-hidden="true">03</span>
+          </div>
+          <div class="preset-body">
+            <h3 class="preset-name">Lavender After Dark</h3>
+            <p class="preset-note">Crushed and cold, violet on the edges. For anything shot after nine.</p>
+            <div class="preset-buy">
+              <span class="preset-price">$5</span>
+              <button type="button" class="btn-small" data-preset="Lavender After Dark" aria-pressed="false">Add</button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="preset-bundle r-fade">
+        <div>
+          <h3 class="bundle-name">The Lavender Collection &mdash; all three</h3>
+          <p class="bundle-desc">
+            Every mood in one install, plus the .XMP and .DNG files so they load
+            on desktop and on mobile Lightroom.
+          </p>
+        </div>
+        <div class="bundle-buy">
+          <span class="bundle-price">$15<small>Same as buying all three</small></span>
+          <button type="button" class="btn-primary" id="bundle-btn">Get the collection</button>
+        </div>
+      </div>
+
+      <p class="preset-status" id="preset-status" role="status"></p>
+      <p class="preset-foot r-fade">Colour mood previews &mdash; final results vary by photo.</p>
+    </div>
+  </section>
+
   <!-- ======================= CAPABILITIES ======================= -->
   <section id="capabilities">
     <div class="wrap">
@@ -1711,9 +1913,11 @@ if (!REDUCED) {
   // SHOP : the product stage is the hero here, so the mark recedes
         .to(path, { camX: 0.4, camY: 0.6, camZ: 15, ribX: 4.6, ribY: -1.2, rotY: Math.PI*3.6, ribScale: 0.4, fog: 0.03, glow: 0.14 }, 0.60)
   // ...and stays back through the buy panel and the Essentials stage
-        .to(path, { camX: 0.6, camY: 0.5, camZ: 15.4, ribX: 5.0, ribY: -1.3, rotY: Math.PI*3.9, ribScale: 0.38, glow: 0.12 }, 0.74)
-  // CAPABILITIES -> CONTACT : the mark returns, centred and close
-        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4.3, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.89);
+        .to(path, { camX: 0.6, camY: 0.5, camZ: 15.4, ribX: 5.0, ribY: -1.3, rotY: Math.PI*3.9, ribScale: 0.38, glow: 0.12 }, 0.70)
+  // PRESETS : the grades carry the colour here, so the mark stays dim
+        .to(path, { camX: 0.5, camY: 0.4, camZ: 14.6, ribX: -5.2, ribY: -1.0, rotY: Math.PI*4.1, ribScale: 0.42, glow: 0.16 }, 0.82)
+  // CONTACT : the mark returns, centred and close
+        .to(path, { camX: 0, camY: 0, camZ: 5.6, ribX: 0, ribY: 0, rotY: Math.PI*4.4, rotX: 0, rotZ: 0, ribScale: 1.05, fog: 0.07, glow: 0.85 }, 0.91);
 }
 
 /* ============================================================
@@ -2152,6 +2356,92 @@ frameSequence({
   track: '.ess-pin', section: '#essentials',
   beatSel: '#essentials .beat', railSel: '.ess-rail i'
 });
+
+/* ============================================================
+   PRESETS - scroll-sheared rail.
+   Each card drifts at its own rate so the three shear past one
+   another in depth. One element per driver, as everywhere else:
+   .preset carries the scroll shear, .preset-shot the pointer tilt.
+   ============================================================ */
+(() => {
+  const rail = document.querySelector('.preset-rail');
+  if (!rail) return;
+  const cards = Array.from(rail.querySelectorAll('.preset'));
+  if (!cards.length) return;
+
+  if (!REDUCED) {
+    cards.forEach((card) => {
+      const d = Number(card.dataset.depth) || 0;
+
+      // entrance: rises and settles out of a slight turn
+      gsap.from(card, {
+        y: 70, opacity: 0, rotateY: d * -9, rotateX: 5, duration: 1.15,
+        ease: 'power3.out', delay: Math.abs(d) * 0.08,
+        scrollTrigger: { trigger: rail, start: 'top 82%', once: true }
+      });
+
+      // scroll shear: the outer two drift against the middle
+      gsap.fromTo(card,
+        { yPercent: d * 5 },
+        { yPercent: d * -5, xPercent: d * 1.6, ease: 'none',
+          scrollTrigger: { trigger: '#presets', start: 'top bottom', end: 'bottom top', scrub: true } });
+    });
+
+    // pointer tilt on the shot, so it never fights the scroll shear
+    if (matchMedia('(hover:hover)').matches) {
+      cards.forEach((card) => {
+        const shot = card.querySelector('.preset-shot');
+        gsap.set(shot, { transformPerspective: 900, transformOrigin: 'center' });
+        const qx = gsap.quickTo(shot, 'rotationY', { duration: 0.6, ease: 'power3' });
+        const qy = gsap.quickTo(shot, 'rotationX', { duration: 0.6, ease: 'power3' });
+        card.addEventListener('pointermove', (e) => {
+          const r = shot.getBoundingClientRect();
+          qx(((e.clientX - r.left) / r.width  - 0.5) * 12);
+          qy(((e.clientY - r.top)  / r.height - 0.5) * -9);
+        });
+        card.addEventListener('pointerleave', () => { qx(0); qy(0); });
+      });
+    }
+  }
+
+  /* ---- basket: single presets and the bundle ---- */
+  const status = document.getElementById('preset-status');
+  const bundle = document.getElementById('bundle-btn');
+  const picked = new Set();
+
+  function say(msg) {
+    if (!status) return;
+    status.textContent = msg;
+    if (!REDUCED) gsap.fromTo(status, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+  }
+
+  rail.querySelectorAll('[data-preset]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.preset;
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!on));
+      btn.textContent = on ? 'Add' : 'Added';
+      if (on) picked.delete(name); else picked.add(name);
+
+      if (!picked.size) { say('Basket empty — demo only, nothing is charged'); return; }
+      const total = picked.size * 5;
+      const note = picked.size === 3 ? ' — same price as the collection' : '';
+      say(picked.size + ' preset' + (picked.size > 1 ? 's' : '') +
+          ' · $' + total + note + ' — demo only, nothing is charged');
+    });
+  });
+
+  if (bundle) {
+    bundle.addEventListener('click', () => {
+      rail.querySelectorAll('[data-preset]').forEach((b) => {
+        b.setAttribute('aria-pressed', 'true');
+        b.textContent = 'Added';
+        picked.add(b.dataset.preset);
+      });
+      say('The Lavender Collection · $15 — demo only, nothing is charged');
+    });
+  }
+})();
 
 /* ---- essentials: countdown to the drop, and the waiting list ---- */
 (() => {

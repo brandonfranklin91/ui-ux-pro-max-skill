@@ -38,6 +38,7 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentEl
 </head>
 <body>
 <a class="skip" href="#services">Skip to content</a>
+<canvas class="ambient" aria-hidden="true"></canvas>
 
 <header class="header" id="header">
   <a class="header__logo" href="#top" aria-label="Bud Haynes Heating &amp; Air Conditioning — home">
@@ -336,7 +337,7 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentEl
 </footer>
 
 <script src="js/site.js" defer></script>
-<!-- Built from js/hero.js + world.js + kit.js + vendor/three by tools/build.sh -->
+<!-- Built from js/main.js (hero + ambient background) and vendor/three by tools/build.sh -->
 <script src="js/hero.bundle.js" defer></script>
 </body>
 </html>

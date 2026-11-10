@@ -170,6 +170,8 @@ python3 {{SCRIPT_PATH}} "<keyword>" --domain <domain> [-n <max_results>]
 | Icon suggestions | `icons` | `"decorative icon aria hidden" --domain icons` |
 | Individual Google Fonts | `google-fonts` | `"variable sans serif" --domain google-fonts` |
 | GSAP animation snippets | `gsap` | `"scroll reveal stagger" --domain gsap` |
+| Lenis smooth scroll + GSAP setup | `gsap` | `"lenis smooth scroll scrolltrigger" --domain gsap` |
+| React Bits animated components | `reactbits` | `"split text headline reveal" --domain reactbits` |
 
 ### Step 4: Stack Guidelines
 
@@ -200,7 +202,8 @@ python3 {{SCRIPT_PATH}} "virtualized list" --stack react-native
 | `landing` | Page structure, CTA strategies | hero, hero-centric, testimonial, pricing, social-proof |
 | `chart` | Chart types, library recommendations | trend, comparison, timeline, funnel, pie |
 | `ux` | Best practices, anti-patterns | animation, accessibility, z-index, loading |
-| `gsap` | GSAP animation skeletons by intensity tier | scroll reveal, stagger, magnetic cursor, page transition |
+| `gsap` | GSAP animation skeletons by intensity tier, plus GSAP install/useGSAP/matchMedia setup and Lenis smooth scroll | scroll reveal, stagger, magnetic cursor, page transition, lenis, usegsap, splittext |
+| `reactbits` | React Bits animated components (text, cursor, cards, nav, WebGL backgrounds) with shadcn/jsrepo install commands | split text, logo marquee, custom cursor, aurora background, bento |
 | `react` | React/Next.js performance | waterfall, bundle, suspense, memo, rerender, cache |
 | `web` | App interface guidelines (iOS/Android/React Native) | accessibilityLabel, touch targets, safe areas, Dynamic Type |
 | `icons` | Icon recommendations with import code | arrow, navigation, lucide, phosphor |

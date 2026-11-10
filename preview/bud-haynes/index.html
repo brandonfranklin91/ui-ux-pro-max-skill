@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bud Haynes Heating &amp; Air Conditioning</title>
+<meta name="description" content="Bud Haynes Heating & Air Conditioning — locally owned heating and cooling service, maintenance and new systems.">
+<meta name="theme-color" content="#282B4A">
+<link rel="icon" href="assets/mascot.webp">
+
+<!-- ================================================================
+     EDIT ME — company details. Every value below is a placeholder
+     until confirmed; change it here and it updates across the page.
+     ================================================================ -->
+<script>
+window.BUD_HAYNES = {
+  phone:       '(000) 000-0000',            // display format
+  phoneHref:   '+10000000000',              // digits for the tel: link
+  email:       'office@example.com',
+  serviceArea: 'Okmulgee County and surrounding areas',
+  location:    'Okmulgee, Oklahoma',
+  hours:       'Monday – Friday, 0:00 am – 0:00 pm',
+  // Service-request form destination. Paste a form endpoint that accepts a
+  // JSON POST (Formspree, Web3Forms, Basin, or your own). While this is
+  // empty the form will not claim to have sent anything.
+  formEndpoint: ''
+};
+// Pinned cinematic hero unless the visitor prefers reduced motion.
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('hero-pinned');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,700..900&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<link rel="preload" as="image" href="assets/hero-1.webp">
+
+</head>
+<body>
+<a class="skip" href="#services">Skip to content</a>
+<canvas class="ambient" aria-hidden="true"></canvas>
+
+<header class="header" id="header">
+  <a class="header__logo" href="#top" aria-label="Bud Haynes Heating &amp; Air Conditioning — home">
+    <img src="assets/logo-sm.webp" width="360" height="231" alt="Bud Haynes Heating &amp; Air Conditioning">
+  </a>
+  <nav class="header__nav" id="nav" aria-label="Primary">
+    <a href="#services">Services</a>
+    <a href="#maintenance">Maintenance</a>
+    <a href="#systems">New Systems</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a class="btn btn--solid header__nav-cta" href="#contact">Schedule Service</a>
+  </nav>
+  <a class="btn btn--solid header__cta" href="#contact">Schedule Service</a>
+  <button class="header__menu" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<main>
+<!-- ============================== HERO ============================== -->
+<section class="hero" id="top" aria-label="Introduction">
+  <div class="hero__stage">
+    <canvas class="hero__canvas" aria-hidden="true"></canvas>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="hero__veil" aria-hidden="true"></div>
+
+    <svg class="hero__leaders" aria-hidden="true" preserveAspectRatio="none">
+      <path data-for="guard"/><path data-for="fan"/><path data-for="coil"/><path data-for="compressor"/><path data-for="control"/><path data-for="valves"/>
+      <circle r="3" data-dot="guard"/><circle r="3" data-dot="fan"/><circle r="3" data-dot="coil"/><circle r="3" data-dot="compressor"/><circle r="3" data-dot="control"/><circle r="3" data-dot="valves"/>
+    </svg>
+    <ul class="hero__tags" aria-label="Parts of an outdoor condenser">
+      <li class="tag" data-anchor="guard" data-dx="-150" data-dy="-70"><b>Fan guard</b><span>Top panel and grille</span></li>
+      <li class="tag" data-anchor="fan" data-dx="210" data-dy="-70"><b>Condenser fan</b><span>Motor and blades</span></li>
+      <li class="tag tag--wide" data-anchor="coil" data-dx="200" data-dy="-20"><b>Condenser coil</b><span>Fins and tubing</span></li>
+      <li class="tag" data-anchor="compressor" data-dx="-330" data-dy="-235"><b>Compressor</b><span>Heart of the system</span></li>
+      <li class="tag tag--wide" data-anchor="control" data-dx="210" data-dy="60"><b>Controls</b><span>Board and capacitor</span></li>
+      <li class="tag" data-anchor="valves" data-dx="170" data-dy="96"><b>Service valves</b><span>Refrigerant lines</span></li>
+    </ul>
+
+    <div class="hero__scenes">
+      <article class="scene scene--1 is-on">
+        <p class="eyebrow">Heating &amp; Air Conditioning · <span data-site="location">Okmulgee, Oklahoma</span></p>
+        <h1 class="display">Your comfort.<br>Our commitment.</h1>
+        <p class="lede">Heating and cooling service that keeps your home feeling right.</p>
+        <div class="actions">
+          <a class="btn btn--solid" href="#contact">Schedule Service</a>
+          <a class="btn btn--line" data-site-tel href="tel:+10000000000">Call Bud Haynes</a>
+        </div>
+      </article>
+      <article class="scene scene--2">
+        <p class="eyebrow">A closer look</p>
+        <h2 class="display">Every detail.<br>Checked with care.</h2>
+        <p class="lede">From the fan at the top to the valves at the base, we look at the whole unit.</p>
+      </article>
+      <article class="scene scene--3">
+        <p class="eyebrow">Follow the system</p>
+        <h2 class="display">Comfort,<br>in motion.</h2>
+        <p class="lede">Outdoor unit, air handler, ductwork, vent — one system, working together.</p>
+      </article>
+      <article class="scene scene--4">
+        <p class="eyebrow">At home</p>
+        <h2 class="display">Comfort, handled.</h2>
+        <p class="lede">Make your next service visit a Bud Haynes visit.</p>
+        <div class="actions">
+          <a class="btn btn--solid" href="#contact">Request Service</a>
+          <a class="btn btn--line" href="#services">Explore Our Services</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="hero__chapter" aria-hidden="true">
+      <span class="hero__chapter-num">01</span><span class="hero__chapter-of">/ 04</span>
+      <span class="hero__chapter-name">Outside</span>
+      <span class="hero__chapter-bar"><i></i></span>
+    </div>
+    <div class="hero__hint" aria-hidden="true"><span>Scroll</span><i></i></div>
+  </div>
+</section>
+
+<!-- ============================ SERVICES ============================ -->
+<section class="section services" id="services" aria-labelledby="services-h">
+  <div class="wrap">
+    <header class="section__head">
+      <p class="eyebrow">Services</p>
+      <h2 class="title" id="services-h">Heating and cooling,<br>looked after.</h2>
+      <p class="section__intro">Residential and light commercial work — from a system that has stopped keeping up to one that is ready to be replaced.</p>
+    </header>
+    <ol class="svc">
+      <li class="svc__item reveal">
+        <figure class="svc__img"><img src="assets/svc-ac.webp" width="1200" height="900" loading="lazy" alt="Top of an outdoor air conditioning condenser, showing the fan guard"></figure>
+        <div class="svc__body"><span class="svc__n">01</span><h3>Air Conditioning</h3>
+          <p>Troubleshooting and repair for central air systems that are running warm, running constantly, or not running at all.</p></div>
+      </li>
+      <li class="svc__item reveal">
+        <figure class="svc__img"><img src="assets/svc-heat.webp" width="1200" height="900" loading="lazy" alt="Indoor furnace and air handler cabinet"></figure>
+        <div class="svc__body"><span class="svc__n">02</span><h3>Heating</h3>
+          <p>Service for furnaces, heat pumps and air handlers, so the house is ready before the cold arrives.</p></div>
+      </li>
+      <li class="svc__item reveal">
+        <figure class="svc__img"><img src="assets/svc-maint.webp" width="1200" height="900" loading="lazy" alt="Technical cutaway view of a condenser with its internal components outlined"></figure>
+        <div class="svc__body"><span class="svc__n">03</span><h3>Maintenance</h3>
+          <p>Seasonal check-ups that look over the parts doing the work — coils, fan, electrical, airflow — before the busy months.</p></div>
+      </li>
+      <li class="svc__item reveal">
+        <figure class="svc__img"><img src="assets/svc-install.webp" width="1200" height="900" loading="lazy" alt="Outdoor condenser installed on a pad beside a home at dusk"></figure>
+        <div class="svc__body"><span class="svc__n">04</span><h3>System Installation</h3>
+          <p>New and replacement systems, matched to the home and installed with the same care we would want in our own.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================= FILTER ============================= -->
+<section class="section filter" id="maintenance" aria-labelledby="filter-h">
+  <div class="wrap filter__grid">
+    <header class="filter__head">
+      <p class="eyebrow">Quick check</p>
+      <h2 class="title" id="filter-h">When did you last check your filter?</h2>
+    </header>
+    <p class="section__intro filter__intro">A filter loaded with dust makes the whole system work harder to move air through your home. Drag the handle to see the difference.</p>
+
+    <div class="compare reveal" style="--pos:50%">
+      <img class="compare__img" src="assets/filter-clean.webp" width="900" height="900" loading="lazy" alt="A clean pleated air filter">
+      <img class="compare__img compare__img--top" src="assets/filter-dirty.webp" width="900" height="900" loading="lazy" alt="The same air filter, grey and loaded with dust">
+      <span class="compare__label compare__label--a" aria-hidden="true">Clean</span>
+      <span class="compare__label compare__label--b" aria-hidden="true">Overdue</span>
+      <span class="compare__handle" aria-hidden="true"><i></i></span>
+      <input class="compare__range" type="range" min="0" max="100" value="50" step="1" aria-label="Compare a clean filter with a dirty one" aria-valuetext="Half clean, half dirty">
+    </div>
+
+    <ul class="filter__list">
+      <li class="reveal"><h3>Look</h3><p>Slide the filter out and take a look every so often — more often in heavy heating or cooling seasons.</p></li>
+      <li class="reveal"><h3>Compare</h3><p>Grey, matted, or blocking the light when you hold it up? It is likely due.</p></li>
+      <li class="reveal"><h3>Replace</h3><p>Filter types and homes vary. Follow the recommendations for your system and filter — or ask us at your next visit.</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================= SYSTEMS ============================ -->
+<section class="section systems" id="systems" aria-labelledby="systems-h">
+  <div class="wrap">
+    <header class="section__head section__head--split">
+      <div><p class="eyebrow">New systems</p>
+        <h2 class="title" id="systems-h">Which one fits<br>your home?</h2></div>
+      <p class="section__intro">Three common ways to heat and cool a house. The right one depends on the home itself, so we look before we recommend.</p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="System types">
+      <button class="tabs__tab" role="tab" id="tab-central" aria-controls="panel-central" aria-selected="true">Central Air</button>
+      <button class="tabs__tab" role="tab" id="tab-heatpump" aria-controls="panel-heatpump" aria-selected="false" tabindex="-1">Heat Pumps</button>
+      <button class="tabs__tab" role="tab" id="tab-ductless" aria-controls="panel-ductless" aria-selected="false" tabindex="-1">Ductless Systems</button>
+    </div>
+
+    <div class="panels">
+      <article class="panel is-active" role="tabpanel" id="panel-central" aria-labelledby="tab-central" tabindex="0">
+        <figure class="panel__img"><img src="assets/sys-central.webp" width="1200" height="900" loading="lazy" alt="Outdoor central air condenser"></figure>
+        <div class="panel__body">
+          <h3>Central Air</h3>
+          <p>An outdoor condenser paired with an indoor coil and a furnace or air handler. Cool air travels through the home’s ductwork to every room.</p>
+          <dl class="spec">
+            <div><dt>Does</dt><dd>Cooling, paired with a furnace for heat</dd></div>
+            <div><dt>Uses</dt><dd>Existing ductwork</dd></div>
+            <div><dt>Often suits</dt><dd>Homes already set up with ducts</dd></div>
+          </dl>
+        </div>
+      </article>
+      <article class="panel" role="tabpanel" id="panel-heatpump" aria-labelledby="tab-heatpump" tabindex="0" hidden>
+        <figure class="panel__img"><img src="assets/sys-heatpump.webp" width="1200" height="900" loading="lazy" alt="Outdoor heat pump unit with two fans"></figure>
+        <div class="panel__body">
+          <h3>Heat Pumps</h3>
+          <p>One system for both seasons. A heat pump moves heat rather than making it — out of the house in summer, into it in winter.</p>
+          <dl class="spec">
+            <div><dt>Does</dt><dd>Heating and cooling</dd></div>
+            <div><dt>Uses</dt><dd>Ductwork, with an indoor air handler</dd></div>
+            <div><dt>Often suits</dt><dd>Homes wanting one system year-round</dd></div>
+          </dl>
+        </div>
+      </article>
+      <article class="panel" role="tabpanel" id="panel-ductless" aria-labelledby="tab-ductless" tabindex="0" hidden>
+        <figure class="panel__img"><img src="assets/sys-ductless.webp" width="1200" height="900" loading="lazy" alt="Ductless wall-mounted indoor unit with its compact outdoor unit"></figure>
+        <div class="panel__body">
+          <h3>Ductless Systems</h3>
+          <p>A compact outdoor unit connected to one or more wall-mounted indoor units. Each room gets its own control, and no ductwork is needed.</p>
+          <dl class="spec">
+            <div><dt>Does</dt><dd>Heating and cooling, room by room</dd></div>
+            <div><dt>Uses</dt><dd>No ductwork</dd></div>
+            <div><dt>Often suits</dt><dd>Additions, shops and rooms without ducts</dd></div>
+          </dl>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ABOUT ============================= -->
+<section class="section about" id="about" aria-labelledby="about-h">
+  <div class="wrap about__grid">
+    <figure class="about__mascot reveal">
+      <img src="assets/mascot.webp" width="543" height="646" loading="lazy" alt="The Bud Haynes mascot — a smiling air conditioner in a cap, pointing upward">
+    </figure>
+    <div class="about__body">
+      <p class="eyebrow">About Bud Haynes</p>
+      <h2 class="title" id="about-h">Locally owned.<br>Owner-operated.</h2>
+      <!-- EDIT ME — company story. Replace with Bud's own words. -->
+      <p class="about__text">Bud Haynes Heating &amp; Air Conditioning is a locally owned and operated HVAC contractor based in <span data-site="location">Okmulgee, Oklahoma</span>. When you call, you are working with the people who will be at your door.</p>
+      <p class="about__text">We take care of residential and light commercial heating and cooling — repairs, seasonal maintenance, and new systems.</p>
+      <dl class="facts">
+        <div><dt>Based in</dt><dd data-site="location">Okmulgee, Oklahoma</dd></div>
+        <div><dt>Service area</dt><dd data-site="serviceArea">Okmulgee County and surrounding areas</dd></div>
+        <div><dt>Hours</dt><dd data-site="hours">Monday – Friday, 0:00 am – 0:00 pm</dd></div>
+        <div><dt>Phone</dt><dd><a data-site-tel data-site="phone" href="tel:+10000000000">(000) 000-0000</a></dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= CONTACT ============================ -->
+<section class="section contact" id="contact" aria-labelledby="contact-h">
+  <div class="wrap contact__grid">
+    <div class="contact__intro">
+      <p class="eyebrow">Service request</p>
+      <h2 class="title" id="contact-h">Tell us what’s<br>going on.</h2>
+      <p class="section__intro">Send a few details and we will get back to you to set up a visit. If it cannot wait, call.</p>
+      <a class="contact__phone" data-site-tel href="tel:+10000000000"><span>Call</span><b data-site="phone">(000) 000-0000</b></a>
+      <p class="contact__meta"><span data-site="hours">Monday – Friday, 0:00 am – 0:00 pm</span><br><span data-site="serviceArea">Okmulgee County and surrounding areas</span></p>
+    </div>
+
+    <form class="form" id="service-form" novalidate>
+      <div class="form__row">
+        <div class="field">
+          <label for="f-name">Name</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name">
+          <p class="field__err" id="e-name" hidden>Please enter your name.</p>
+        </div>
+        <div class="field">
+          <label for="f-phone">Phone</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="e-phone">
+          <p class="field__err" id="e-phone" hidden>Please enter a phone number we can reach you at.</p>
+        </div>
+      </div>
+      <div class="form__row">
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="e-email">
+          <p class="field__err" id="e-email" hidden>Please enter a valid email address.</p>
+        </div>
+        <div class="field">
+          <label for="f-service">Requested service</label>
+          <select id="f-service" name="service" required aria-describedby="e-service">
+            <option value="" selected disabled>Choose one</option>
+            <option>Air conditioning repair</option>
+            <option>Heating repair</option>
+            <option>Seasonal maintenance</option>
+            <option>New system or replacement</option>
+            <option>Something else</option>
+          </select>
+          <p class="field__err" id="e-service" hidden>Please choose a service.</p>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-message">Message <span class="field__opt">optional</span></label>
+        <textarea id="f-message" name="message" rows="4"></textarea>
+      </div>
+      <div class="field field--trap" aria-hidden="true">
+        <label for="f-company">Company</label><input id="f-company" name="company" type="text" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="form__foot">
+        <button class="btn btn--solid" type="submit"><span class="btn__label">Request Service</span></button>
+        <p class="form__status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <a class="footer__logo" href="#top" aria-label="Back to top">
+      <img src="assets/logo.webp" width="900" height="576" loading="lazy" alt="Bud Haynes Heating &amp; Air Conditioning">
+    </a>
+    <nav class="footer__nav" aria-label="Footer">
+      <a href="#services">Services</a><a href="#maintenance">Maintenance</a><a href="#systems">New Systems</a><a href="#about">About</a><a href="#contact">Contact</a>
+    </nav>
+    <address class="footer__contact">
+      <a data-site-tel data-site="phone" href="tel:+10000000000">(000) 000-0000</a>
+      <a data-site-mail data-site="email" href="mailto:office@example.com">office@example.com</a>
+      <span data-site="location">Okmulgee, Oklahoma</span>
+      <span data-site="hours">Monday – Friday, 0:00 am – 0:00 pm</span>
+    </address>
+  </div>
+  <div class="wrap footer__base">
+    <span>© <span id="year">2026</span> Bud Haynes Heating &amp; Air Conditioning</span>
+    <span data-site="serviceArea">Okmulgee County and surrounding areas</span>
+  </div>
+</footer>
+
+<script src="js/site.js" defer></script>
+<!-- Built from js/main.js (hero + ambient background) and vendor/three by tools/build.sh -->
+<script src="js/hero.bundle.js" defer></script>
+</body>
+</html>

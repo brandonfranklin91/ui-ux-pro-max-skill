@@ -153,6 +153,13 @@ h3{font-size:clamp(1.45rem,2.1vw,1.9rem);line-height:1.08;letter-spacing:-.012em
   .hero-pinned .scene{bottom:44px}.lede{display:none}.actions{margin-top:14px}
 }
 
+/* ---------- smooth scrolling (js/smooth.js, Lenis) ---------- */
+html.lenis,html.lenis body{height:auto}
+html.lenis{scroll-behavior:auto}
+.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.has-smooth .svc__img img,.has-smooth .panel__img img{transform:translate3d(0,var(--py,0%),0) scale(1.1);transition:none;will-change:transform}
+
 /* ---------- ambient 3D background (js/ambient.js) ----------
    A fixed canvas sits behind the page; sections below the hero use
    translucent grounds so the motion shows through without hurting contrast. */

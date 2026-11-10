@@ -6,4 +6,5 @@ cd "$(dirname "$0")/.." || exit 1
 ${ESBUILD:-npx --yes esbuild@0.24.0} js/main.js --bundle --format=iife --minify --target=es2020 \
   --alias:three=./vendor/three/three.module.min.js \
   --alias:three/addons=./vendor/three/addons \
+  --alias:lenis=./vendor/lenis/lenis.mjs \
   --legal-comments=none --outfile=js/hero.bundle.js

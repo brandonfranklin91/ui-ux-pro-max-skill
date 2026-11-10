@@ -95,12 +95,40 @@ export const tex = {
       for (let x = 0; x < w; x += 4) { ctx.fillStyle = '#3c4046'; ctx.fillRect(x, 0, 1.5, h); }
     }, { repeat: [6, 1] });
   },
-  stucco() {
-    return canvasTex(512, 512, (ctx, w, h) => {
-      ctx.fillStyle = '#9b999d'; ctx.fillRect(0, 0, w, h);
-      blotches(ctx, w, h, 30, 'rgba(90,84,78,.045)', 60, 160, 11);
-      grain(ctx, w, h, 12, 5); grain(ctx, w, h, 8, 9, 3);
-    }, { repeat: [4, 2] });
+  // Horizontal lap siding; returns colour + bump so the boards catch the light.
+  siding() {
+    const draw = (bump) => (ctx, w, h) => {
+      const n = 8, bh = h / n;
+      for (let i = 0; i < n; i++) {
+        const g = ctx.createLinearGradient(0, i * bh, 0, (i + 1) * bh);
+        if (bump) { g.addColorStop(0, '#6a6a6a'); g.addColorStop(0.9, '#ffffff'); g.addColorStop(0.93, '#000'); g.addColorStop(1, '#000'); }
+        else { g.addColorStop(0, '#a3a1a4'); g.addColorStop(0.88, '#b3b1b2'); g.addColorStop(0.93, '#4c4a50'); g.addColorStop(1, '#5e5c62'); }
+        ctx.fillStyle = g; ctx.fillRect(0, i * bh, w, bh);
+      }
+      if (!bump) { blotches(ctx, w, h, 24, 'rgba(70,66,72,.05)', 60, 160, 11); grain(ctx, w, h, 7, 5); }
+    };
+    return { map: canvasTex(512, 512, draw(false), { repeat: [6, 2.5] }), bump: canvasTex(512, 512, draw(true), { repeat: [6, 2.5], srgb: false }) };
+  },
+  // Distant neighbourhood silhouette, drawn once and wrapped around the horizon.
+  treeline() {
+    return canvasTex(2048, 256, (ctx, w, h) => {
+      const r = rng(131);
+      ctx.fillStyle = '#0d1020';
+      for (let i = 0; i < 70; i++) {
+        const x = r() * w, rad = 18 + r() * 46, y = h - 40 - r() * 70;
+        for (let k = 0; k < 10; k++) { ctx.beginPath(); ctx.arc(x + (r() - 0.5) * rad * 2, y + (r() - 0.5) * rad * 1.1, rad * (0.3 + r() * 0.45), 0, 7); ctx.fill(); }
+        ctx.fillRect(x - 3, y, 6, h - y);
+      }
+      ctx.fillRect(0, h - 46, w, 46);
+      for (let i = 0; i < 7; i++) { // rooflines with a lit window or two
+        const x = r() * (w - 200), bw = 120 + r() * 90, bh = 50 + r() * 26, y = h - 40 - bh;
+        ctx.fillStyle = '#10132a'; ctx.fillRect(x, y, bw, bh + 40);
+        ctx.beginPath(); ctx.moveTo(x - 12, y); ctx.lineTo(x + bw / 2, y - 30 - r() * 14); ctx.lineTo(x + bw + 12, y); ctx.fill();
+        ctx.fillStyle = 'rgba(255,196,120,.85)';
+        for (let k = 0; k < 2; k++) if (r() < 0.7) ctx.fillRect(x + 18 + k * (bw * 0.45), y + 16, 16, 20);
+        ctx.fillStyle = '#0d1020';
+      }
+    }, { repeat: [3, 1] });
   },
   concrete() {
     return canvasTex(512, 512, (ctx, w, h) => {

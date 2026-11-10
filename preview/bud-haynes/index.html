@@ -35,9 +35,6 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentEl
 <link rel="stylesheet" href="css/site.css">
 <link rel="preload" as="image" href="assets/hero-1.webp">
 
-<script type="importmap">
-{ "imports": { "three": "./vendor/three/three.module.min.js", "three/addons/": "./vendor/three/addons/" } }
-</script>
 </head>
 <body>
 <a class="skip" href="#services">Skip to content</a>
@@ -339,6 +336,7 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentEl
 </footer>
 
 <script src="js/site.js" defer></script>
-<script type="module" src="js/hero.js"></script>
+<!-- Built from js/hero.js + world.js + kit.js + vendor/three by tools/build.sh -->
+<script src="js/hero.bundle.js" defer></script>
 </body>
 </html>

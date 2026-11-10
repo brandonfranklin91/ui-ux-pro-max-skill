@@ -30,7 +30,8 @@ export function buildWorld(scene) {
   addEdges(pad, line); ext.add(pad);
 
   // house shell
-  const mWall = tech.ghost(std(0xffffff, { map: tex.stucco(), roughness: 0.95, metalness: 0 }), 0.035, 0.06);
+  const sd = tex.siding();
+  const mWall = tech.ghost(std(0xffffff, { map: sd.map, bumpMap: sd.bump, bumpScale: 3, roughness: 0.82, metalness: 0 }), 0.035, 0.06);
   const mTrim = tech.ghost(std(0x1b1c22, { roughness: 0.6, metalness: 0.4 }), 0.1, 0.1);
   const front = mesh(new THREE.BoxGeometry(10.8, 3.6, 0.2), mWall, -3.8, 1.8, -0.1); addEdges(front, line); front.renderOrder = -2; ext.add(front);
   const side = mesh(new THREE.BoxGeometry(0.2, 3.6, 8), mWall, 1.5, 1.8, -4.2); addEdges(side, line); side.renderOrder = -2; ext.add(side);
@@ -71,26 +72,28 @@ export function buildWorld(scene) {
   ext.add(flow);
 
   // planting + distance
+  // clipped hedge under the windows: a dark core dressed in a few thousand leaves
   const r = rng(5);
-  const hg = new THREE.BoxGeometry(7.7, 0.84, 0.62, 120, 14, 10);
-  const hp = hg.attributes.position;
-  const hash = (x, y, z) => { const n = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return n - Math.floor(n); };
-  for (let i = 0; i < hp.count; i++) { // lumpy, clipped-hedge silhouette
-    const x = hp.getX(i), y = hp.getY(i), z = hp.getZ(i), k = hash(Math.round(x * 50), Math.round(y * 50), Math.round(z * 50));
-    const big = Math.sin(x * 2.3) * 0.03 + Math.sin(x * 5.1 + 1) * 0.02;
-    hp.setXYZ(i, x, y + (y > 0 ? k * 0.07 + big : 0), z + (z > 0 ? k * 0.07 + big : 0));
+  ext.add(mesh(new THREE.BoxGeometry(7.6, 0.74, 0.5), std(0x0f1a10, { roughness: 1, metalness: 0 }), -5.05, 0.37, 0.5));
+  const leafShape = new THREE.Shape();
+  leafShape.moveTo(0, -0.5); leafShape.quadraticCurveTo(0.42, -0.1, 0, 0.5); leafShape.quadraticCurveTo(-0.42, -0.1, 0, -0.5);
+  const LEAVES = 7000;
+  const leaves = new THREE.InstancedMesh(new THREE.ShapeGeometry(leafShape, 3), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, metalness: 0, side: THREE.DoubleSide }), LEAVES);
+  const dummy = new THREE.Object3D(), lc = new THREE.Color();
+  for (let i = 0; i < LEAVES; i++) {
+    const x = -8.9 + r() * 7.75, bump = Math.sin(x * 2.3) * 0.035 + Math.sin(x * 5.1 + 1) * 0.02, f = r();
+    if (f < 0.5) dummy.position.set(x, 0.04 + r() * 0.78, 0.76 + bump + r() * 0.07);          // front
+    else if (f < 0.93) dummy.position.set(x, 0.76 + bump + r() * 0.07, 0.22 + r() * 0.6);      // top
+    else dummy.position.set(-1.2 + r() * 0.07, 0.04 + r() * 0.78, 0.22 + r() * 0.6);           // end
+    dummy.rotation.set(r() * 6.28, r() * 6.28, r() * 6.28); dummy.scale.setScalar(0.06 + r() * 0.06); dummy.updateMatrix();
+    leaves.setMatrixAt(i, dummy.matrix);
+    const g = 0.05 + r() * 0.2; leaves.setColorAt(i, lc.setRGB(g * 0.55, g, g * 0.38));
   }
-  hg.computeVertexNormals();
-  const hedgeTex = tex.hedge(); hedgeTex.repeat.set(16, 2);
-  ext.add(mesh(hg, new THREE.MeshStandardMaterial({ color: 0xa9b39c, map: hedgeTex, roughness: 1, metalness: 0, flatShading: true }), -5.05, 0.4, 0.5));
+  leaves.castShadow = leaves.receiveShadow = true; ext.add(leaves);
+  // far neighbourhood silhouette on the horizon
+  const horizon = new THREE.Mesh(new THREE.CylinderGeometry(46, 46, 9, 64, 1, true), new THREE.MeshBasicMaterial({ map: tex.treeline(), transparent: true, side: THREE.BackSide, depthWrite: false }));
+  horizon.position.y = 4.1; horizon.renderOrder = -3; ext.add(horizon);
   const treeMat = std(0x10161a, { roughness: 1, metalness: 0 });
-  for (let i = 0; i < 12; i++) {
-    const g = new THREE.Group(); const s = 1.6 + r() * 2.2;
-    g.add(mesh(new THREE.CylinderGeometry(0.08, 0.12, s, 6), treeMat, 0, s / 2, 0, false));
-    for (let k = 0; k < 5; k++) g.add(mesh(new THREE.IcosahedronGeometry(s * (0.3 + r() * 0.2), 1), treeMat, (r() - 0.5) * s * 0.6, s + (r() - 0.3) * s * 0.4, (r() - 0.5) * s * 0.6, false));
-    g.position.set(9 + r() * 22, 0, -10 - r() * 22); ext.add(g);
-  }
-  const fence = mesh(new THREE.BoxGeometry(40, 1.5, 0.08), std(0x1c1a1c, { roughness: 0.9 }), 22, 0.75, -9.5, false); ext.add(fence);
 
   // the hero unit
   const unit = makeCondenser(tech);
@@ -174,13 +177,6 @@ export function buildWorld(scene) {
   const view = new THREE.Mesh(new THREE.PlaneGeometry(26, 10), new THREE.MeshBasicMaterial({ map: tex.evening(), fog: false }));
   view.position.set(0, 2.2, Z1 - 7); room.add(view);
   const terrace = mesh(new THREE.PlaneGeometry(26, 8), std(0x0e0f16, { roughness: 0.5, metalness: 0.2 }), 0, 0, Z1 - 3.5, false); terrace.rotation.x = -Math.PI / 2; room.add(terrace);
-  const gt = rng(9);
-  for (let i = 0; i < 4; i++) { // garden silhouettes just outside
-    const g = new THREE.Group(); const s = 1.0 + gt() * 0.8;
-    g.add(mesh(new THREE.CylinderGeometry(0.05, 0.08, s, 6), treeMat, 0, s / 2, 0, false));
-    for (let k = 0; k < 5; k++) g.add(mesh(new THREE.IcosahedronGeometry(s * (0.25 + gt() * 0.18), 1), std(0x0c120f, { roughness: 1 }), (gt() - 0.5) * s * 0.7, s + (gt() - 0.4) * s * 0.4, (gt() - 0.5) * s * 0.5, false));
-    g.position.set(-3 + i * 2.1 + gt(), 0, Z1 - 2 - gt() * 2.5); room.add(g);
-  }
   const garden = new THREE.PointLight(0xffc27a, 1.0, 6, 1.6); garden.position.set(0.5, 0.5, Z1 - 2.2); room.add(garden);
 
   // sheer curtains

@@ -33,6 +33,10 @@ Data lives in `data/` (SQLite database + private uploads; git-ignored). Delete t
 
 Customers create their own accounts in the app. Staff sign in from **Account**; the **Shop dashboard** link then appears. A second shop's storefront is reachable with `/?shop=apex`.
 
+### Static showcase (no server)
+
+`node scripts/build-static.mjs` writes `dist-static/`: the landing, install film, 3D editor and photo demo as plain files that can be hosted anywhere. Accounts, saving, My Garage, quotes and the shop dashboard are switched off there and the page says so.
+
 ## What's in the app
 
 - **Studio** – scroll-driven landing (3D coupe that turns with scroll, then a 150-frame scroll-scrubbed install film), then the editor: wrap color (search, favorites, custom), finish, design (full / contrasting roof / hood accent / racing stripes), wheels (4 styles × 4 finishes), tint, undo/redo/reset, before-and-after slider, image download. Bottom drawer on mobile, side panel on desktop.

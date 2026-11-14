@@ -15,7 +15,14 @@ const listeners = new Set();
 export const onAuth = (fn) => listeners.add(fn);
 export function setUser(user, staffShop = null) { store.user = user; store.staffShop = staffShop; listeners.forEach((fn) => fn()); }
 
+// Static showcase build (no server): only catalog/config reads are answered, from data baked into the page.
+export const STATIC = globalThis.BWW_STATIC || null;
 export async function api(path, { method = 'GET', body } = {}) {
+  if (STATIC) {
+    if (path.startsWith('/api/config')) return structuredClone(STATIC.config);
+    if (path === '/api/me') return { user: null, staffShop: null };
+    throw Object.assign(new Error('This showcase runs without a server, so accounts, saving and quotes are switched off.'), { status: 503 });
+  }
   let res;
   try {
     res = await fetch(path, { method, credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });

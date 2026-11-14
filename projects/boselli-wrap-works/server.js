@@ -573,4 +573,5 @@ const server = http.createServer(async (req, res) => {
     send(res, status, { error: status === 500 ? 'Something went wrong on our side. Please try again.' : e.message });
   }
 });
-server.listen(PORT, () => console.log(`Boselli Wrap Works running at http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Boselli Wrap Works running at http://localhost:${server.address().port}`));
+module.exports = { server };

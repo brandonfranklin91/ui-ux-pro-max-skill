@@ -1,5 +1,5 @@
 // Studio: scroll-driven landing + the customization editor (3D demo coupe and photo previews).
-import { $, $$, esc, api, store, local, toast, modal, icon, ensureAuth, describe, cap, busy, field, formData, refreshMe } from './core.js';
+import { $, $$, esc, api, store, local, toast, modal, icon, ensureAuth, describe, cap, busy, field, formData, refreshMe, STATIC } from './core.js';
 import { createCarView, STOCK, SIGNATURE, WHEELS, WHEEL_FINISHES, TINTS } from './car3d.js';
 import { createPhotoEditor, loadImage, LAYERS } from './photo.js';
 import { openQuoteWizard } from './quote.js';
@@ -11,7 +11,7 @@ const DESIGNS = [
 ];
 const FRAMES = 150;
 const stageHost = document.createElement('div'); stageHost.className = 'stage3d';
-let view = null, viewFailed = false;
+let view = null, viewFailed = false, localPhoto = null; // localPhoto: object URL of a photo opened in the static showcase
 function getView() {
   if (view || viewFailed) return view;
   try { view = createCarView(stageHost); } catch (e) { console.error(e); viewFailed = true; }
@@ -45,7 +45,7 @@ export function renderLanding(root) {
   <section class="hero" id="hero"><div class="hero-sticky">
     <div class="hero-stage" id="heroStage"></div>
     <div class="hero-copy">
-      <img class="hero-logo" src="/assets/logo.webp" alt="Boselli Wrap Works" width="900" height="612">
+      <img class="hero-logo" src="assets/logo.webp" alt="Boselli Wrap Works" width="900" height="612">
       <p class="eyebrow">Wrap visualizer</p>
       <h1>Your ride.<br><em>Your signature.</em></h1>
       <p class="lede">Preview wraps, finishes, wheels and tint on a live 3D coupe or a photo of your own car. Save the build, then send it to our installers for a quote.</p>
@@ -83,7 +83,7 @@ export function renderLanding(root) {
       <div><h2>Ready when you are.</h2><p class="muted">Open the studio and start with the demo coupe or your own photo.</p></div>
       <button class="btn gold lg" data-act="start">${icon('car')}Customize your car</button>
     </div>
-    <footer class="foot"><img src="/assets/emblem.webp" alt="" width="84" height="50"><p>${esc(DISCLAIMER)}</p><p>© ${new Date().getFullYear()} Boselli Wrap Works. Your ride. Your signature.</p></footer>
+    <footer class="foot"><img src="assets/emblem.webp" alt="" width="84" height="50"><p>${esc(DISCLAIMER)}</p>${STATIC ? '<p>Showcase preview: accounts, My Garage, quotes and the shop dashboard run in the full app.</p>' : ''}<p>© ${new Date().getFullYear()} Boselli Wrap Works. Your ride. Your signature.</p></footer>
   </section>`;
 
   const v = getView(), hero = $('#hero', root), story = $('#story', root);
@@ -98,7 +98,7 @@ export function renderLanding(root) {
     let i = want; for (let k = 0; k < FRAMES && !imgs[i]; k++) i = Math.max(0, Math.min(FRAMES - 1, want + (k % 2 ? 1 : -1) * Math.ceil(k / 2)));
     if (imgs[i]) ctx.drawImage(imgs[i], 0, 0, canvas.width, canvas.height);
   };
-  const loadFrame = (i) => { if (imgs[i] !== undefined) return; imgs[i] = null; const im = new Image(); im.src = `/assets/frames/f${String(i + 1).padStart(3, '0')}.webp`; im.onload = () => { imgs[i] = im; if (Math.abs(i - want) < 6) paint(); }; };
+  const loadFrame = (i) => { if (imgs[i] !== undefined) return; imgs[i] = null; const im = new Image(); im.src = `assets/frames/f${String(i + 1).padStart(3, '0')}.webp`; im.onload = () => { imgs[i] = im; if (Math.abs(i - want) < 6) paint(); }; };
   const startLoading = () => { if (started) return; started = true; for (const step of [10, 5, 2, 1]) for (let i = 0; i < FRAMES; i += step) loadFrame(i); };
   const chapters = $$('.chapter', root), bar = $('.story-progress i', root), copy = $('.hero-copy', root);
   if (reduceMotion()) { want = 96; loadFrame(96); chapters.forEach((c) => c.classList.add('on')); }
@@ -142,7 +142,7 @@ export function startSheet() {
         <input id="carFile" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp">
         <div class="progress" hidden role="progressbar" aria-label="Upload progress" aria-valuemin="0" aria-valuemax="100"><i></i><span>Uploading… 0%</span></div>
         <p class="form-err" role="alert" hidden></p>
-        <p class="fine">${store.user ? `${Math.max(0, allowance - used)} of ${allowance} free photo previews left.` : `Includes ${allowance} free photo previews with a free account.`} Photo previews stay 2D — 360° rotation needs a 3D model.</p>
+        <p class="fine">${STATIC ? 'In this showcase your photo stays in this browser and is not uploaded.' : store.user ? `${Math.max(0, allowance - used)} of ${allowance} free photo previews left.` : `Includes ${allowance} free photo previews with a free account.`} Photo previews stay 2D — 360° rotation needs a 3D model.</p>
         <button class="btn ghost block" data-go="sample">Use the prepared sample photo <em class="pill demo">Demo</em></button>
       </div>
     </div>
@@ -159,6 +159,7 @@ export function startSheet() {
     const file = e.target.files[0]; e.target.value = ''; if (!file) return; err.hidden = true;
     if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return fail('Please choose a JPG, PNG or WebP photo.');
     if (file.size > 12 * 1024 * 1024) return fail('That photo is over 12 MB. Try a smaller export.');
+    if (STATIC) { if (localPhoto) URL.revokeObjectURL(localPhoto); localPhoto = URL.createObjectURL(file); newDraft('photo', { photoSrc: 'local' }); m.close(); location.hash = '#/studio/edit'; return; }
     if (!(await ensureAuth('Create a free account so your photo is stored privately.'))) return;
     prog.hidden = false;
     try {
@@ -218,10 +219,10 @@ export function renderEditor(root) {
       <button class="drawer-handle" data-act="drawer" aria-expanded="true" aria-label="Collapse or expand controls"><i></i></button>
       <div class="tabs" role="tablist" aria-label="Customization">${tabs.map((t) => `<button role="tab" id="tab-${t}" data-tab="${t}" aria-selected="${t === ui.tab}">${cap(t)}</button>`).join('')}</div>
       <div class="tab-body" id="tabBody" role="tabpanel" tabindex="-1"></div>
-      <div class="panel-actions">
+      <div class="panel-actions">${STATIC ? `<button class="btn gold grow" data-act="full">Save and get a quote</button>` : `
         <button class="btn ghost" data-act="save">${icon('save')}Save</button>
         <button class="btn ghost" data-act="download" aria-label="Download preview image">${icon('download')}<span class="lbl">Image</span></button>
-        <button class="btn gold grow" data-act="quote">Get a wrap quote</button>
+        <button class="btn gold grow" data-act="quote">Get a wrap quote</button>`}
       </div>
       <p class="fine disclaimer">${esc(DISCLAIMER)}</p>
     </aside></div>`;
@@ -243,10 +244,13 @@ export function renderEditor(root) {
       if (d.photoSrc === 'sample') {
         if (!v) throw new Error('The sample photo needs WebGL, which is not available on this device.');
         const s = v.renderSample(); photo.load(s.image, d.masks ? stored : { body: s.body, glass: s.glass, wheels: s.wheels });
+      } else if (d.photoSrc === 'local') {
+        if (!localPhoto) throw new Error('Choose your photo again to keep editing. This showcase keeps photos only while the page is open.');
+        photo.load(await loadImage(localPhoto), stored);
       } else photo.load(await loadImage('/api/uploads/' + d.uploadId), stored);
       photo.onChange(() => { d.masks = photo.exportMasks(); d.dirty = true; persist(); if (ui.tab === 'select') drawTab(); });
       target = photo; apply(); setTab(ui.tab);
-      if (d.photoSrc === 'upload' && !d.masks) toast('Tap your car’s body panels to choose where the wrap goes.');
+      if (d.photoSrc !== 'sample' && !d.masks) toast('Tap your car’s body panels to choose where the wrap goes.');
     } catch (ex) {
       stageView.innerHTML = `<p class="stage-fallback">${esc(ex.status === 401 || ex.message.includes('could not be opened') ? 'We could not open this photo. Sign in to the account that uploaded it, or start a new build.' : ex.message)}</p>`;
     } finally { loading.hidden = true; }
@@ -361,6 +365,7 @@ export function renderEditor(root) {
       case 'save': return saveDialog(false);
       case 'download': return download();
       case 'quote': return quote();
+      case 'full': return modal({ title: 'Available in the full app', html: `<p class="muted">This page is a showcase of the Boselli studio. Saving builds to My Garage, sharing, downloading images and sending a quote request to the shop all run in the full app, which needs its server.</p><p class="muted">Everything you change here stays in this browser.</p>` });
     }
   }
   function onInput(e) {

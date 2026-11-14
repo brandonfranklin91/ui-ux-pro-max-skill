@@ -223,7 +223,7 @@ function radialTexture(stops, size = 256) {
 }
 export function paintBackdrop(ctx, w, h) {
   const g = ctx.createRadialGradient(w / 2, h * 0.62, 0, w / 2, h * 0.62, Math.max(w, h) * 0.75);
-  g.addColorStop(0, '#4a1622'); g.addColorStop(0.55, '#200a10'); g.addColorStop(1, '#0d0406');
+  g.addColorStop(0, '#26231c'); g.addColorStop(0.55, '#0f0f0f'); g.addColorStop(1, '#030303');
   ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
 }
 
@@ -240,10 +240,10 @@ export function createCarView(container) {
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
   const key = new THREE.DirectionalLight(0xfff1dc, 1.6); key.position.set(4, 6, 5); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xffc8d0, 0.7); rim.position.set(-5, 3, -4); scene.add(rim);
+  const rim = new THREE.DirectionalLight(0xffe2b0, 0.7); rim.position.set(-5, 3, -4); scene.add(rim);
 
   const floor = new THREE.Mesh(new THREE.CircleGeometry(8, 64), new THREE.MeshStandardMaterial({
-    color: 0x1c080e, roughness: 0.62, metalness: 0.2, transparent: true, alphaMap: radialTexture([[0, '#fff'], [0.2, '#888'], [0.44, '#000'], [1, '#000']]) }));
+    color: 0x141414, roughness: 0.62, metalness: 0.2, transparent: true, alphaMap: radialTexture([[0, '#fff'], [0.2, '#888'], [0.44, '#000'], [1, '#000']]) }));
   floor.rotation.x = -Math.PI / 2; scene.add(floor);
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 6.4), new THREE.MeshBasicMaterial({
     map: radialTexture([[0, 'rgba(0,0,0,.95)'], [0.6, 'rgba(0,0,0,.7)'], [1, 'rgba(0,0,0,0)']]), transparent: true, depthWrite: false }));

@@ -412,7 +412,7 @@ export function renderEditor(root) {
   }
   function download() {
     const c = snapshot(1600, 1000); if (!c) return toast('Preview is not ready yet.', 'err');
-    const x = c.getContext('2d'); x.fillStyle = 'rgba(10,4,6,.72)'; x.fillRect(0, 930, 1600, 70);
+    const x = c.getContext('2d'); x.fillStyle = 'rgba(0,0,0,.72)'; x.fillRect(0, 930, 1600, 70);
     x.fillStyle = '#f1e6d0'; x.font = '600 26px Manrope, system-ui, sans-serif'; x.fillText(`${d.name} — Concept preview`, 36, 974);
     x.fillStyle = '#d4af37'; x.textAlign = 'right'; x.fillText('Boselli Wrap Works', 1564, 974);
     c.toBlob((blob) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = d.name.replace(/[^\w-]+/g, '-').toLowerCase() + '-concept.jpg'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast('Preview image downloaded.'); }, 'image/jpeg', 0.9);

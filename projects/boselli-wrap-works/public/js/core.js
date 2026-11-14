@@ -80,7 +80,7 @@ export function modal({ title, html, wide = false, onClose }) {
     if (closed) return; closed = true;
     wrap.classList.add('out'); document.removeEventListener('keydown', onKey);
     setTimeout(() => { wrap.remove(); if (!$('.modal-wrap')) document.body.classList.remove('modal-open'); }, 180);
-    onClose?.(result); prev?.focus?.();
+    prev?.focus?.(); onClose?.(result); // restore focus first so a dialog opened by onClose keeps it
   };
   const onKey = (e) => {
     if (e.key === 'Escape') close();

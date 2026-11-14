@@ -37,6 +37,7 @@ try {
   console.log('\nBrowser workflow');
   const page = await browser.newPage({ viewport: { width: 390, height: 820 } });
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
+  if (process.env.BWW_DEBUG) page.on('request', (r) => { if (r.method() !== 'GET') console.log('   ', r.method(), r.url().replace(base, ''), (r.postData() || '').slice(0, 70)); });
   await page.goto(base);
   await page.waitForSelector('[data-act=start]');
   ok(await page.locator('h1').innerText().then((t) => /YOUR RIDE/i.test(t)), 'studio opens with the tagline and “Customize your car”');
@@ -60,14 +61,15 @@ try {
   await page.click('[data-act=save]');
   await page.fill('.modal input[name=name]', 'Ava Tester'); await page.fill('.modal input[name=email]', 'ava@example.test'); await page.fill('.modal input[name=password]', 'correct-horse-1');
   await page.click('.modal button[type=submit]');
-  await page.waitForSelector('.modal input[name=year]');
-  await page.fill('.modal input[name=name]', 'Midnight Gold'); await page.fill('.modal input[name=year]', '2021'); await page.fill('.modal input[name=make]', 'Dodge'); await page.fill('.modal input[name=model]', 'Challenger');
-  await page.click('.modal button[type=submit]');
+  const save = page.locator('[role=dialog][aria-label="Save to My Garage"]'); // scope: the closing account dialog is briefly still in the DOM
+  await save.locator('input[name=name]').fill('Midnight Gold'); await save.locator('input[name=year]').fill('2021'); await save.locator('input[name=make]').fill('Dodge'); await save.locator('input[name=model]').fill('Challenger');
+  await save.locator('button[type=submit]').click();
   await page.waitForSelector('.toast:has-text("Saved to My Garage")');
   ok(true, 'sign-up then save build to My Garage');
 
   await page.goto(base + '/#/garage'); await page.waitForSelector('.build');
-  ok(await page.locator('.build h3').first().innerText() === 'Midnight Gold', 'saved build is listed in My Garage with its name');
+  const savedName = await page.locator('.build h3').first().innerText();
+  ok(savedName === 'Midnight Gold', `saved build is listed in My Garage with its name (${savedName})`);
   ok(await page.locator('.build .thumb img').count() === 1, 'saved build has a preview image');
   await page.screenshot({ path: path.join(shots, '02-garage.png') });
   await page.evaluate(() => localStorage.removeItem('bww.draft')); // prove the reopen comes from the database
